@@ -1,2 +1,2 @@
-# Conversa
-Deep learning for recognition of micro expressions and sentiment prediction
+# conversa
+Deep learning for human behaviour recognition through video and audio
