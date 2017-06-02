@@ -46,7 +46,7 @@ function varargout = cnv_plotTracking(plotData, varargin)
 % Initialize paramters from input option arguments as needed
 optionArgs=[];
 if (nargin>0)
-    optionArgs = cnv_loadArgs(varargin); % Load args
+    optionArgs = cnv_fieldValuePairs(varargin); % Load args
 end;
 
 if (~exist('plotData'))
@@ -64,7 +64,7 @@ else % Initialize defaults
     plotMap = defaultPlotMap;
 end;
 if (isfield(optionArgs, {'plotfields'}))
-    plotFieldArgs = cnv_loadArgs(optionArgs.plotfields);
+    plotFieldArgs = cnv_fieldValuePairs(optionArgs.plotfields);
 end;
 
 % Get timestamps
@@ -134,7 +134,7 @@ for i = 1:min(nFigCols*nFigRows, size(plotGroups,2)) % Iterate through groups, s
     end;
     l=legend(fields);
     set(l,'interpreter','none'); % Prevents interpretation of underscores as subscripts in legends
-    % Plot labels (TEMP WIP)
+    % Plot labels (WIP)
 %     for i = 1:length(behaviours)
 %         behav = behaviours{i};
 %         startA = 1;
@@ -165,13 +165,4 @@ for i = 1:min(nFigCols*nFigRows, size(plotGroups,2)) % Iterate through groups, s
     title(plotGroup);
 end;
 
-% If labels given, use drawline to draw vertical lines at onset and offset of each expression 
-
-% Full customizability
-
-% Loads a struct with the parameters
-function args = cnv_loadArgs(vargs)
-args=[];
-for i = 1:2:length(vargs)
-    args.(vargs{i}) = vargs{i+1};
-end;
+% Add more customizability - e.g. style, more layour options

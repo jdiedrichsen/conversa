@@ -9,15 +9,30 @@ function cnvTrackingData=cnv_loadTrackingFile(varargin)
 %   The data is stored in a structure with a 2D array of fields, with the
 %   ith field array belonging to the ith face
 %   If no fileName argument is provided a default file is read from
+% Options
+%   file
+%   pid
+%   cam
+%   
 % Last updated 26 May 2017
+
 cnvTrackingData = [];
+
+args = cnv_fieldValuePairs(varargin);
+defaultArgs = struct( ...
+    'file', 'C:\Users\Shayn\Documents\Work\AI Research\conversa\Visualization\cam1par127.txt', ...
+    'dir',  'C:\Users\Shayn\Documents\Work\AI Research\conversa\Test Data', ...
+    'pid',  '1001', ...
+    'cam',  '1' ...
+    );
+
 fileName = 'C:\Users\Shayn\Documents\Work\AI Research\conversa\Visualization\cam1par127.txt';
 if (nargin == 1)
     fileName = varargin{1};
 end;
 fid = fopen(fileName,'r'); % Open the file for reading
 if (fid == -1) % Indicates file not found
-    fprintf(['Error: Did not find file\n']);
+    fprintf('Error: Did not find file\n');
     return;
 end;
 % Read in the metadata file from file header
