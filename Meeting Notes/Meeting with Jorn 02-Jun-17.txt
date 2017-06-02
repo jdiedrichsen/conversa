@@ -1,0 +1,5 @@
+Meeting with Jorn 02-Jun-17
+
+- Did not find varargin options, goto method seems to be my implementation
+
+- 

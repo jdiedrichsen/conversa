@@ -1,0 +1,44 @@
+timestamp	
+isTracked	
+bodyId	
+
+neckPosX	*1:45, 8000
+neckPosY	
+neckPosZ	
+neckRotX	
+neckRotY	
+neckRotZ	
+
+headPosX	*1:45, 8000
+headPosY	
+headPosZ	
+headRotX	
+headRotY	
+headRotZ	
+
+Brow_Up_L	
+Brow_Up_R	
+Brow_Down_L	
+Brow_Down_R	
+
+Eye_Closed_L	
+Eye_Closed_R	
+
+Cheek_Puffed_L	
+Cheek_Puffed_R	
+
+Lips_Pucker	
+Lips_Stretch_L	
+Lips_Stretch_R	
+Lip_Lower_Down_L	
+Lip_Lower_Down_R
+	
+Smile_L		*1:30, 6600
+Smile_R		*1:30, 6600
+
+Frown_L	
+Frown_R	
+
+Jaw_L	
+Jaw_R	
+Jaw_Open

@@ -1,0 +1,1 @@
+pid	cam	Min	Sec	Frame	smile	talking

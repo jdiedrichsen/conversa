@@ -1,0 +1,6 @@
+﻿-- logger module started --
+oldrc: VLC media player - 2.2.1 Terry Pratchett (Weatherwax)
+oldrc: Copyright © 1996-2015 the VideoLAN team
+oldrc: 
+Warning: if you cannot access the GUI anymore, open a command-line window, go to the directory where you installed VLC and run "vlc -I qt"
+
