@@ -9,6 +9,7 @@ function varargout = cnv_plotTracking(plotData, varargin)
 % Description
 %   TODO
 % Argument list
+%   plotdata        
 %   labels          Struct of labels to use
 %                   Usage example: 'labels', dload(
 %   start           Frame to start at
@@ -30,7 +31,8 @@ function varargout = cnv_plotTracking(plotData, varargin)
 % reference to built in Matlab functions which did anything like this
 
 % Default grouping of data
-    defaultPlotMap = containers.Map({'neck', 'head', 'brow', 'eyes', 'cheek', 'lips', 'smile', 'frown', 'jaw'}, { ...
+    defaultPlotMap = containers.Map({'all', 'neck', 'head', 'brow', 'eyes', 'cheek', 'lips', 'smile', 'frown', 'jaw'}, { ...
+    {'neckposx', 'neckposy', 'neckposz', 'neckrotx', 'neckroty', 'neckrotz', 'headposx', 'headposy', 'headposz', 'headrotx', 'headroty', 'headrotz', 'brow_up_l', 'brow_up_r', 'brow_down_l', 'brow_down_r', 'eye_closed_l', 'eye_closed_r', 'cheek_puffed_l', 'cheek_puffed_r', 'lips_pucker', 'lips_stretch_l', 'lips_stretch_r', 'lip_lower_down_l', 'lip_lower_down_r', 'smile_l', 'smile_r', 'frown_l', 'frown_r', 'jaw_l', 'jaw_r', 'jaw_open'}, ...
     {'neckposx', 'neckposy', 'neckposz', 'neckrotx', 'neckroty', 'neckrotz'}, ...
     {'headposx', 'headposy', 'headposz', 'headrotx', 'headroty', 'headrotz'}, ...
     {'brow_up_l', 'brow_up_r', 'brow_down_l', 'brow_down_r'}, ...
@@ -43,11 +45,13 @@ function varargout = cnv_plotTracking(plotData, varargin)
  });
 
 % Initialize paramters from input option arguments as needed
-
 optionArgs=[];
-
 if (nargin>0)
     optionArgs = cnv_loadArgs(varargin); % Load args
+end;
+
+if (~exist('plotData'))
+    plotData = cnv_loadTrackingFile('C:\Users\Shayn\Documents\Work\AI Research\conversa\Visualization\cam1par127.txt');
 end;
 
 % Remove and add plot groups as needed
@@ -65,7 +69,7 @@ if (isfield(optionArgs, {'plotfields'}))
 end;
 
 % Get timestamps
-time = plotData.timestamp;
+time = getfield(plotData, 'timestamp');
 
 % Set plotting range
 startFrame = 1;
@@ -92,7 +96,8 @@ end;
 % TODO: add styling options for plotting
 
 % Load labels
-
+if (isfield(optionArgs, {'plotgroups'}))
+end;
 
 % Plot data
 

@@ -30,7 +30,7 @@ tempStr = fgetl(fid);
 nFrames = str2double(tempStr(regexp(tempStr, '(\d*)$'):end));
 % Go to first face
 nextL = fgetl(fid);
-while(~feof(fid) && (isempty(nextL) || nextL(1)~='='))
+while(~feof(fid) && (isempty(nextL) || nextL(1) ~= '='))
     nextL = fgetl(fid);
 end;
 faceNo = 0;
