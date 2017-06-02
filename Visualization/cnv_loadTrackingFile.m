@@ -9,26 +9,21 @@ function cnvTrackingData=cnv_loadTrackingFile(varargin)
 %   The data is stored in a structure with a 2D array of fields, with the
 %   ith field array belonging to the ith face
 %   If no fileName argument is provided a default file is read from
-% Options
-%   file
-%   pid
-%   cam
-%   
 % Last updated 26 May 2017
 
+DEFAULT_FILE = 'C:\Users\Shayn\Documents\Work\AI Research\conversa\Test Data\par1001Cam1\cam1par1001.txt';
+TOP_HEADER_LN = '==========';
+N_HEADER_LNS = 3;
+% We use the above since this entry delimits each face (where i is replaced by the faceNo):
+% ==========
+%  Face: i
+% ==========
 cnvTrackingData = [];
-
-args = cnv_fieldValuePairs(varargin);
-defaultArgs = struct( ...
-    'file', 'C:\Users\Shayn\Documents\Work\AI Research\conversa\Visualization\cam1par127.txt', ...
-    'dir',  'C:\Users\Shayn\Documents\Work\AI Research\conversa\Test Data', ...
-    'pid',  '1001', ...
-    'cam',  '1' ...
-    );
-
-fileName = 'C:\Users\Shayn\Documents\Work\AI Research\conversa\Visualization\cam1par127.txt';
+% Load file location
 if (nargin == 1)
     fileName = varargin{1};
+else
+    fileName = DEFAULT_FILE;
 end;
 fid = fopen(fileName,'r'); % Open the file for reading
 if (fid == -1) % Indicates file not found
@@ -41,22 +36,23 @@ for i = 0:6
     fgetl(fid);
 end;
 % Get the number of frames from metadata
-tempStr = fgetl(fid);
-nFrames = str2double(tempStr(regexp(tempStr, '(\d*)$'):end));
+nFrameLnStr = fgetl(fid); % The line in the file containing the number of frames
+nFrames = str2double(nFrameLnStr(regexp(nFrameLnStr, '(\d*)$'):end)); % Finds number in line by searching from back of string
 % Go to first face
 nextL = fgetl(fid);
-while(~feof(fid) && (isempty(nextL) || nextL(1) ~= '='))
+while(~feof(fid) && (isempty(nextL) || strcmp(nextL, TOP_HEADER_LN) ~= 1))
     nextL = fgetl(fid);
 end;
 faceNo = 0;
 % Read until no tracked faces are left (eof)
 while(~feof(fid))
     % Ignore face header
-    fgetl(fid);
-    fgetl(fid);
+    for i = 2:N_HEADER_LNS
+        fgetl(fid);
+    end;
     faceNo = faceNo+1; % Update the number of faces for indexing
     % Parsing while reading, can be spedup
-    % Read the face data header
+    % Read the data header
     fieldStr = fgetl(fid); % Read the data header line as a string
     fieldCells = [];
     tempHeaderStr = fieldStr;
@@ -80,7 +76,7 @@ while(~feof(fid))
     end;    
     % Go to next face
     nextL = fgetl(fid);
-    while(~feof(fid) && (~isempty(nextL) && nextL(1)~='='))
+    while(~feof(fid) && (~isempty(nextL) && strcmp(nextL, TOP_HEADER_LN) ~= 1))
         nextL = fgetl(fid);
     end;
 end;

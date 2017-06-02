@@ -4,7 +4,7 @@ function varargout = cnv_loadLabelFile(filename)
 % 
 % 
 % D.behavior 
-% D.start\
+% D.start
 % D.stop
 % D.pid
 % D.sid 
@@ -21,15 +21,16 @@ function varargout = cnv_loadLabelFile(filename)
 %   struct with fields:
 %          pid: [n×1 double] repeated entry
 %          cam: [n×1 double] repeated entry
-%          min: [n×1 double] 
-%          sec: [n×1 double] 
-%           ms: [n×1 double] 
+%          min: [n×1 double] 00
+%          sec: [n×1 double] 00
+%           ms: [n×1 double] 000
 %   behaviour1: [n×1 double] one hot
 %   behaviour2: [n×1 double] one hot
 %   behaviour3: [n×1 double] one hot
 
 % We want
-%   struct with fields: pid, cam, start, stop, behaviour
+%   struct with fields: pid, cam, start, stop, behaviour (e.g. smiling,
+%   laughing, etc.)
 
-%  = dload(filename); % 
+dlf = dload(filename); % dlf for dloadFile
 
