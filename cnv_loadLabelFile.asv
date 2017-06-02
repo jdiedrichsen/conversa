@@ -12,10 +12,6 @@ function varargout = cnv_loadLabelFile(filename)
 %   behaviour2: [n×1 double] one hot
 %   behaviour3: [n×1 double] one hot
 
-% We want
-%   struct with fields: pid, cam, start, stop, behaviour (e.g. smiling,
-%   laughing, etc.)
-
 % What we want (Jorn):
 % D.behavior 
 % D.start
@@ -27,6 +23,10 @@ function varargout = cnv_loadLabelFile(filename)
 % 1001  1   smile		1.432	1.788
 % 1001  1   smile		2.3     2.7
 % 1001  1   talk        0.015	4.7
+
+% We want
+%   struct with fields: pid, cam, start, stop, behaviour (e.g. smiling,
+%   laughing, etc.)
 
 FIELD_MAP = containers.Map( ...
     {'smiling', 'talking', 'laughing'}, ... % Behaviours
@@ -49,6 +49,6 @@ end;
 
 for i = 1:length(behaviourFields)
     behav = behaviourFields{i};
-    % TODO: Go through dlf behaviour field and add ranges where behaviour
-    % is 1 to cnv_loadLabelFile
+    startI = 1;
+    cnv_loadLabelFile.behaviour(
 end;
