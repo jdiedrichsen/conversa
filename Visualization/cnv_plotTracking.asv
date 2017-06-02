@@ -95,28 +95,28 @@ end;
 % TODO: add styling options for plotting
 
 % Load labels and behaviours
-% labels = struct('smiling',[]);
-% %labels = struct('smiling',[],'talking',[],'laughing',[]);
-% behaviours = {'smiling'};
-% %behaviours = {'smiling', 'talking', 'laughing'};
-% % labels.smile = {[1 100], [140 400]}
-% if (isfield(optionArgs, {'labelfile'}))
-%     labelFile = dload(optionArgs.labelfile);
-% %     for i = 1:length(behaviours) % For each behaviour
-% %         behav = behaviours{i};
-% %         behavVec = labelFile.(behav);
-% %         for j = 1:length(behavVec) % For each entry
-% %             currState = behavVec(j);
-% %             k = 0;
-% %             while (currState == behavVec(j+k) && j+k < length(behavVec))
-% %                 k = k+1;
-% %             end;
-% %             [j j+k]
-% %             labels.(behav){end + 1} = [j j+k];
-% %             j = k;
-% %         end;
-% %     end;
-% end;
+labels = struct('smiling',[]);
+%labels = struct('smiling',[],'talking',[],'laughing',[]);
+behaviours = {'smiling'};
+%behaviours = {'smiling', 'talking', 'laughing'};
+% labels.smile = {[1 100], [140 400]}
+if (isfield(optionArgs, {'labelfile'}))
+    labelFile = dload(optionArgs.labelfile);
+%     for i = 1:length(behaviours) % For each behaviour
+%         behav = behaviours{i};
+%         behavVec = labelFile.(behav);
+%         for j = 1:length(behavVec) % For each entry
+%             currState = behavVec(j);
+%             k = 0;
+%             while (currState == behavVec(j+k) && j+k < length(behavVec))
+%                 k = k+1;
+%             end;
+%             [j j+k]
+%             labels.(behav){end + 1} = [j j+k];
+%             j = k;
+%         end;
+%     end;
+end;
 
 % Plot data
 
@@ -135,22 +135,16 @@ for i = 1:min(nFigCols*nFigRows, size(plotGroups,2)) % Iterate through groups, s
     l=legend(fields);
     set(l,'interpreter','none'); % Prevents interpretation of underscores as subscripts in legends
     % Plot labels (TEMP WIP)
-%     for i = 1:length(behaviours)
-%         behav = behaviours{i};
-%         startA = 1;
-%         endA = startA;
-%         while (startA < length(labelFile.(behav)) && endA < length(labelFile.(behav)))
-%             while(startA < length(labelFile.(behav)) && labelFile.(behav)(startA) ~= 1) % Go to start of behav
-%                 startA = startA+1;
-%             end;
-%             endA = startA;
-%             while (endA < length(labelFile.(behav)) && labelFile.(behav)(startA) == 1) % Go to end
-%                 endA = endA+1;
-%             end;
-%             startMin;
-% %             area((79*labels.(behav){j}), get(gca, 'ylim'));
-%         end;
-%     end;
+    for i = 1:length(behaviours)
+        behav = behaviours{i};
+        startA = 1;
+        while (startA < length(
+        while(labelFile.(behav)(startA) ~= 1 && startA < length(labelFile.(behav)))
+            startA = startA+1;
+        end;
+        endA = startA;
+        while (startA < 
+    end;
 %     for i = 1:length(behaviours)
 %         behav = behaviours{i};
 %         for j = 1:length(labels.(behav))
