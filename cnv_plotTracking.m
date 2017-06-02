@@ -29,7 +29,8 @@ function varargout = cnv_plotTracking(plotData, varargin)
 % Jorn mentioned sometime like 'varargin options', I was unable to find a
 % reference to built in Matlab functions which did anything like this
 
-% Default grouping of data
+% Default grouping of data ADD: change into default struct containing all
+% default option args
     defaultPlotMap = containers.Map({'all', 'neck', 'head', 'brow', 'eyes', 'cheek', 'lips', 'smile', 'frown', 'jaw'}, { ...
     {'neckposx', 'neckposy', 'neckposz', 'neckrotx', 'neckroty', 'neckrotz', 'headposx', 'headposy', 'headposz', 'headrotx', 'headroty', 'headrotz', 'brow_up_l', 'brow_up_r', 'brow_down_l', 'brow_down_r', 'eye_closed_l', 'eye_closed_r', 'cheek_puffed_l', 'cheek_puffed_r', 'lips_pucker', 'lips_stretch_l', 'lips_stretch_r', 'lip_lower_down_l', 'lip_lower_down_r', 'smile_l', 'smile_r', 'frown_l', 'frown_r', 'jaw_l', 'jaw_r', 'jaw_open'}, ...
     {'neckposx', 'neckposy', 'neckposz', 'neckrotx', 'neckroty', 'neckrotz'}, ...
@@ -46,7 +47,7 @@ function varargout = cnv_plotTracking(plotData, varargin)
 % Initialize paramters from input option arguments as needed
 optionArgs=[];
 if (nargin>0)
-    optionArgs = cnv_loadArgs(varargin); % Load args
+    optionArgs = cnv_fieldValuePairs(varargin); % Load args
 end;
 
 if (~exist('plotData'))
@@ -64,7 +65,7 @@ else % Initialize defaults
     plotMap = defaultPlotMap;
 end;
 if (isfield(optionArgs, {'plotfields'}))
-    plotFieldArgs = cnv_loadArgs(optionArgs.plotfields);
+    plotFieldArgs = cnv_fieldValuePairs(optionArgs.plotfields);
 end;
 
 % Get timestamps
@@ -94,29 +95,8 @@ end;
 
 % TODO: add styling options for plotting
 
-% Load labels and behaviours
-labels = struct('smiling',[]);
-%labels = struct('smiling',[],'talking',[],'laughing',[]);
-behaviours = {'smiling'};
-%behaviours = {'smiling', 'talking', 'laughing'};
-% labels.smile = {[1 100], [140 400]}
-if (isfield(optionArgs, {'labelfile'}))
-    labelFile = dload(optionArgs.labelfile);
-%     for i = 1:length(behaviours) % For each behaviour
-%         behav = behaviours{i};
-%         behavVec = labelFile.(behav);
-%         for j = 1:length(behavVec) % For each entry
-%             currState = behavVec(j);
-%             k = 0;
-%             while (currState == behavVec(j+k) && j+k < length(behavVec))
-%                 k = k+1;
-%             end;
-%             [j j+k]
-%             labels.(behav){end + 1} = [j j+k];
-%             j = k;
-%         end;
-%     end;
-end;
+% Load labels and behaviours (WIP)
+
 
 % Plot data
 
@@ -125,6 +105,7 @@ fig = figure; % Create figure
 % Go through groups and plot
 plotGroups = keys(plotMap);
 for i = 1:min(nFigCols*nFigRows, size(plotGroups,2)) % Iterate through groups, stop when no more plot positions or all groups plotted
+    % Plot labels
     plotGroup = plotGroups{i};
     subplot(nFigRows, nFigCols, i)
     fields = plotMap(plotGroup);
@@ -132,40 +113,12 @@ for i = 1:min(nFigCols*nFigRows, size(plotGroups,2)) % Iterate through groups, s
     for j = 1:length(fields)
         plot(time(range), plotData.(fields{j})(range)); hold on;
     end;
-    l=legend(fields);
+    l=legend(fields); % ADD: hide/how legend option
     set(l,'interpreter','none'); % Prevents interpretation of underscores as subscripts in legends
-    % Plot labels (TEMP WIP)
-    for i = 1:length(behaviours)
-        behav = behaviours{i};
-        startA = 1;
-        while (startA < length(
-        while(labelFile.(behav)(startA) ~= 1 && startA < length(labelFile.(behav)))
-            startA = startA+1;
-        end;
-        endA = startA;
-        while (startA < 
-    end;
-%     for i = 1:length(behaviours)
-%         behav = behaviours{i};
-%         for j = 1:length(labels.(behav))
-%             [startl endl] = labels.(behav){j};
-%             labelFile;
-%             area((79*labels.(behav){j}), get(gca, 'ylim'));
-%         end;
-%     end;
     hold off;
-    xlabel('time (seconds)');
-    ylabel('magnitude (a.u.)');
+    xlabel('time (seconds)'); % ADD: different time unit option and hide xlabel option
+    ylabel('magnitude (a.u.)'); % ADD: hide ylabel option
     title(plotGroup);
 end;
 
-% If labels given, use drawline to draw vertical lines at onset and offset of each expression 
-
-% Full customizability
-
-% Loads a struct with the parameters
-function args = cnv_loadArgs(vargs)
-args=[];
-for i = 1:2:length(vargs)
-    args.(vargs{i}) = vargs{i+1};
-end;
+% Add more customizability - e.g. style, more layour options
