@@ -32,6 +32,7 @@ function varargout = cnv_loadLabelFile(filename)
 % 1001  1   smile		2.3     2.7
 % 1001  1   talk        0.015	4.7
 
+global FRAME_RATE;
 FRAME_RATE = 30; % Assumed 30 fps for frame encoding
 
 FIELD_MAP = containers.Map( ...
@@ -41,22 +42,22 @@ FIELD_MAP = containers.Map( ...
 
 dlf = dload(filename); % dlf for dloadFile
 
-% % Convert time to seconds
-% time = []; % Time vector in floating pt seconds
-% if (isfield(dlf,'ms')) % Decode by using milliseconds
-%     time = millisToSeconds(dlf.min, dlf.sec, dlf.ms);
-% elseif (isfield(dlf,'frame')) % Decode by using frame numbers
-%     time = framesToSeconds(dlf.min, dlf.sec, dlf.frame, FRAME_RATE);
-% else % Error - neither frames nor milliseconds provided
-%     error('Label file does not contain milliseconds or frame numbers');
-% end;
+% Figure out which conversion function to use (frames or seconds)
+toSeconds = [];
+if (isfield(dlf,'ms')) % Decode by using milliseconds
+    toSeconds = str2func(millisToSeconds);
+elseif (isfield(dlf,'frame')) % Decode by using frame numbers
+    toSeconds = str2func(framesToSeconds);
+else % Error - neither frames nor milliseconds provided
+    error('Label file does not contain milliseconds or frame numbers');
+end;
 
 pid = dlf.pid(1); % Set pid
 cam = dlf.cam(1); % Set cam number array (does not vary)
 
 dlfFields = fieldnames(dlf);
 
-% Identify and set behaviour fields
+% Identify behaviour fields
 behaviourFields = {};
 for i = 1:length(dlfFields)
     chkField = dlfFields{i};
@@ -71,31 +72,32 @@ for i = 1:length(behaviourFields)
     behavName = behaviourFields{i};
     behav = dlf.(behavName);
     behavLength = length(behav);
-    behavStart = 1;
-    while (behavStart < behavLength)
-        while (behavStart < behavLength && behav(behavStart) ~= 1) % Go to next 1
-           behavStart = behavStart+1;
+    behavStartI = 1;
+    while (behavStartI < behavLength)
+        while (behavStartI < behavLength && behav(behavStartI) ~= 1) % Go to next 1
+           behavStartI = behavStartI+1;
         end;
-        behavEnd = behavStart+1;
-        while (behavEnd < behavLength && behav(behavStart) == 1) % Go to end of '1' state (i.e. end of on state')
-           behavEnd = behavEnd+1;
+        behavEndI = behavStartI+1;
+        while (behavEndI < behavLength && behav(behavStartI) == 1) % Go to end of '1' state (i.e. end of on state')
+           behavEndI = behavEndI+1;
         end;
         % Add to label struct
         cnv_loadLabelFile.pid(entryNo) = pid;
         cnv_loadLabelFile.cam(entryNo) = cam;
         cnv_loadLabelFile.behaviour(entryNo) = behavName;
-        cnv_loadLabelFile.start(entryNo) = behavStart; % WIP TODO: change to time
-        cnv_loadLabelFile.end(entryNo) = behavEnd; % WIP TODO: change to time
+        cnv_loadLabelFile.start(entryNo) = toSeconds(dlf, behavStartI); % WIP TODO: change to time
+        cnv_loadLabelFile.end(entryNo) = toSeconds(dlf, behavEndI); % WIP TODO: change to time
         entryNo = entryNo+1;
     end;
 end;
 
 end % cnv_loadLabelFile
 
-function outSecs = framesToSeconds(min, sec, frameNo, frameRate) % Assumes 30 fps
-    outSecs = (60)*min + sec + (1/frameRate)*frameNo;
+function outSecs = framesToSeconds(dlf, i)
+global FRAME_RATE;
+outSecs = (60)*dlf.min(i) + dlf.sec(i)+ (1/FRAME_RATE)*dlf.frame(i);
 end
 
-function outSecs = millisToSeconds(min, sec, ms)
-    outSecs = (60)*min + sec + (1/1000)*ms;
+function outSecs = millisToSeconds(dlf, i)
+outSecs = (60)*dlf.min(i) + dlf.sec(i)+ (1/1000)*dlf.frame(i);
 end
