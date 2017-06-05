@@ -1,4 +1,4 @@
-function varargout = cnv_loadLabelFile(filename)
+function labels = cnv_loadLabelFile(filename)
 % Loads a files of labels into a dataframe
 % By Shayaan Syed Ali
 % Last updated 05-Jun-17
@@ -40,6 +40,8 @@ FIELD_MAP = containers.Map( ...
     {'behaviour', 'behaviour', 'behaviour'} ...
     );
 
+labels = [];
+
 dlf = dload(filename); % dlf for dloadFile
 
 % Figure out which conversion function to use (frames or seconds)
@@ -78,16 +80,19 @@ for i = 1:length(behaviourFields)
            behavStartI = behavStartI+1;
         end;
         behavEndI = behavStartI+1;
-        while (behavEndI < behavLength && behav(behavStartI) == 1) % Go to end of '1' state (i.e. end of on state')
+        while (behavEndI < behavLength && behav(behavEndI) == 1) % Go to end of '1' state (i.e. end of on state')
            behavEndI = behavEndI+1;
         end;
+        % Correct for overstepping
+        behavEndI = behavEndI-1;
         % Add to label struct
-        cnv_loadLabelFile.pid(entryNo) = pid;
-        cnv_loadLabelFile.cam(entryNo) = cam;
-        cnv_loadLabelFile.behaviour(entryNo) = behavName;
-        cnv_loadLabelFile.start(entryNo) = toSeconds(dlf, behavStartI); % WIP TODO: change to time
-        cnv_loadLabelFile.end(entryNo) = toSeconds(dlf, behavEndI); % WIP TODO: change to time
+        labels.pid(entryNo, 1) = pid;
+        labels.cam(entryNo, 1) = cam;
+        labels.behaviour(entryNo, 1) = {behavName};
+        labels.start(entryNo, 1) = toSeconds(dlf, behavStartI);
+        labels.end(entryNo, 1) = toSeconds(dlf, behavEndI);
         entryNo = entryNo+1;
+        behavStartI = behavEndI+1;
     end;
 end;
 
@@ -99,5 +104,5 @@ outSecs = (60)*dlf.min(i) + dlf.sec(i)+ (1/FRAME_RATE)*dlf.frame(i);
 end
 
 function outSecs = millisToSeconds(dlf, i)
-outSecs = (60)*dlf.min(i) + dlf.sec(i)+ (1/1000)*dlf.frame(i);
+outSecs = (60)*dlf.min(i) + dlf.sec(i)+ (1/1000)*dlf.ms(i);
 end
