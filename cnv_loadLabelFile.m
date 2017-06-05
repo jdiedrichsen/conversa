@@ -45,9 +45,9 @@ dlf = dload(filename); % dlf for dloadFile
 % Figure out which conversion function to use (frames or seconds)
 toSeconds = [];
 if (isfield(dlf,'ms')) % Decode by using milliseconds
-    toSeconds = str2func(millisToSeconds);
+    toSeconds = @millisToSeconds;
 elseif (isfield(dlf,'frame')) % Decode by using frame numbers
-    toSeconds = str2func(framesToSeconds);
+    toSeconds = @framesToSeconds;
 else % Error - neither frames nor milliseconds provided
     error('Label file does not contain milliseconds or frame numbers');
 end;
