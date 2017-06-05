@@ -10,10 +10,11 @@ function varargout = cnv_loadLabelFile(filename)
 %          min: [n×1 double] 00
 %          sec: [n×1 double] 00
 %           ms: [n×1 double] 000
-%        Frame: [n×1 double] 000
+%        frame: [n×1 double] 000
 %   behaviour1: [n×1 double] one hot
 %   behaviour2: [n×1 double] one hot
 %   behaviour3: [n×1 double] one hot
+% Notes that either ms or frames will be fields, not both
 
 % We want
 %   struct with fields: pid, cam, start, stop, behaviour (e.g. smiling,
@@ -26,12 +27,12 @@ function varargout = cnv_loadLabelFile(filename)
 % D.pid
 % D.cam
 % 
-% pid   cam behavior    start	stop    <- fields
+% pid   cam behavior    start	end    <- fields
 % 1001  1   smile		1.432	1.788
 % 1001  1   smile		2.3     2.7
 % 1001  1   talk        0.015	4.7
 
-FRAME_RATE = 30; % Assumed 30 fps
+FRAME_RATE = 30; % Assumed 30 fps for frame encoding
 
 FIELD_MAP = containers.Map( ...
     {'smiling', 'talking', 'laughing'}, ... % Behaviours
@@ -40,25 +41,18 @@ FIELD_MAP = containers.Map( ...
 
 dlf = dload(filename); % dlf for dloadFile
 
-% Convert time to seconds
-time = []; % Time vector in floating pt seconds
-if (isfield(fld,'ms')) % Decode by using milliseconds
-    time = millisToSeconds(dlf.min, dlf.sec, dlf.ms);
-elseif (isfield(fld,'Frame')) % Decode by using frame numbers
-    time = framesToSeconds(dlf.min, dlf.sec, dlf.frame);
-else % Error - neither frames nor milliseconds provided
-    error('Label file does not contain milliseconds or frame numbers');
-end;
+% % Convert time to seconds
+% time = []; % Time vector in floating pt seconds
+% if (isfield(dlf,'ms')) % Decode by using milliseconds
+%     time = millisToSeconds(dlf.min, dlf.sec, dlf.ms);
+% elseif (isfield(dlf,'frame')) % Decode by using frame numbers
+%     time = framesToSeconds(dlf.min, dlf.sec, dlf.frame, FRAME_RATE);
+% else % Error - neither frames nor milliseconds provided
+%     error('Label file does not contain milliseconds or frame numbers');
+% end;
 
-nEntries = length(dlf.pid);
-
-% Set pid and cam as single entry
-% cnv_loadLabelFile.pid = dlf.pid(1); % Set pid
-% cnv_loadLabelFile.cam = dlf.cam(1); % Set cam number
-
-% Set pid and cam as array of entries
-cnv_loadLabelFile.pid = repmat(dlf.pid(1), 1, nEntries)'; % Set pid array (does not vary)
-cnv_loadLabelFile.cam = repmat(dlf.cam(1), 1, nEntries)'; % Set cam number array (does not vary)
+pid = dlf.pid(1); % Set pid
+cam = dlf.cam(1); % Set cam number array (does not vary)
 
 dlfFields = fieldnames(dlf);
 
@@ -71,18 +65,37 @@ for i = 1:length(dlfFields)
     end;
 end;
 
+entryNo = 1;
 for i = 1:length(behaviourFields)
-    behav = behaviourFields{i};
-    % TODO: Go through dlf behaviour field and add ranges where behaviour
-    % is 1 to cnv_loadLabelFile
+    % Go through dlf behaviour field and add ranges where behaviour is 1
+    behavName = behaviourFields{i};
+    behav = dlf.(behavName);
+    behavLength = length(behav);
+    behavStart = 1;
+    while (behavStart < behavLength)
+        while (behavStart < behavLength && behav(behavStart) ~= 1) % Go to next 1
+           behavStart = behavStart+1;
+        end;
+        behavEnd = behavStart+1;
+        while (behavEnd < behavLength && behav(behavStart) == 1) % Go to end of '1' state (i.e. end of on state')
+           behavEnd = behavEnd+1;
+        end;
+        % Add to label struct
+        cnv_loadLabelFile.pid(entryNo) = pid;
+        cnv_loadLabelFile.cam(entryNo) = cam;
+        cnv_loadLabelFile.behaviour(entryNo) = behavName;
+        cnv_loadLabelFile.start(entryNo) = behavStart; % WIP TODO: change to time
+        cnv_loadLabelFile.end(entryNo) = behavEnd; % WIP TODO: change to time
+        entryNo = entryNo+1;
+    end;
 end;
 
 end % cnv_loadLabelFile
 
-function secs = framesToSeconds(min, sec, frameNo)
-    
+function outSecs = framesToSeconds(min, sec, frameNo, frameRate) % Assumes 30 fps
+    outSecs = (60)*min + sec + (1/frameRate)*frameNo;
 end
 
-function secs = millisToSeconds(min, sec, ms)
-    
+function outSecs = millisToSeconds(min, sec, ms)
+    outSecs = (60)*min + sec + (1/1000)*ms;
 end
