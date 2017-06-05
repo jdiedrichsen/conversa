@@ -1,5 +1,7 @@
 function varargout = cnv_loadLabelFile(filename)
 % Loads a files of labels into a dataframe
+% By Shayaan Syed Ali
+% Last updated 05-Jun-17
 
 % The format we get from dload is:
 %   struct with fields:
@@ -38,12 +40,12 @@ FIELD_MAP = containers.Map( ...
 
 dlf = dload(filename); % dlf for dloadFile
 
-% Set time in seconds
-
+% Convert time to seconds
+time = []; % Time vector in floating pt seconds
 if (isfield(fld,'ms')) % Decode by using milliseconds
-    
+    time = millisToSeconds(dlf.min, dlf.sec, dlf.ms);
 elseif (isfield(fld,'Frame')) % Decode by using frame numbers
-    
+    time = framesToSeconds(dlf.min, dlf.sec, dlf.frame);
 else % Error - neither frames nor milliseconds provided
     error('Label file does not contain milliseconds or frame numbers');
 end;
@@ -77,6 +79,10 @@ end;
 
 end % cnv_loadLabelFile
 
-function secs = framesToSeconds()
+function secs = framesToSeconds(min, sec, frameNo)
+    
+end
+
+function secs = millisToSeconds(min, sec, ms)
     
 end

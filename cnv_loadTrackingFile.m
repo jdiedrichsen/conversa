@@ -9,6 +9,7 @@ function cnvTrackingData = cnv_loadTrackingFile(varargin)
 %   The data is stored in a structure with a 2D array of fields, with the
 %   ith field array belonging to the ith face
 %   If no fileName argument is provided a default file is read from
+% By Shayaan Syed Ali
 % Last updated 26 May 2017
 
 DEFAULT_FILE = 'C:\Users\Shayn\Documents\Work\AI Research\conversa\Test Data\par1001Cam1\cam1par1001.txt';

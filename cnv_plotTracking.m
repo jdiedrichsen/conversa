@@ -23,6 +23,7 @@ function varargout = cnv_plotTracking(plotData, varargin)
 %                   Usage example: plotfields, {'Neck X Position and Rotation', {'neckPosX', 'neckRotX'}, 'Smile', {'Smile_L', 'Smile_R'} }
 %   timeunits       Can either set timeunits to frames or seconds (WIP)
 %                   Usage example: 'timeunits', 'seconds'
+% By Shayaan Syed Ali
 % Last updated 30 May 17
 
 % We can use inputParser for type checking, but this is slower
