@@ -1,2 +1,2 @@
 # conversa
-Deep learning for human behaviour recognition through video and audio
+Deep learning for human behavior recognition through video and audio
