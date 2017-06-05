@@ -88,7 +88,8 @@ for i = 1:length(behaviourFields)
         % Add to label struct
         labels.pid(entryNo, 1) = pid;
         labels.cam(entryNo, 1) = cam;
-        labels.behaviour(entryNo, 1) = {behavName};
+        labels.behaviour(entryNo, 1) = {behavName}; % As cell array
+%         labels.behaviour(entryNo, 1:length(behavName)) = behavName; % As char array
         labels.start(entryNo, 1) = toSeconds(dlf, behavStartI);
         labels.end(entryNo, 1) = toSeconds(dlf, behavEndI);
         entryNo = entryNo+1;
