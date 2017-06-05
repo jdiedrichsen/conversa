@@ -8,6 +8,7 @@ function varargout = cnv_loadLabelFile(filename)
 %          min: [n×1 double] 00
 %          sec: [n×1 double] 00
 %           ms: [n×1 double] 000
+%        Frame: [n×1 double] 000
 %   behaviour1: [n×1 double] one hot
 %   behaviour2: [n×1 double] one hot
 %   behaviour3: [n×1 double] one hot
@@ -28,12 +29,16 @@ function varargout = cnv_loadLabelFile(filename)
 % 1001  1   smile		2.3     2.7
 % 1001  1   talk        0.015	4.7
 
+FRAME_RATE = 30; % Assumed 30 fps
+
 FIELD_MAP = containers.Map( ...
     {'smiling', 'talking', 'laughing'}, ... % Behaviours
     {'behaviour', 'behaviour', 'behaviour'} ...
     );
 
 dlf = dload(filename); % dlf for dloadFile
+
+% Set time in seconds
 
 if (isfield(fld,'ms')) % Decode by using milliseconds
     
@@ -44,16 +49,20 @@ else % Error - neither frames nor milliseconds provided
 end;
 
 nEntries = length(dlf.pid);
+
 % Set pid and cam as single entry
 % cnv_loadLabelFile.pid = dlf.pid(1); % Set pid
 % cnv_loadLabelFile.cam = dlf.cam(1); % Set cam number
+
 % Set pid and cam as array of entries
 cnv_loadLabelFile.pid = repmat(dlf.pid(1), 1, nEntries)'; % Set pid array (does not vary)
 cnv_loadLabelFile.cam = repmat(dlf.cam(1), 1, nEntries)'; % Set cam number array (does not vary)
 
-behaviourFields = {};
 dlfFields = fieldnames(dlf);
-for i = 1:length(dlfFields) % Identify behaviour fields
+
+% Identify and set behaviour fields
+behaviourFields = {};
+for i = 1:length(dlfFields)
     chkField = dlfFields{i};
     if (isKey(FIELD_MAP, chkField) && strcmp(FIELD_MAP(chkField), 'behaviour') == 1) % Field is a behaviour field
         behaviourFields{end+1} = chkField;
@@ -65,3 +74,9 @@ for i = 1:length(behaviourFields)
     % TODO: Go through dlf behaviour field and add ranges where behaviour
     % is 1 to cnv_loadLabelFile
 end;
+
+end % cnv_loadLabelFile
+
+function secs = framesToSeconds()
+    
+end

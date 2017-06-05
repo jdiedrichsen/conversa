@@ -121,4 +121,6 @@ for i = 1:min(nFigCols*nFigRows, size(plotGroups,2)) % Iterate through groups, s
     title(plotGroup);
 end;
 
+end % cnv_plotTracking
+
 % Add more customizability - e.g. style, more layour options

@@ -7,3 +7,4 @@ args=[];
 for i = 1:2:length(vargs)
     args.(vargs{i}) = vargs{i+1};
 end;
+end % cnv_fieldValuePairs
