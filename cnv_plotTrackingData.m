@@ -51,7 +51,7 @@ if (nargin>0)
     optionArgs = cnv_fieldValuePairs(varargin); % Load args
 end;
 
-if (~exist('plotData'))
+if (~exist('plotData', 'var'))
     plotData = cnv_loadTrackingFile('C:\Users\Shayn\Documents\Work\AI Research\conversa\Test Data\par1001Cam2\cam2par1001.txt');
 end;
 
