@@ -79,12 +79,10 @@ for i = 1:length(behaviourFields)
         while (behavStartI < behavLength && behav(behavStartI) ~= 1) % Go to next 1
            behavStartI = behavStartI+1;
         end;
-        behavEndI = behavStartI+1;
+        behavEndI = behavStartI;
         while (behavEndI < behavLength && behav(behavEndI) == 1) % Go to end of '1' state (i.e. end of on state')
            behavEndI = behavEndI+1;
         end;
-        % Correct for overstepping
-        behavEndI = behavEndI-1;
         % Add to label struct
         labels.pid(entryNo, 1) = pid;
         labels.cam(entryNo, 1) = cam;
@@ -105,5 +103,5 @@ outSecs = (60)*dlf.min(i) + dlf.sec(i)+ (1/FRAME_RATE)*dlf.frame(i);
 end
 
 function outSecs = millisToSeconds(dlf, i)
-outSecs = (60)*dlf.min(i) + dlf.sec(i)+ (1/1000)*dlf.ms(i);
+outSecs = (60)*(dlf.min(i)) + dlf.sec(i)+ (1/1000)*(dlf.ms(i));
 end

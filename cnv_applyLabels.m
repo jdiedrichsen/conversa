@@ -1,3 +1,5 @@
-function varargout = cnv_applyLabels()
+function varargout = cnv_applyLabels(trackingData, labels)
+
+
 
 end
