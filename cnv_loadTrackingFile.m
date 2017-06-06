@@ -2,8 +2,8 @@ function cnvTrackingData = cnv_loadTrackingFile(varargin)
 % CNV_DLOAD: loads a tab delimited text file of motion tracking data
 %       into memory
 % Usage
-%   CnvTrackingData=cnvLoad('fileName')
-%   CnvTrackingData=cnvLoad()
+%   cnvTrackingData=cnvLoad('fileName')
+%   cnvTrackingData=cnvLoad()
 % Description
 %   Reads and stores data from a Kinect face-tracking data text file
 %   The data is stored in a structure with a 2D array of fields, with the

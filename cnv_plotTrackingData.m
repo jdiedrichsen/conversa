@@ -48,7 +48,7 @@ function varargout = cnv_plotTrackingData(plotData, varargin)
 % Initialize paramters from input option arguments as needed
 optionArgs=[];
 if (nargin>0)
-    optionArgs = cnv_fieldValuePairs(varargin); % Load args
+    optionArgs = cnv_getArgs(varargin); % Load args
 end;
 
 if (~exist('plotData', 'var'))
@@ -66,7 +66,7 @@ else % Initialize defaults
     plotMap = defaultPlotMap;
 end;
 if (isfield(optionArgs, {'plotfields'}))
-    plotFieldArgs = cnv_fieldValuePairs(optionArgs.plotfields);
+    plotFieldArgs = cnv_getArgs(optionArgs.plotfields);
 end;
 
 % Get timestamps
