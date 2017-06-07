@@ -1,2 +1,5 @@
-/etc/Meeting Notes/*
+!data/par1001Cam2/cam2par1001_labels.txt
+data/*
+!data/**.txt
+etc/Meeting Notes/*
 *.asv
