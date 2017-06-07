@@ -1,3 +1,4 @@
 !data/**.txt
+data/*
 etc/Meeting Notes/*
 *.asv
