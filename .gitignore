@@ -1,4 +1,2 @@
-!data/**.txt
-data/*
-etc/Meeting Notes/*
+/etc/Meeting Notes/*
 *.asv
