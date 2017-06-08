@@ -1,4 +1,4 @@
-pid	cam	min	sec	 	smiling	talking	laughing
+pid	cam	min	sec	ms	smiling	talking	laughing
 1001	2	0	0	15	0	1	0
 1001	2	0	0	645	1	1	0
 1001	2	0	1	688	0	1	0
