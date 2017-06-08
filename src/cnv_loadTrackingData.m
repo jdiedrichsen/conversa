@@ -1,4 +1,4 @@
-function cnvTrackingData = cnv_loadTrackingFile(varargin)
+function cnvTrackingData = cnv_loadTrackingData(varargin)
 % CNV_DLOAD: loads a tab delimited text file of motion tracking data
 %       into memory
 % Usage
