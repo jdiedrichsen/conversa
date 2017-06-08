@@ -85,7 +85,7 @@ range = startFrame:endFrame;
 
 % Set number of horizontal and vertical cells for subplots
 % Default format is a column
-nFigRows = size(plotMap,1);
+nFigRows = length(plotMap);
 if (isfield(optionArgs, {'nrows'}))
     nFigRows = optionArgs.nrows;
 end;
@@ -105,7 +105,7 @@ fig = figure; % Create figure
 
 % Go through groups and plot
 plotGroups = keys(plotMap);
-for i = 1:min(nFigCols*nFigRows, size(plotGroups,2)) % Iterate through groups, stop when no more plot positions or all groups plotted
+for i = 1:min(nFigCols*nFigRows, length(plotGroups)) % Iterate through groups, stop when no more plot positions or all groups plotted
     % Plot labels
     plotGroup = plotGroups{i};
     subplot(nFigRows, nFigCols, i)
