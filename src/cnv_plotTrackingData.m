@@ -23,6 +23,7 @@ function varargout = cnv_plotTrackingData(plotData, varargin)
 %                   Usage example: plotfields, {'Neck X Position and Rotation', {'neckPosX', 'neckRotX'}, 'Smile', {'Smile_L', 'Smile_R'} }
 %   timeunits       Can either set timeunits to frames or seconds (WIP)
 %                   Usage example: 'timeunits', 'seconds'
+%   labels          Label dataframe to plot
 % By Shayaan Syed Ali
 % Last updated 30 May 17
 
@@ -76,7 +77,7 @@ if (isfield(optionArgs, {'plotfields'}))
 end;
 
 % Get timestamps
-time = plotData(1).timestamp;
+time = plotData.timestamp;
 
 % Set plotting range
 startFrame = 1;
@@ -102,8 +103,11 @@ end;
 
 % TODO: add styling options for plotting
 
-% Load labels and behaviours (WIP)
-
+% Load label args
+labels = [];
+if (isfield(optionArgs, {'labels'}))
+    labels = optionArgs.labels;
+end;
 
 % Plot data
 
