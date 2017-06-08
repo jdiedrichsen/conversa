@@ -46,13 +46,13 @@ function varargout = cnv_plotTrackingData(plotData, varargin)
  });
 
 % Initialize paramters from input option arguments as needed
-optionArgs=[];
+optionArgs = [];
 if (nargin>0)
     optionArgs = cnv_getArgs(varargin); % Load args
 end;
 
 if (~exist('plotData', 'var'))
-    plotData = cnv_loadTrackingFile('C:\Users\Shayn\Documents\Work\AI Research\conversa\Test Data\par1001Cam2\cam2par1001.txt');
+    plotData = cnv_loadTrackingData('C:\Users\Shayn\Documents\Work\AI Research\conversa\data\par1001Cam2\cam2par1001.txt');
 end;
 
 % Remove and add plot groups as needed
@@ -67,6 +67,12 @@ else % Initialize defaults
 end;
 if (isfield(optionArgs, {'plotfields'}))
     plotFieldArgs = cnv_getArgs(optionArgs.plotfields);
+    plotFieldNames = fieldnames(plotFieldArgs);
+    nPlotFields = length(plotFieldNames);
+    for i = 1:nPlotFields
+        fieldName = plotFieldNames{i};
+        plotMap(fieldName) = plotFieldArgs.(plotFieldArgs);
+    end;
 end;
 
 % Get timestamps
