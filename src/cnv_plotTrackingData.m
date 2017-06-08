@@ -89,6 +89,7 @@ if (isfield(optionArgs, {'end'}))
     endFrame = optionArgs.end;
 end;
 range = startFrame:endFrame;
+time = time(range); % Restrict to range
 
 % Set number of horizontal and vertical cells for subplots
 % Default format is a column
@@ -103,6 +104,8 @@ end;
 
 % TODO: add styling options for plotting
 
+% TODO: add default colours for labels
+
 % Load label args
 labels = [];
 if (isfield(optionArgs, {'labels'}))
@@ -116,13 +119,27 @@ fig = figure; % Create figure
 % Go through groups and plot
 plotGroups = keys(plotMap);
 for i = 1:min(nFigCols*nFigRows, length(plotGroups)) % Iterate through groups, stop when no more plot positions or all groups plotted
-    % Plot labels
+    % Plot tracking data
     plotGroup = plotGroups{i};
     subplot(nFigRows, nFigCols, i)
     fields = plotMap(plotGroup);
+    % Plot labels
+    yLimits = ylim;
+    lowerYLim = yLimits(1);
+    upperYLim = yLimits(2);
+    nLabels = length(labels.behaviour);
+    for j = 1:nLabels
+        startT = labels.start(j); % TODO: Convert to time for plotting
+        endT = labels.end(j); % TODO: Convert to time for plotting
+%         if () % TODO: Check that label is at least partially within plot range
+            % TODO: Adjust startT and endT appropriately
+            rectangle('Position', [startT lowerYLim endT upperYLim], 'EdgeColor', 'none', 'FaceColor', 'r'); hold on;
+%         end;
+    end;
     % Plot fields in groups
-    for j = 1:length(fields)
-        plot(time(range), plotData.(fields{j})(range)); hold on;
+    nFields = length(fields);
+    for j = 1:nFields
+        plot(time, plotData.(fields{j})(range)); hold on;
     end;
     l=legend(fields); % ADD: hide/how legend option
     set(l,'interpreter','none'); % Prevents interpretation of underscores as subscripts in legends
@@ -134,8 +151,12 @@ end;
 
 end % cnv_plotTracking
 
-% Add more customizability - e.g. style, more layour options
+% Converts from a frame index to a time
+function indexToTime()
 
-function plotLabel()
+end
+
+% Converts from a time to an index
+function timeToIndex()
 
 end
