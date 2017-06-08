@@ -71,6 +71,7 @@ changeI = -1;
 return ;  % No change found
 end % firstChangeI
 
+% Gets the index of a given timestamp
 function index = timestampIndex(time)
     index = round(30*time + 1);
 end
