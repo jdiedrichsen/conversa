@@ -32,3 +32,8 @@ for i = 1:nBehavs
     labelledDf.(behavName)(startI:endI, 1) = true;
 end;
 end % cnv_applyLabels
+
+% Gets the index of a given timestamp
+function index = timestampIndex(time)
+    index = round(30*time + 1);
+end 

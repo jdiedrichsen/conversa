@@ -148,8 +148,6 @@ for i = 1:min(nFigCols*nFigRows, length(plotGroups)) % Iterate through groups, s
     yLimits = ylim;
     lowerYLim = yLimits(1);
     upperYLim = yLimits(2);
-    % Set axis limits
-    axis([startTime endTime lowerYLim upperYLim]);
     % Plot labels
     nLabels = length(labels.behaviour);
     for j = 1:nLabels
@@ -167,6 +165,8 @@ for i = 1:min(nFigCols*nFigRows, length(plotGroups)) % Iterate through groups, s
 %             end;
         end;
     end;
+    % Set axis limits
+    axis([startTime endTime lowerYLim upperYLim]);
     % Plot fields in groups
     nFields = length(fields);
     for j = 1:nFields
