@@ -19,9 +19,10 @@ function varargout = cnv_plotTrackingData(plotData, varargin)
 %                   Usage example: 'plotgroups', {'Neck', 'Head'}
 %   plotfields      Fields to plots together
 %                   Usage example: plotfields, {'Neck X Position and Rotation', {'neckPosX', 'neckRotX'}, 'Smile', {'Smile_L', 'Smile_R'} }
-%   timeunits       Can either set timeunits to frames or seconds (WIP)
+%   timeunits       (WIP) Can either set timeunits to frames or seconds
 %                   Usage example: 'timeunits', 'seconds'
 %   labels          Label dataframe to plot
+%   annotations     (WIP) Whether to add annotations to labels or not
 % By Shayaan Syed Ali
 % Last updated 30 May 17
 
