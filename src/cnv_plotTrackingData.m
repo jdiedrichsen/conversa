@@ -118,6 +118,11 @@ labelColorMap = containers.Map({'smiling', 'laughing', 'talking'}, {...
     'b' ...
     });
 
+annotations = true;
+if(isfield(optionArgs, {'annotations'}))
+    annotations = optionArgs.annotations;
+end;
+
 % Load label arg
 labels = [];
 if (isfield(optionArgs, {'labels'}))
@@ -154,6 +159,11 @@ for i = 1:min(nFigCols*nFigRows, length(plotGroups)) % Iterate through groups, s
             % of plot range
             patch('Faces', 1:4, 'Vertices', [startT lowerYLim; endT lowerYLim; endT upperYLim; startT upperYLim], ...
                 'FaceColor', labelColorMap(labels.behaviour{j}), 'FaceAlpha', 0.25, 'EdgeColor', 'none'); hold on;
+            % WIP: Add label annotation
+%             if (annotations)
+%                 annotation('textbox', [startT lowerYLim endT-startT 1], ...
+%                 'String', labels.behaviour{j}); % Position must be percentage, e.g. [0.3 0.4 0.1 0.2]
+%             end;
         end;
     end;
     % Plot fields in groups
@@ -161,6 +171,7 @@ for i = 1:min(nFigCols*nFigRows, length(plotGroups)) % Iterate through groups, s
     for j = 1:nFields
         plot(time, plotData.(fields{j})(range)); hold on;
     end;
+    % Add legend and axis labels
     l=legend(fields); % ADD: hide/how legend option
     set(l,'interpreter','none'); % Prevents interpretation of underscores as subscripts in legends
     hold off;
