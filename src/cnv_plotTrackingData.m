@@ -9,12 +9,10 @@ function varargout = cnv_plotTrackingData(plotData, varargin)
 % Description
 %   TODO
 % Argument list
-%   labelfile       Label file to use
-%                   Usage example: TODO
 %   start           Frame to start at
 %   end             Frame to end at
-%   starttime       Time to start at (WIP)
-%   endtime         Time to end at (WIP)
+%   starttime       Time to start at
+%   endtime         Time to end at
 %   nrows           Number of rows in plot
 %   ncols           Number of columns in plot
 %   plotgroups      Groups to plot
@@ -80,7 +78,6 @@ end;
 time = plotData.timestamp;
 
 % Set plotting range
-% TODO: ADD: time arguments
 startFrame = cnv_firstChangeI(plotData, 'exclude', {'timestamp', 'istracked', 'bodyid'});
 endFrame = length(time);
 if (isfield(optionArgs, {'start'}))
@@ -121,16 +118,14 @@ labelColorMap = containers.Map({'smiling', 'laughing', 'talking'}, {...
     'b' ...
     });
 
-% Load label args
+% Load label arg
 labels = [];
 if (isfield(optionArgs, {'labels'}))
     labels = optionArgs.labels;
 end;
 
 % Plot data
-
 fig = figure; % Create figure
-
 % Go through groups and plot
 plotGroups = keys(plotMap);
 for i = 1:min(nFigCols*nFigRows, length(plotGroups)) % Iterate through groups, stop when no more plot positions or all groups plotted
@@ -152,15 +147,13 @@ for i = 1:min(nFigCols*nFigRows, length(plotGroups)) % Iterate through groups, s
     % Plot labels
     nLabels = length(labels.behaviour);
     for j = 1:nLabels
-        startT = startTime + (labels.start(j)); % TODO: Convert to time for plotting
-        endT = startTime + (labels.end(j)); % TODO: Convert to time for plotting
-        if (endT-startT > 0) % Check that the plot is valid and within plotting range
+        startT = startTime + (labels.start(j));
+        endT = startTime + (labels.end(j));
+        if (endT-startT > 0) % Check that the plot is valid and TODO: within plotting range
             % TODO: Adjust startT and endT appropriately when they are out
             % of plot range
-%             endT-startT
-%             upperYLim-lowerYLim
-            patch('Faces', 1:4, 'Vertices', [startT lowerYLim; endT lowerYLim; endT upperYLim; startT upperYLim], 'FaceColor', labelColorMap(labels.behaviour{j}), 'FaceAlpha', 0.25); hold on;
-%             rectangle('Position', [startT lowerYLim endT-startT upperYLim-lowerYLim], 'EdgeColor', 'none', 'FaceColor', labelColorMap(labels.behaviour{j})); hold on;
+            patch('Faces', 1:4, 'Vertices', [startT lowerYLim; endT lowerYLim; endT upperYLim; startT upperYLim], ...
+                'FaceColor', labelColorMap(labels.behaviour{j}), 'FaceAlpha', 0.25, 'EdgeColor', 'none'); hold on;
         end;
     end;
     % Plot fields in groups
