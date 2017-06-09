@@ -80,7 +80,8 @@ end;
 time = plotData.timestamp;
 
 % Set plotting range
-startFrame = 1;
+% TODO: ADD: time arguments
+startFrame = cnv_firstChangeI(plotData, 'exclude', {'timestamp', 'istracked', 'bodyid'});
 endFrame = length(time);
 if (isfield(optionArgs, {'start'}))
     startFrame = optionArgs.start;
@@ -88,6 +89,8 @@ end;
 if (isfield(optionArgs, {'end'}))
     endFrame = optionArgs.end;
 end;
+startTime = indexToTime(startFrame);
+endTime = indexToTime(endFrame);
 range = startFrame:endFrame;
 time = time(range); % Restrict to range
 
@@ -105,6 +108,8 @@ end;
 % TODO: add styling options for plotting
 
 % TODO: add default colours for labels
+% TEMP: colour map
+labelColorMap = map.C
 
 % Load label args
 labels = [];
@@ -123,18 +128,28 @@ for i = 1:min(nFigCols*nFigRows, length(plotGroups)) % Iterate through groups, s
     plotGroup = plotGroups{i};
     subplot(nFigRows, nFigCols, i)
     fields = plotMap(plotGroup);
-    % Plot labels
+    % Plot fields in groups
+    nFields = length(fields);
+    for j = 1:nFields
+        plot(time, plotData.(fields{j})(range)); hold on;
+    end;
+    % Get axis data
     yLimits = ylim;
     lowerYLim = yLimits(1);
     upperYLim = yLimits(2);
+    % Set axis limits
+    axis([startTime endTime lowerYLim upperYLim]);
+    % Plot labels
     nLabels = length(labels.behaviour);
     for j = 1:nLabels
-        startT = labels.start(j); % TODO: Convert to time for plotting
-        endT = labels.end(j); % TODO: Convert to time for plotting
-%         if () % TODO: Check that label is at least partially within plot range
-            % TODO: Adjust startT and endT appropriately
-            rectangle('Position', [startT lowerYLim endT upperYLim], 'EdgeColor', 'none', 'FaceColor', 'r'); hold on;
-%         end;
+        startT = (labels.start(j)); % TODO: Convert to time for plotting
+        endT = (labels.end(j)); % TODO: Convert to time for plotting
+        if (endT-startT > 0) % Check that the plot is valid and within plotting range
+            % TODO: Adjust startT and endT appropriately when they are 
+%             endT-startT
+%             upperYLim-lowerYLim
+            rectangle('Position', [startT lowerYLim endT-startT upperYLim-lowerYLim], 'EdgeColor', 'none', 'FaceColor', 'b'); hold on;
+        end;
     end;
     % Plot fields in groups
     nFields = length(fields);
@@ -152,11 +167,11 @@ end;
 end % cnv_plotTracking
 
 % Converts from a frame index to a time
-function indexToTime()
-
+function time = indexToTime(index)
+    time = (index-1)/30;
 end
 
-% Converts from a time to an index
-function timeToIndex()
-
+% Gets the index of a given timestamp
+function index = timeToIndex(time)
+    index = round(30*time + 1);
 end
