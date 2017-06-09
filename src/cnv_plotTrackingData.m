@@ -91,6 +91,12 @@ if (isfield(optionArgs, {'end'}))
 end;
 startTime = indexToTime(startFrame);
 endTime = indexToTime(endFrame);
+if (isfield(optionArgs, {'starttime'}))
+    startTime = optionArgs.starttime;
+end;
+if (isfield(optionArgs, {'endtime'}))
+    endTime = optionArgs.endtime;
+end;
 range = startFrame:endFrame;
 time = time(range); % Restrict to range
 
@@ -109,7 +115,11 @@ end;
 
 % TODO: add default colours for labels
 % TEMP: colour map
-labelColorMap = map.C
+labelColorMap = containers.Map({'smiling', 'laughing', 'talking'}, {...
+    'r', ...
+    'g', ...
+    'b' ...
+    });
 
 % Load label args
 labels = [];
@@ -142,13 +152,15 @@ for i = 1:min(nFigCols*nFigRows, length(plotGroups)) % Iterate through groups, s
     % Plot labels
     nLabels = length(labels.behaviour);
     for j = 1:nLabels
-        startT = (labels.start(j)); % TODO: Convert to time for plotting
-        endT = (labels.end(j)); % TODO: Convert to time for plotting
+        startT = startTime + (labels.start(j)); % TODO: Convert to time for plotting
+        endT = startTime + (labels.end(j)); % TODO: Convert to time for plotting
         if (endT-startT > 0) % Check that the plot is valid and within plotting range
-            % TODO: Adjust startT and endT appropriately when they are 
+            % TODO: Adjust startT and endT appropriately when they are out
+            % of plot range
 %             endT-startT
 %             upperYLim-lowerYLim
-            rectangle('Position', [startT lowerYLim endT-startT upperYLim-lowerYLim], 'EdgeColor', 'none', 'FaceColor', 'b'); hold on;
+            patch('Faces', 1:4, 'Vertices', [startT lowerYLim; endT lowerYLim; endT upperYLim; startT upperYLim], 'FaceColor', labelColorMap(labels.behaviour{j}), 'FaceAlpha', 0.25); hold on;
+%             rectangle('Position', [startT lowerYLim endT-startT upperYLim-lowerYLim], 'EdgeColor', 'none', 'FaceColor', labelColorMap(labels.behaviour{j})); hold on;
         end;
     end;
     % Plot fields in groups
@@ -159,8 +171,8 @@ for i = 1:min(nFigCols*nFigRows, length(plotGroups)) % Iterate through groups, s
     l=legend(fields); % ADD: hide/how legend option
     set(l,'interpreter','none'); % Prevents interpretation of underscores as subscripts in legends
     hold off;
-    xlabel('time (seconds)'); % ADD: different time unit option and hide xlabel option
-    ylabel('magnitude (a.u.)'); % ADD: hide ylabel option
+%     xlabel('time (seconds)'); % ADD: different time unit option and hide xlabel option
+%     ylabel('magnitude (a.u.)'); % ADD: hide ylabel option
     title(plotGroup);
 end;
 
