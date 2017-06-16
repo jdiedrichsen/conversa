@@ -20,6 +20,11 @@ nFrames = length(labelledDf.timestamp);
 
 % Add labels
 % Set all values to false then update from labels
+
+% Transform start and end vectors to indices from timestamps
+labels.start = timestampIndex(labels.start)
+labels.end = timestampIndex(labels.end)
+
 nBehavs = length(labels.behaviour);
 for i = 1:nBehavs
     behavName = labels.behaviour{i};
@@ -27,8 +32,8 @@ for i = 1:nBehavs
 end;
 for i = 1:nBehavs
     behavName = labels.behaviour{i};
-    startI = timestampIndex(labels.start(i));
-    endI = timestampIndex(labels.end(i));
+    startI = labels.start(i);
+    endI = labels.end(i);
     labelledDf.(behavName)(startI:endI, 1) = true;
 end;
 end % cnv_applyLabels
