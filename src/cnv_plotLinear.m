@@ -23,6 +23,7 @@ function varargout = cnv_plotLinear(plotData, varargin)
 %                   Usage example: 'timeunits', 'seconds'
 %   labels          Label dataframe to plot
 %   annotations     (WIP) Whether to add annotations to labels or not
+%   plottype        Allows for linear or spectrogram plotting
 % By Shayaan Syed Ali
 % Last updated 30 May 17
 
@@ -134,6 +135,12 @@ if (isfield(optionArgs, {'labels'}))
     labels = optionArgs.labels;
 end;
 
+% Load plottype
+plotType = 'linear';
+if(isfield(optionArgs, {'plottype'})
+    plotType = optionArgs.plottype;
+end;
+
 % Plot data
 fig = figure; % Create figure
 % Go through groups and plot
@@ -173,9 +180,18 @@ for i = 1:min(nFigCols*nFigRows, length(plotGroups)) % Iterate through groups, s
     axis([startTime endTime lowerYLim upperYLim]);
     % Plot fields in groups
     nFields = length(fields);
-    for j = 1:nFields
-        plot(time, plotData.(fields{j})(range)); hold on;
-    end;
+    switch plotType
+        case 'linear'
+            for j = 1:nFields
+                plot(time, plotData.(fields{j})(range)); hold on;
+            end;
+        case 'spectro'
+            for j = 1:nFields
+                spectrogram(plotData.(fields{j})(range));
+            end;
+        otherwise
+            error('Invalid plottype');
+    end
     % Add legend and axis labels
     l=legend(fields); % ADD: hide/how legend option
     set(l,'interpreter','none'); % Prevents interpretation of underscores as subscripts in legends
