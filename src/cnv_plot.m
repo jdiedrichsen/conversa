@@ -172,6 +172,40 @@ for i = 1:min(nFigCols*nFigRows, length(plotGroups)) % Iterate through groups, s
             for j = 1:nFields
                 plot(time, plotData.(fields{j})(range)); hold on;
             end;
+            % Get axis data and set axis limits
+            yLimits = ylim;
+            lowerYLim = yLimits(1);
+            upperYLim = yLimits(2);
+            axis([startTime endTime lowerYLim upperYLim]);
+            % Plot labels
+            if (labelsIncl)
+                behavs = labels.behaviour;
+                nLabels = length(behavs);
+                for j = 1:nLabels
+                    startT = startTime + (labels.start(j));
+                    endT = startTime + (labels.end(j));
+                    if (endT-startT > 0) % Check that the plot is valid and TODO: within plotting range
+                        % TODO: Adjust startT and endT appropriately when they are out
+                        % of plot range
+                        patch('Faces', 1:4, 'Vertices', [startT lowerYLim; endT lowerYLim; endT upperYLim; startT upperYLim], ...
+                            'FaceColor', labelColorMap(behavs{j}), 'FaceAlpha', 0.25, 'EdgeColor', 'none'); hold on;
+                        % WIP: Add label annotation
+            %             if (annotations)
+            %                 annotation('textbox', [startT lowerYLim endT-startT 1], ...
+            %                 'String', labels.behaviour{j}); % Position must be percentage, e.g. [0.3 0.4 0.1 0.2]
+            %             end;
+                    end;
+                end;
+                for j = 1:nFields
+                    plot(time, plotData.(fields{j})(range)); hold on;
+                end;
+                    % Add legend and axis labels
+                    l=legend(fields); % ADD: hide/how legend option
+                    set(l,'interpreter','none'); % Prevents interpretation of underscores as subscripts in legends
+                %     xlabel('time (seconds)'); % ADD: different time unit option and hide xlabel option
+                %     ylabel('magnitude (a.u.)'); % ADD: hide ylabel option
+                    title(plotGroup);
+            end;
             % Add legend and axis labels
             l=legend(fields); % ADD: hide/how legend option
             set(l,'interpreter','none'); % Prevents interpretation of underscores as subscripts in legends
@@ -187,53 +221,6 @@ for i = 1:min(nFigCols*nFigRows, length(plotGroups)) % Iterate through groups, s
             end;
         otherwise
             error('Invalid plottype');
-    end;
-    % Get axis data and set axis limits
-    yLimits = ylim;
-    lowerYLim = yLimits(1);
-    upperYLim = yLimits(2);
-    axis([startTime endTime lowerYLim upperYLim]);
-    % Plot labels
-    if (labelsIncl)
-        behavs = labels.behaviour;
-        nLabels = length(behavs);
-        for j = 1:nLabels
-            startT = startTime + (labels.start(j));
-            endT = startTime + (labels.end(j));
-            if (endT-startT > 0) % Check that the plot is valid and TODO: within plotting range
-                % TODO: Adjust startT and endT appropriately when they are out
-                % of plot range
-                patch('Faces', 1:4, 'Vertices', [startT lowerYLim; endT lowerYLim; endT upperYLim; startT upperYLim], ...
-                    'FaceColor', labelColorMap(behavs{j}), 'FaceAlpha', 0.25, 'EdgeColor', 'none'); hold on;
-                % WIP: Add label annotation
-    %             if (annotations)
-    %                 annotation('textbox', [startT lowerYLim endT-startT 1], ...
-    %                 'String', labels.behaviour{j}); % Position must be percentage, e.g. [0.3 0.4 0.1 0.2]
-    %             end;
-            end;
-        end;
-    end;
-    % Plot fields in groups on top of labels
-    % TODO: Refactor to function call, currently must copy code from above
-    % -_-
-    if (labelsIncl)
-        nFields = length(fields);
-        switch plotType
-            case 'linear'
-                for j = 1:nFields
-                    plot(time, plotData.(fields{j})(range)); hold on;
-                end;
-                    % Add legend and axis labels
-                    l=legend(fields); % ADD: hide/how legend option
-                    set(l,'interpreter','none'); % Prevents interpretation of underscores as subscripts in legends
-                %     xlabel('time (seconds)'); % ADD: different time unit option and hide xlabel option
-                %     ylabel('magnitude (a.u.)'); % ADD: hide ylabel option
-                    title(plotGroup);
-            case 'spectro'
-%                 end;
-            otherwise
-                error('Invalid plottype');
-        end;
     end;
 end;
 
