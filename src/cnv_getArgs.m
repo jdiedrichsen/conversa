@@ -1,7 +1,7 @@
 % Loads a struct with the parameters
 % By Shayaan Syed Ali
 % Last updated 05-Jun-17
-function args = cnv_fieldValuePairs(vargs)
+function args = cnv_getArgs(vargs)
 if (mod(length(vargs), 2) ~= 0)
     error('Must have an equal number of fields and values');;
 end;
