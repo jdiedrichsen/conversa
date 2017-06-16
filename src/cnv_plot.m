@@ -155,7 +155,7 @@ end;
 nFigCols = 1;
 if (isfield(optionArgs, {'ncols'}))
     nFigCols = optionArgs.ncols;
-elseif (strcmp(plotType, 'spectro') == 0)
+elseif (strcmp(plotType, 'spectro') == 1)
     nFigCols = maxNFields;
 end;
 
@@ -172,9 +172,15 @@ for i = 1:min(nFigCols*nFigRows, length(plotGroups)) % Iterate through groups, s
             for j = 1:nFields
                 plot(time, plotData.(fields{j})(range)); hold on;
             end;
+            % Add legend and axis labels
+            l=legend(fields); % ADD: hide/how legend option
+            set(l,'interpreter','none'); % Prevents interpretation of underscores as subscripts in legends
+        %     xlabel('time (seconds)'); % ADD: different time unit option and hide xlabel option
+        %     ylabel('magnitude (a.u.)'); % ADD: hide ylabel option
+            title(plotGroup);
         case 'spectro'
             for j = 1:nFields
-                subplot(nFigRows, maxNFields, j + (i-1)*maxNFields)
+                subplot(nFigRows, nFigCols, j + (i-1)*maxNFields)
                 spectrogram(plotData.(fields{j})(range), 'yaxis');
                 t = title(fields{j}); hold on;
                 set(t,'interpreter','none')
