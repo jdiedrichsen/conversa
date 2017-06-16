@@ -12,10 +12,11 @@ optionArgs = struct( ... % TODO: Setup optionArgs with default vals and then set
 learnPrefix = 'cnv_learn_';
 predictionPrefix = 'cnv_predict_'; 
 % Learning functions
-learnFunctions = preSufFuncList({learnPrefix}, algoNames)
-predictFunctions = preSufFuncList({predictionPrefix}, algoNames)
+learnFunctions = preSufFuncList({learnPrefix}, algoNames)';
+predictFunctions = preSufFuncList({predictionPrefix}, algoNames)';
 
-% Learn with a partition of the data
+% Partition into learning set and testing set, cycle partitions and update
+% error
 
 
 end
@@ -31,7 +32,7 @@ end
 function out = preSufFuncList(prefixes, suffixes)
 nPrefixes = length(prefixes);
 nSuffixes = length(suffixes);
-out = cell(nPrefixes, nSuffixes)
+out = cell(nPrefixes, nSuffixes);
 for i = 1:nPrefixes
     for j = 1:nSuffixes
         out{i, j} = preSufFunc(prefixes{i}, suffixes{j});
