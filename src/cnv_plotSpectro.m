@@ -1,4 +1,4 @@
-function varargout = cnv_spectrogramPlot(plotData, varargin)
+function varargout = cnv_plotSpectro(plotData, varargin)
 % TODO: documentation
 
 optionArgs = cnv_getArgs(varargin);
