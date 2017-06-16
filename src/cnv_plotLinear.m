@@ -28,6 +28,7 @@ function varargout = cnv_plotLinear(plotData, varargin)
 
 % TODO: Refactor varargin parameter loading, e.g. by iterating through
 % varargin and setting params as needed
+
 % We can use inputParser for type checking, but this is slower
 % Jorn mentioned sometime like 'varargin options', I was unable to find a
 % reference to built in Matlab functions which did anything like this
@@ -47,7 +48,8 @@ function varargout = cnv_plotLinear(plotData, varargin)
     {'jaw_l', 'jaw_r', 'jaw_open'} ...
  });
 
-% Initialize paramters from input option arguments as needed
+% Initialize paramters from input option arguments as needed - this will be
+% refactored
 optionArgs = [];
 if (nargin>0)
     optionArgs = cnv_getArgs(varargin); % Load args
@@ -77,7 +79,7 @@ if (isfield(optionArgs, {'plotfields'}))
     end;
 end;
 
-% TODO: Refactor
+% TODO: Refactor time ranging
 % Get timestamps
 time = plotData.timestamp;
 % Set plotting range
