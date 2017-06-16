@@ -26,6 +26,8 @@ function varargout = cnv_plotTrackingData(plotData, varargin)
 % By Shayaan Syed Ali
 % Last updated 30 May 17
 
+% TODO: Refactor varargin parameter loading, e.g. by iterating through
+% varargin and setting params as needed
 % We can use inputParser for type checking, but this is slower
 % Jorn mentioned sometime like 'varargin options', I was unable to find a
 % reference to built in Matlab functions which did anything like this
@@ -75,9 +77,9 @@ if (isfield(optionArgs, {'plotfields'}))
     end;
 end;
 
+% TODO: Refactor
 % Get timestamps
 time = plotData.timestamp;
-
 % Set plotting range
 startFrame = cnv_firstChangeI(plotData, 'exclude', {'timestamp', 'istracked', 'bodyid'});
 endFrame = length(time);
