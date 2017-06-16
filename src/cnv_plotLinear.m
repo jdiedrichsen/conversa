@@ -131,13 +131,15 @@ end;
 
 % Load label arg
 labels = [];
+labelsIncl = false;
 if (isfield(optionArgs, {'labels'}))
     labels = optionArgs.labels;
+    labelsIncl = true;
 end;
 
 % Load plottype
 plotType = 'linear';
-if(isfield(optionArgs, {'plottype'})
+if(isfield(optionArgs, {'plottype'}))
     plotType = optionArgs.plottype;
 end;
 
@@ -160,20 +162,23 @@ for i = 1:min(nFigCols*nFigRows, length(plotGroups)) % Iterate through groups, s
     lowerYLim = yLimits(1);
     upperYLim = yLimits(2);
     % Plot labels
-    nLabels = length(labels.behaviour);
-    for j = 1:nLabels
-        startT = startTime + (labels.start(j));
-        endT = startTime + (labels.end(j));
-        if (endT-startT > 0) % Check that the plot is valid and TODO: within plotting range
-            % TODO: Adjust startT and endT appropriately when they are out
-            % of plot range
-            patch('Faces', 1:4, 'Vertices', [startT lowerYLim; endT lowerYLim; endT upperYLim; startT upperYLim], ...
-                'FaceColor', labelColorMap(labels.behaviour{j}), 'FaceAlpha', 0.25, 'EdgeColor', 'none'); hold on;
-            % WIP: Add label annotation
-%             if (annotations)
-%                 annotation('textbox', [startT lowerYLim endT-startT 1], ...
-%                 'String', labels.behaviour{j}); % Position must be percentage, e.g. [0.3 0.4 0.1 0.2]
-%             end;
+    if (labelsIncl)
+        behavs = labels.behaviour;
+        nLabels = length(behavs);
+        for j = 1:nLabels
+            startT = startTime + (labels.start(j));
+            endT = startTime + (labels.end(j));
+            if (endT-startT > 0) % Check that the plot is valid and TODO: within plotting range
+                % TODO: Adjust startT and endT appropriately when they are out
+                % of plot range
+                patch('Faces', 1:4, 'Vertices', [startT lowerYLim; endT lowerYLim; endT upperYLim; startT upperYLim], ...
+                    'FaceColor', labelColorMap(behavs{j}), 'FaceAlpha', 0.25, 'EdgeColor', 'none'); hold on;
+                % WIP: Add label annotation
+    %             if (annotations)
+    %                 annotation('textbox', [startT lowerYLim endT-startT 1], ...
+    %                 'String', labels.behaviour{j}); % Position must be percentage, e.g. [0.3 0.4 0.1 0.2]
+    %             end;
+            end;
         end;
     end;
     % Set axis limits
