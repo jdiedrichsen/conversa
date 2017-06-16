@@ -103,17 +103,6 @@ end;
 range = startFrame:endFrame;
 time = time(range); % Restrict to range
 
-% Set number of horizontal and vertical cells for subplots
-% Default format is a column
-nFigRows = length(plotMap);
-if (isfield(optionArgs, {'nrows'}))
-    nFigRows = optionArgs.nrows;
-end;
-nFigCols = 1;
-if (isfield(optionArgs, {'ncols'}))
-    nFigCols = optionArgs.ncols;
-end;
-
 % TODO: add styling options for plotting
 
 % TODO: add default colours for labels
@@ -144,23 +133,60 @@ if(isfield(optionArgs, {'plottype'}))
 end;
 
 % Plot data
+
 fig = figure; % Create figure
+
 % Go through groups and plot
 plotGroups = keys(plotMap);
+
+% Get maxNFields for subplotting with plottype spectro
+maxNFields = 0;
+for i = 1:length(plotGroups)
+    maxNFields = max(maxNFields, length(plotMap(plotGroups{i})));
+%     disp(horzcat(plotGroups{i}, ' ', num2str(length(plotMap(plotGroups{i})))))
+end;
+
+% Set number of horizontal and vertical cells for subplots
+% Default format is a column
+nFigRows = length(plotMap);
+if (isfield(optionArgs, {'nrows'}))
+    nFigRows = optionArgs.nrows;
+end;
+nFigCols = 1;
+if (isfield(optionArgs, {'ncols'}))
+    nFigCols = optionArgs.ncols;
+elseif (strcmp(plotType, 'spectro') == 0)
+    nFigCols = maxNFields;
+end;
+
 for i = 1:min(nFigCols*nFigRows, length(plotGroups)) % Iterate through groups, stop when no more plot positions or all groups plotted
     % Plot tracking data
     plotGroup = plotGroups{i};
-    subplot(nFigRows, nFigCols, i)
     fields = plotMap(plotGroup);
     % Plot fields in groups
+    % TODO: Refactor to function call
     nFields = length(fields);
-    for j = 1:nFields
-        plot(time, plotData.(fields{j})(range)); hold on;
+    switch plotType
+        case 'linear'
+            subplot(nFigRows, nFigCols, i)
+            for j = 1:nFields
+                plot(time, plotData.(fields{j})(range)); hold on;
+            end;
+        case 'spectro'
+            for j = 1:nFields
+                subplot(nFigRows, maxNFields, j + (i-1)*maxNFields)
+                spectrogram(plotData.(fields{j})(range), 'yaxis');
+                t = title(fields{j}); hold on;
+                set(t,'interpreter','none')
+            end;
+        otherwise
+            error('Invalid plottype');
     end;
-    % Get axis data
+    % Get axis data and set axis limits
     yLimits = ylim;
     lowerYLim = yLimits(1);
     upperYLim = yLimits(2);
+    axis([startTime endTime lowerYLim upperYLim]);
     % Plot labels
     if (labelsIncl)
         behavs = labels.behaviour;
@@ -181,29 +207,28 @@ for i = 1:min(nFigCols*nFigRows, length(plotGroups)) % Iterate through groups, s
             end;
         end;
     end;
-    % Set axis limits
-    axis([startTime endTime lowerYLim upperYLim]);
-    % Plot fields in groups
-    nFields = length(fields);
-    switch plotType
-        case 'linear'
-            for j = 1:nFields
-                plot(time, plotData.(fields{j})(range)); hold on;
-            end;
-        case 'spectro'
-            for j = 1:nFields
-                spectrogram(plotData.(fields{j})(range));
-            end;
-        otherwise
-            error('Invalid plottype');
-    end
-    % Add legend and axis labels
-    l=legend(fields); % ADD: hide/how legend option
-    set(l,'interpreter','none'); % Prevents interpretation of underscores as subscripts in legends
-    hold off;
-%     xlabel('time (seconds)'); % ADD: different time unit option and hide xlabel option
-%     ylabel('magnitude (a.u.)'); % ADD: hide ylabel option
-    title(plotGroup);
+    % Plot fields in groups on top of labels
+    % TODO: Refactor to function call, currently must copy code from above
+    % -_-
+    if (labelsIncl)
+        nFields = length(fields);
+        switch plotType
+            case 'linear'
+                for j = 1:nFields
+                    plot(time, plotData.(fields{j})(range)); hold on;
+                end;
+                    % Add legend and axis labels
+                    l=legend(fields); % ADD: hide/how legend option
+                    set(l,'interpreter','none'); % Prevents interpretation of underscores as subscripts in legends
+                %     xlabel('time (seconds)'); % ADD: different time unit option and hide xlabel option
+                %     ylabel('magnitude (a.u.)'); % ADD: hide ylabel option
+                    title(plotGroup);
+            case 'spectro'
+%                 end;
+            otherwise
+                error('Invalid plottype');
+        end;
+    end;
 end;
 
 end % cnv_plotTracking
