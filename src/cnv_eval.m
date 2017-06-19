@@ -1,4 +1,4 @@
-function out = cnv_eval(predictors, labels, algoNames, varargin)
+function outError = cnv_eval(predictors, labels, algoNames, varargin)
 % Evaluates learning algorithms
 % Takes a matrix of predictors, array of labels, and cell array of the
 % names of the algorithms to evaluate
@@ -12,7 +12,7 @@ function out = cnv_eval(predictors, labels, algoNames, varargin)
 % Initialize optional arguments default values
 % Format is struct('fieldName1', 'defaultValue1', 'fieldName2', 'defaultValue2', ...)
 optionArgs = struct( ... % TODO: Setup optionArgs with default vals and then set via getArgs
-	'trainsize', '0.8', ... % Testing with 80% of the data by default, giving 20% of the data for testing
+	'trainsize', 0.8, ... % Testing with 80% of the data by default, giving 20% of the data for testing
 	'errorfunc', 'immse' ... % Defaults to mean square error
 	    );
 optionArgs = cnv_getArgs(optionArgs, varargin); % Get and set args as provided
@@ -25,7 +25,7 @@ if (nSamples ~= size(labels, 1)) % Labels and predictors must have corresponding
 end;
 nTrainSamples = round(nSamples*(optionArgs.trainsize)); % Number of rows, since 
 nTestSamples = nSamples - nTrainSamples; % All non-training samples are for testing
-nPartitions = ceil(1/optionArgs.trainsize);
+nPartitions = ceil((1)/(1-optionArgs.trainsize));
 
 % PARTITION DATA ==========================================================
 % Partition data into learning and testing sets for training and evaluation
@@ -61,7 +61,7 @@ end;
 %	predictedLabels = cnv_predict_algo(model, predictors)
 
 % Train and test each algorithm
-evalError = zeroes(algoNo, nPartitions+1); % Error matrix will have error of each algorithm (row), partition (column), and average error of algorithm (final column)
+evalError = zeros(nAlgos, nPartitions+1); % Error matrix will have error of each algorithm (row), partition (column), and average error of algorithm (final column)
 for algoNo = 1:nAlgos
 	algoName = algoNames{algoNo};
 	learn = learnFunc(algoName);
@@ -70,19 +70,19 @@ for algoNo = 1:nAlgos
 		% Train from 1 to testStartI-1 and testEndI+1 to nSamples
 		testStart = testStartI(partitionNo);
 		testEnd = testEndI(partitionNo);
-		predictorSet = predictors([1:(firstSetEnd-1) (secondSetStart+1):nSamples],:);
-		labelSet = labels([1:firstSetEnd secondSetStart:nSamples],:);
+		predictorSet = predictors([1:(testStart-1) (testEnd+1):nSamples],:);
+		labelSet = labels([1:(testStart-1) (testEnd+1):nSamples],:);
 		model = learn(predictorSet, labelSet);
 		% Make prediction, evaluate, and update error
 		evalError(algoNo, partitionNo) = findError( ...
-			predict(model, predictors(testStart:testEnd)), ... % Predicted by model
-			labels(testStart:testEnd), ... % Actual labels
+			predict(model, predictors(max(testStart,1):min(testEnd,nSamples))), ... % Predicted by model
+			labels(max(testStart,1):min(testEnd,nSamples)), ... % Actual labels
 			optionArgs.errorfunc);
 	end;
 	evalError(algoNo, nPartitions+1) = mean(evalError(algoNo, 1:nPartitions)); % Update average error
 end;
 
-out = evalError;
+outError = evalError;
 
 end % cnv_eval
 
@@ -93,6 +93,6 @@ out = str2func(strcat(prefix, suffix));
 end
 
 function out = findError(predicted, actual, errorFuncStr)
-errorFunc = str2fun(errorFuncStr);
+errorFunc = str2func(errorFuncStr);
 out = errorFunc(predicted, actual);
 end

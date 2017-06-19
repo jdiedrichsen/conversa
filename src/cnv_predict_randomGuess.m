@@ -4,5 +4,5 @@ function prediction = cnv_predict_randomGuess(model, predictors)
 % By Shayaan Syed Ali
 % Last updated 19-Jun-17
 nPredictions = length(predictors);
-prediction = model.minGuess + (model.maxGuessmodel.minGuess)*rand(nPredictions, 1);
+prediction = model.minGuess + (model.maxGuess-model.minGuess)*rand(nPredictions, 1);
 end
