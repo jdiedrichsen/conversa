@@ -1,5 +1,8 @@
-function varargout = cnv_eval(predictor, labels, algoNames, varargin)
+function varargout = cnv_eval(predictors, labels, algoNames, varargin)
 % Evaluates learning algorithms
+% Takes a matrix of predictors, array of labels, and cell array of the
+% names of the algorithms to evaluate
+% Returns an array of error rates for each algorithm in algoNames
 % By Shayaan Syed Ali
 % Last updated 19-Jun-17
 
@@ -15,7 +18,7 @@ optionArgs = cnv_getArgs(optionArgs, varargin); % Get and set args as provided
 % TODO: Check optionArgs for error (e.g. trainsize <= 0 or trainsize > 1)
 
 % Set basic info about the data
-nSamples = size(predictor, 1);
+nSamples = size(predictors, 1);
 if (nSamples ~= size(labels, 1)) % Labels and predictors must have corresponding rows
 	error('The number of rows in the predictor matrix and label mamtrix are not equal');
 end;
@@ -47,7 +50,7 @@ learnFunc = containers.Map();
 predictFunc = containers.Map();
 nAlgos = length(algoNames);
 for i = 1:nAlgos
-	algoName = algoNames(i);
+	algoName = algoNames{i};
 	learnFunc(algoName) = preSufFunc(learnPrefix, algoName);
 	predictFunc(algoName)  = preSufFunc(predictPrefix, algoName);
 end;
@@ -59,7 +62,7 @@ end;
 % Train and test each algorithm
 error = zeroes(algoNo, nPartitions+1); % Error matrix will have error of each algorithm (row), partition (column), and average error of algorithm (final column)
 for algoNo = 1:nAlgos
-	algoName = algoNames(algoNo);
+	algoName = algoNames{algoNo};
 	% Train from 1 to testStartI-1 and testEndI+1 to nSamples
 	
 	% Test from testStartI to testEndI and update error
