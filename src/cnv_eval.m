@@ -82,6 +82,8 @@ for algoNo = 1:nAlgos
 	evalError(algoNo, nPartitions+1) = mean(evalError(algoNo, 1:nPartitions)); % Update average error
 end;
 
+varargout = evalError;
+
 end % cnv_eval
 
 % Returns a function handle for the function with the name prefix ||
