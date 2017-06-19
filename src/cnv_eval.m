@@ -26,19 +26,23 @@ predictFunctions = preSufFuncList({predictionPrefix}, algoNames)';
 
 % Partition into learning set and testing set, cycle partitions and update
 % error
-% Indices are row indices
+% Ranges are from start to end of indices
 % E.g.:
-%	trainingIndices =
-%		
-%	testingIndices =
-%		
+%	testIndices =
+%		[1		100]
+%		[101	200]
+%		[201	300]
+%	trainIndices =
+%		[0		  0]	[101	300]
+%		[1		100]	[201	300]
+%		[1		200]	[300	300]
 nTrainSamples = nSamples*(optionArgs.trainsize); % Number of rows, since 
 nTestSamples = nSamples - nTrainSamples; % All non-training samples are for testing
-nPartitions = ciel(1/optionArgs.trainsize);
-trainingIndices = [];
-testingIndices = [];
+nPartitions = ceil(1/optionArgs.trainsize);
+trainRanges = [];
+testRanges = [];
 for i = 1:nPartitions
-	
+
 end;
 end
 
