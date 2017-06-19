@@ -12,7 +12,8 @@ function varargout = cnv_eval(predictors, labels, algoNames, varargin)
 % Initialize optional arguments default values
 % Format is struct('fieldName1', 'defaultValue1', 'fieldName2', 'defaultValue2', ...)
 optionArgs = struct( ... % TODO: Setup optionArgs with default vals and then set via getArgs
-	'trainsize', '0.8' ... % Testing with 80% of the data by default, giving 20% of the data for testing
+	'trainsize', '0.8', ... % Testing with 80% of the data by default, giving 20% of the data for testing
+	'errorfunc', 'immse' ... % Defaults to mean square error
 	    );
 optionArgs = cnv_getArgs(optionArgs, varargin); % Get and set args as provided
 % TODO: Check optionArgs for error (e.g. trainsize <= 0 or trainsize > 1)
@@ -52,7 +53,7 @@ nAlgos = length(algoNames);
 for i = 1:nAlgos
 	algoName = algoNames{i};
 	learnFunc(algoName) = preSufFunc(learnPrefix, algoName);
-	predictFunc(algoName)  = preSufFunc(predictPrefix, algoName);
+	predictFunc(algoName) = preSufFunc(predictPrefix, algoName);
 end;
 
 % Function signatures for learning, prediction:
@@ -60,21 +61,25 @@ end;
 %	predictedLabels = cnv_predict_algo(model, predictors)
 
 % Train and test each algorithm
-error = zeroes(algoNo, nPartitions+1); % Error matrix will have error of each algorithm (row), partition (column), and average error of algorithm (final column)
+evalError = zeroes(algoNo, nPartitions+1); % Error matrix will have error of each algorithm (row), partition (column), and average error of algorithm (final column)
 for algoNo = 1:nAlgos
 	algoName = algoNames{algoNo};
 	learn = learnFunc(algoName);
 	predict = predictFunc(algoName);
 	for partitionNo = 1:nPartitions
 		% Train from 1 to testStartI-1 and testEndI+1 to nSamples
-		firstSetEnd = testStartI(partitionNo) - 1;
-		secondSetStart = testEndI(partitionNo) + 1;
-		predictorSet = predictors([1:firstSetEnd secondSetStart:nSamples],:);
+		testStart = testStartI(partitionNo);
+		testEnd = testEndI(partitionNo);
+		predictorSet = predictors([1:(firstSetEnd-1) (secondSetStart+1):nSamples],:);
 		labelSet = labels([1:firstSetEnd secondSetStart:nSamples],:);
-		learn(predictorSet, labelSet);
-		% Test from testStartI to testEndI and update error
-		
+		model = learn(predictorSet, labelSet);
+		% Make prediction, evaluate, and update error
+		evalError(algoNo, partitionNo) = findError( ...
+			predict(model, predictors(testStart:testEnd)), ... % Predicted by model
+			labels(testStart:testEnd), ... % Actual labels
+			optionArgs.errorfunc);
 	end;
+	evalError(algoNo, nPartitions+1) = mean(evalError(algoNo, 1:nPartitions)); % Update average error
 end;
 
 end % cnv_eval
@@ -83,4 +88,9 @@ end % cnv_eval
 % suffix, i.e. the prefix and suffix concatenated as in @prefixsuffix
 function out = preSufFunc(prefix, suffix)
 out = str2func(strcat(prefix, suffix));
+end
+
+function out = findError(predicted, actual, errorFuncStr)
+	errorFunc = str2fun(errorFuncStr);
+	out = errorFunc(predicted, actual);
 end
