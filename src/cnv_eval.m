@@ -1,9 +1,14 @@
 function varargout = cnv_eval(predictor, labels, algoNames, varargin)
 % Evaluates learning algorithms
+nSamples = size(predictor, 1);
+% Labels and predictors must have corresponding rows
+if (nSamples ~= size(labels, 1))
+	error('The number of rows in the predictor matrix and label mamtrix are not equal');
+end;
 
 % Initialize optional arguments default values
 optionArgs = struct( ... % TODO: Setup optionArgs with default vals and then set via getArgs
-	'trainingsize', '0.8' ... % Testing with 80% of the data by default, giving 20% of the data for testing
+	'trainsize', '0.8' ... % Testing with 80% of the data by default, giving 20% of the data for testing
 	    );
 %   'field', 'defaultval', ...
 
@@ -21,6 +26,14 @@ predictFunctions = preSufFuncList({predictionPrefix}, algoNames)';
 
 % Partition into learning set and testing set, cycle partitions and update
 % error
+% Indices are row indices
+% E.g.:
+%	trainingIndices =
+%		
+%	testingIndices =
+%		
+nTrainSamples = nSamples*(optionArgs.trainsize); % Number of rows, since 
+nTestSamples = nSamples - nTrainSamples;
 trainingIndices = [];
 testingIndices = [];
 
