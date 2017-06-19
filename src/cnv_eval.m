@@ -1,4 +1,4 @@
-function varargout = cnv_eval(predictors, labels, algoNames, varargin)
+function out = cnv_eval(predictors, labels, algoNames, varargin)
 % Evaluates learning algorithms
 % Takes a matrix of predictors, array of labels, and cell array of the
 % names of the algorithms to evaluate
@@ -82,7 +82,7 @@ for algoNo = 1:nAlgos
 	evalError(algoNo, nPartitions+1) = mean(evalError(algoNo, 1:nPartitions)); % Update average error
 end;
 
-varargout = evalError;
+out = evalError;
 
 end % cnv_eval
 

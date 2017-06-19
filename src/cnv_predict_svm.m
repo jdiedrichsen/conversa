@@ -1,4 +1,4 @@
-function varargout = cnv_predict_svm(model, predictors)
+function predictions = cnv_predict_svm(model, predictors)
 
 
 

@@ -1,4 +1,4 @@
-function varargout = cnv_plot(plotData, varargin)
+function out = cnv_plot(plotData, varargin)
 % CNV_PLOTTRACKING: plots tracking data in subplots with various parameters
 % Input
 %   TODO
