@@ -25,7 +25,7 @@ function varargout = cnv_plot(plotData, varargin)
 %   annotations     (WIP) Whether to add annotations to labels or not
 %   plottype        Allows for linear or spectrogram plotting
 % By Shayaan Syed Ali
-% Last updated 30 May 17
+% Last updated 19-Jun-17
 
 % TODO: Refactor varargin parameter loading, e.g. by iterating through
 % varargin and setting params as needed

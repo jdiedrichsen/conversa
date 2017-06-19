@@ -10,7 +10,7 @@ function cnvTrackingData = cnv_loadTrackingData(varargin)
 %   ith field array belonging to the ith face
 %   If no fileName argument is provided a default file is read from
 % By Shayaan Syed Ali
-% Last updated 26 May 2017
+% Last updated 26-May-17
 
 DEFAULT_FILE = 'C:\Users\Shayn\Documents\Work\AI Research\conversa\Test Data\par1001Cam1\cam1par1001.txt';
 TOP_HEADER_LN = '==========';

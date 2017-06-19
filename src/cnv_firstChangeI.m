@@ -1,6 +1,7 @@
-% Finds first point index of change in a data struct's fields
 function changeI = cnv_firstChangeI(data, varargin)
-% TODO: Documentation
+% Finds first point index of change in a data struct's fields
+% By Shayaan Syed Ali
+% Last updated 19-Jun-17
 args = [];
 args = cnv_getArgs(args, varargin); % TODO: implement easy default behaviour, as in cnv_eval
 fields = fieldnames(data);
