@@ -1,4 +1,4 @@
-function out = cnv_behavioursToPredictorsAndLabels(ld, behaviourNames, varargin)
+function out = cnv_predictorsAndLabels(ld, behaviourNames, varargin)
 % Returns a matrix of predictors and a matrix of labels given a labelled
 % dataframe of behaviours and a list of behaviour names to use as labels
 % By Shayaan Syed Ali
