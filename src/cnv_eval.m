@@ -67,7 +67,11 @@ for algoNo = 1:nAlgos
 	predict = predictFunc(algoName);
 	for partitionNo = 1:nPartitions
 		% Train from 1 to testStartI-1 and testEndI+1 to nSamples
-		
+		firstSetEnd = testStartI(partitionNo) - 1;
+		secondSetStart = testEndI(partitionNo) + 1;
+		predictorSet = predictors([1:firstSetEnd secondSetStart:nSamples],:);
+		labelSet = labels([1:firstSetEnd secondSetStart:nSamples],:);
+		learn(predictorSet, labelSet);
 		% Test from testStartI to testEndI and update error
 		
 	end;
