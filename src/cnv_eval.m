@@ -33,10 +33,13 @@ predictFunctions = preSufFuncList({predictionPrefix}, algoNames)';
 %	testingIndices =
 %		
 nTrainSamples = nSamples*(optionArgs.trainsize); % Number of rows, since 
-nTestSamples = nSamples - nTrainSamples;
+nTestSamples = nSamples - nTrainSamples; % All non-training samples are for testing
+nPartitions = ciel(1/optionArgs.trainsize);
 trainingIndices = [];
 testingIndices = [];
-
+for i = 1:nPartitions
+	
+end;
 end
 
 % Returns a function handle for the function with the name prefix ||
