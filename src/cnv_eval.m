@@ -93,6 +93,6 @@ out = str2func(strcat(prefix, suffix));
 end
 
 function out = findError(predicted, actual, errorFuncStr)
-	errorFunc = str2fun(errorFuncStr);
-	out = errorFunc(predicted, actual);
+errorFunc = str2fun(errorFuncStr);
+out = errorFunc(predicted, actual);
 end
