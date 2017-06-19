@@ -15,7 +15,7 @@ optionArgs = struct( ... % TODO: Setup optionArgs with default vals and then set
 % Get and set args as provided
 optionArgs = cnv_getArgs(optionArgs, varargin);
 
-% Check optionArgs if needed
+% Check optionArgs for error (e.g. trainsize <= 0 or trainsize > 1)
 
 % Set lists of learning and 
 learnPrefix = 'cnv_learn_';
@@ -26,24 +26,20 @@ predictFunctions = preSufFuncList({predictionPrefix}, algoNames)';
 
 % Partition into learning set and testing set, cycle partitions and update
 % error
-% Ranges are from start to end of indices
-% E.g.:
-%	testIndices =
-%		[1		100]
-%		[101	200]
-%		[201	300]
-%	trainIndices =
-%		[0		  0]	[101	300]
-%		[1		100]	[201	300]
-%		[1		200]	[300	300]
-nTrainSamples = nSamples*(optionArgs.trainsize); % Number of rows, since 
+nTrainSamples = round(nSamples*(optionArgs.trainsize)); % Number of rows, since 
 nTestSamples = nSamples - nTrainSamples; % All non-training samples are for testing
 nPartitions = ceil(1/optionArgs.trainsize);
-trainRanges = [];
-testRanges = [];
-for i = 1:nPartitions
 
+% Set test partition indices
+testStartI = zeros(nPartitions, 1);
+testEndI = zeros(nPartitions, 1);
+for i = 1:nPartitions
+	testStartI(i) = (i-1)*nTestSamples;
+	testEndI(i) = (i)*nTestSamples;
 end;
+% Test from testStartI to testEndI
+% Train from 1 to testStartI-1 and testEndI+1 to nSamples
+% (All bounds inclusive)
 end
 
 % Returns a function handle for the function with the name prefix ||
