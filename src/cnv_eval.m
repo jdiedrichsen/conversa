@@ -3,8 +3,9 @@ function varargout = cnv_eval(predictor, labels, algoNames, varargin)
 
 % Set optional arguments default values
 optionArgs = struct( ... % TODO: Setup optionArgs with default vals and then set via getArgs
-    'field', 'val' ...
-    );
+	    );
+%   'field', 'defaultval', ...
+
 % Get and set args as provided
 
 

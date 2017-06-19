@@ -53,7 +53,7 @@ function varargout = cnv_plot(plotData, varargin)
 % refactored
 optionArgs = [];
 if (nargin>0)
-    optionArgs = cnv_getArgs(varargin); % Load args
+    optionArgs = cnv_getArgs(optionArgs, varargin); % Load args TODO: implement easy default behaviour, as in cnv_eval
 end;
 
 if (~exist('plotData', 'var'))
@@ -71,7 +71,8 @@ else % Initialize defaults
     plotMap = defaultPlotMap;
 end;
 if (isfield(optionArgs, {'plotfields'}))
-    plotFieldArgs = cnv_getArgs(optionArgs.plotfields);
+	plotFieldArgs = [];
+    plotFieldArgs = cnv_getArgs(plotFieldArgs, optionArgs.plotfields); % TODO: implement easy default behaviour, as in cnv_eval
     plotFieldNames = fieldnames(plotFieldArgs);
     nPlotFields = length(plotFieldNames);
     for i = 1:nPlotFields

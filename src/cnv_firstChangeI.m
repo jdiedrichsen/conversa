@@ -1,7 +1,8 @@
 % Finds first point index of change in a data struct's fields
 function changeI = cnv_firstChangeI(data, varargin)
 % TODO: Documentation
-args = cnv_getArgs(varargin);
+args = [];
+args = cnv_getArgs(args, varargin); % TODO: implement easy default behaviour, as in cnv_eval
 fields = fieldnames(data);
 % Remove fields to exclude
 if(isfield(args, 'exclude'))
