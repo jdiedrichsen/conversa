@@ -22,8 +22,8 @@ nFrames = length(labelledDf.timestamp);
 % Set all values to false then update from labels
 
 % Transform start and end vectors to indices from timestamps
-labels.start = timestampIndex(labels.start)
-labels.end = timestampIndex(labels.end)
+labels.start = timestampIndex(labels.start);
+labels.end = timestampIndex(labels.end);
 
 nBehavs = length(labels.behaviour);
 for i = 1:nBehavs

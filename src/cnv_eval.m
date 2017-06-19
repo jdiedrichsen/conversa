@@ -75,7 +75,7 @@ for algoNo = 1:nAlgos
 		model = learn(predictorSet, labelSet);
 		% Make prediction, evaluate, and update error
 		evalError(algoNo, partitionNo) = findError( ...
-			predict(model, predictors(max(testStart,1):min(testEnd,nSamples))), ... % Predicted by model
+			predict(model, predictors(max(testStart,1):min(testEnd,nSamples),:)), ... % Predicted by model
 			labels(max(testStart,1):min(testEnd,nSamples)), ... % Actual labels
 			optionArgs.errorfunc);
 	end;
