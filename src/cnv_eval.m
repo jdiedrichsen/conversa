@@ -33,24 +33,40 @@ for i = 1:(nPartitions-1)
 	testStartI(i) = (i-1)*nTestSamples;
 	testEndI(i) = (i)*nTestSamples;
 end;
-% Set last partition
+% Set last partition, may overlap with second last partition
 testStartI(nPartitions) = nSamples - nTestSamples;
 testEndI(nPartitions) = nSamples;
 
 % TRAIN AND TEST ==========================================================
 % Train and test algorithms, returning an error rate
 
-% Set lists of learning and prediction functions from the algoNames
+% Set map from the algoNames to the learning and prediction functions
 learnPrefix = 'cnv_learn_';
-predictionPrefix = 'cnv_predict_';
-learnFunctions = preSufFuncList({learnPrefix}, algoNames)';
-predictFunctions = preSufFuncList({predictionPrefix}, algoNames)';
+predictPrefix = 'cnv_predict_';
+learnFunc = containers.Map();
+predictFunc = containers.Map();
+nAlgos = length(algoNames);
+for i = 1:nAlgos
+	algoName = algoNames(i);
+	learnFunc(algoName) = preSufFunc(learnPrefix, algoName);
+	predictFunc(algoName)  = preSufFunc(predictPrefix, algoName);
+end;
 
-% Train from 1 to testStartI-1 and testEndI+1 to nSamples
-% Test from testStartI to testEndI
-% (All bounds inclusive)
+% Function signatures for learning, prediction:
+%	model = cnv_learn_algo(predictors, labels)
+%	predictedLabels = cnv_predict_algo(model, predictors)
 
-end
+% Train and test each algorithm
+error = zeroes(algoNo, nPartitions+1); % Error matrix will have error of each algorithm (row), partition (column), and average error of algorithm (final column)
+for algoNo = 1:nAlgos
+	algoName = algoNames(algoNo);
+	% Train from 1 to testStartI-1 and testEndI+1 to nSamples
+	
+	% Test from testStartI to testEndI and update error
+	
+end;
+
+end % cnv_eval
 
 % Returns a function handle for the function with the name prefix ||
 % suffix, i.e. the prefix and suffix concatenated as in @prefixsuffix
@@ -58,15 +74,15 @@ function out = preSufFunc(prefix, suffix)
 out = str2func(strcat(prefix, suffix));
 end
 
-% Returns function handle list with all combos from the prefixList and
-% suffixList
-function out = preSufFuncList(prefixes, suffixes)
-nPrefixes = length(prefixes);
-nSuffixes = length(suffixes);
-out = cell(nPrefixes, nSuffixes);
-for i = 1:nPrefixes
-    for j = 1:nSuffixes
-        out{i, j} = preSufFunc(prefixes{i}, suffixes{j});
-    end;
-end;
-end
+% % Returns function handle list with all combos from the prefixList and
+% % suffixList
+% function out = preSufFuncList(prefixes, suffixes)
+% nPrefixes = length(prefixes);
+% nSuffixes = length(suffixes);
+% out = cell(nPrefixes, nSuffixes);
+% for i = 1:nPrefixes
+%     for j = 1:nSuffixes
+%         out{i, j} = preSufFunc(prefixes{i}, suffixes{j});
+%     end;
+% end;
+% end
