@@ -63,10 +63,14 @@ end;
 error = zeroes(algoNo, nPartitions+1); % Error matrix will have error of each algorithm (row), partition (column), and average error of algorithm (final column)
 for algoNo = 1:nAlgos
 	algoName = algoNames{algoNo};
-	% Train from 1 to testStartI-1 and testEndI+1 to nSamples
-	
-	% Test from testStartI to testEndI and update error
-	
+	learn = learnFunc(algoName);
+	predict = predictFunc(algoName);
+	for partitionNo = 1:nPartitions
+		% Train from 1 to testStartI-1 and testEndI+1 to nSamples
+		
+		% Test from testStartI to testEndI and update error
+		
+	end;
 end;
 
 end % cnv_eval
@@ -76,16 +80,3 @@ end % cnv_eval
 function out = preSufFunc(prefix, suffix)
 out = str2func(strcat(prefix, suffix));
 end
-
-% % Returns function handle list with all combos from the prefixList and
-% % suffixList
-% function out = preSufFuncList(prefixes, suffixes)
-% nPrefixes = length(prefixes);
-% nSuffixes = length(suffixes);
-% out = cell(nPrefixes, nSuffixes);
-% for i = 1:nPrefixes
-%     for j = 1:nSuffixes
-%         out{i, j} = preSufFunc(prefixes{i}, suffixes{j});
-%     end;
-% end;
-% end
