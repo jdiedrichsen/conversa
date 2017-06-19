@@ -7,6 +7,6 @@ if (mod(length(vargs), 2) ~= 0)
 end;
 args = inArgs;
 for i = 1:2:length(vargs)
-    args.(vargs{i}) = vargs{i+1};
+    args.(vargs{i}) = vargs{i+1}; % TODO: Check if field exists in inArgs before adding, must refactor code which calls this to pass defaults through inArgs first
 end;
 end % cnv_fieldValuePairs
