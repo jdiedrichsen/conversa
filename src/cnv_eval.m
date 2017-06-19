@@ -1,24 +1,28 @@
 function varargout = cnv_eval(predictor, labels, algoNames, varargin)
 % Evaluates learning algorithms
 
-% Set optional arguments default values
+% Initialize optional arguments default values
 optionArgs = struct( ... % TODO: Setup optionArgs with default vals and then set via getArgs
+	'trainingsize', '0.8' ... % Testing with 80% of the data by default, giving 20% of the data for testing
 	    );
 %   'field', 'defaultval', ...
 
 % Get and set args as provided
+optionArgs = cnv_getArgs(optionArgs, varargin);
 
+% Check optionArgs if needed
 
 % Set lists of learning and 
 learnPrefix = 'cnv_learn_';
-predictionPrefix = 'cnv_predict_'; 
+predictionPrefix = 'cnv_predict_';
 % Learning functions
 learnFunctions = preSufFuncList({learnPrefix}, algoNames)';
 predictFunctions = preSufFuncList({predictionPrefix}, algoNames)';
 
 % Partition into learning set and testing set, cycle partitions and update
 % error
-
+trainingIndices = [];
+testingIndices = [];
 
 end
 
