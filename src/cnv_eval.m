@@ -1,4 +1,4 @@
-function outError = cnv_eval(predictors, labels, algoNames, varargin)
+function outError = cnv_eval(ld, algoNames, behaviourNames, varargin)
 % Evaluates learning algorithms
 % Takes a matrix of predictors, array of labels, and cell array of the
 % names of the algorithms to evaluate
@@ -17,6 +17,24 @@ optionArgs = struct( ... % TODO: Setup optionArgs with default vals and then set
 	    );
 optionArgs = cnv_getArgs(optionArgs, varargin); % Get and set args as provided
 % TODO: Check optionArgs for error (e.g. trainsize <= 0 or trainsize > 1)
+
+% TODO: Refactor to work with struct instead of translating to matrix
+
+% List of tracking fields
+trackingFields = {'neckposx', 'neckposy', 'neckposz', 'neckrotx', 'neckroty', 'neckrotz', 'headposx', 'headposy', 'headposz', 'headrotx', 'headroty', 'headrotz', 'brow_up_l', 'brow_up_r', 'brow_down_l', 'brow_down_r', 'eye_closed_l', 'eye_closed_r', 'cheek_puffed_l', 'cheek_puffed_r', 'lips_pucker', 'lips_stretch_l', 'lips_stretch_r', 'lip_lower_down_l', 'lip_lower_down_r', 'smile_l', 'smile_r', 'frown_l', 'frown_r', 'jaw_l', 'jaw_r', 'jaw_open'};
+nTrackingFields = length(trackingFields);
+% Set predictor fields
+nSamples = length(ld.timestamp);
+predictors = zeros(nSamples, nTrackingFields);
+for fieldNo = 1:nTrackingFields
+	predictors(:,fieldNo) = ld.(trackingFields{fieldNo});
+end;
+% Set label fields
+nBehaviours = length(behaviourNames);
+labels = zeros(nSamples, nBehaviours);
+for behavNo = 1:nBehaviours
+	labels(:,behavNo) = ld.(behaviourNames{behavNo});
+end;
 
 % Set basic info about the data
 nSamples = size(predictors, 1);
@@ -70,8 +88,9 @@ for algoNo = 1:nAlgos
 		% Train from 1 to testStartI-1 and testEndI+1 to nSamples
 		testStart = testStartI(partitionNo);
 		testEnd = testEndI(partitionNo);
-		predictorSet = predictors([1:(testStart-1) (testEnd+1):nSamples],:);
-		labelSet = labels([1:(testStart-1) (testEnd+1):nSamples],:);
+		rows = [1:(testStart-1) (testEnd+1):nSamples];
+		predictorSet = predictors(rows,:);
+		labelSet = labels(rows,:);
 		model = learn(predictorSet, labelSet);
 		% Make prediction, evaluate, and update error
 		evalError(algoNo, partitionNo) = findError( ...
