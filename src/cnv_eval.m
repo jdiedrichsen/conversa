@@ -1,4 +1,4 @@
-function outError = cnv_eval(ld, algoNames, behaviourNames, varargin)
+function outError = cnv_eval(data, algoNames, targetFields, varargin)
 % Evaluates learning algorithms
 % Takes a matrix of predictors, array of labels, and cell array of the
 % names of the algorithms to evaluate
@@ -13,40 +13,49 @@ function outError = cnv_eval(ld, algoNames, behaviourNames, varargin)
 % Format is struct('fieldName1', 'defaultValue1', 'fieldName2', 'defaultValue2', ...)
 optionArgs = struct( ... % TODO: Setup optionArgs with default vals and then set via getArgs
 	'trainsize', 0.8, ... % Testing with 80% of the data by default, giving 20% of the data for testing
-	'errorfunc', 'immse' ... % Defaults to mean square error
-	    );
+	'errorfunc', 'immse', ... % Defaults to mean square error
+	'npartitions', 5, ... % The number of partitions is 5 by default
+	'verbose', false ...
+	);
+% 		'predictorfields', {'timestamp', 'neckposx', 'neckposy', 'neckposz', 'neckrotx', 'neckroty', 'neckrotz', 'headposx', 'headposy', 'headposz', 'headrotx', 'headroty', 'headrotz', 'brow_up_l', 'brow_up_r', 'brow_down_l', 'brow_down_r', 'eye_closed_l', 'eye_closed_r', 'cheek_puffed_l', 'cheek_puffed_r', 'lips_pucker', 'lips_stretch_l', 'lips_stretch_r', 'lip_lower_down_l', 'lip_lower_down_r', 'smile_l', 'smile_r', 'frown_l', 'frown_r', 'jaw_l', 'jaw_r', 'jaw_open'} ... 
 optionArgs = cnv_getArgs(optionArgs, varargin); % Get and set args as provided
 % TODO: Check optionArgs for error (e.g. trainsize <= 0 or trainsize > 1)
 
 % TODO: Refactor to work with struct instead of translating to matrix
 
 % List of tracking fields
-trackingFields = {'neckposx', 'neckposy', 'neckposz', 'neckrotx', 'neckroty', 'neckrotz', 'headposx', 'headposy', 'headposz', 'headrotx', 'headroty', 'headrotz', 'brow_up_l', 'brow_up_r', 'brow_down_l', 'brow_down_r', 'eye_closed_l', 'eye_closed_r', 'cheek_puffed_l', 'cheek_puffed_r', 'lips_pucker', 'lips_stretch_l', 'lips_stretch_r', 'lip_lower_down_l', 'lip_lower_down_r', 'smile_l', 'smile_r', 'frown_l', 'frown_r', 'jaw_l', 'jaw_r', 'jaw_open'};
-nTrackingFields = length(trackingFields);
+predictFields = {'timestamp', 'neckposx', 'neckposy', 'neckposz', 'neckrotx', 'neckroty', 'neckrotz', 'headposx', 'headposy', 'headposz', 'headrotx', 'headroty', 'headrotz', 'brow_up_l', 'brow_up_r', 'brow_down_l', 'brow_down_r', 'eye_closed_l', 'eye_closed_r', 'cheek_puffed_l', 'cheek_puffed_r', 'lips_pucker', 'lips_stretch_l', 'lips_stretch_r', 'lip_lower_down_l', 'lip_lower_down_r', 'smile_l', 'smile_r', 'frown_l', 'frown_r', 'jaw_l', 'jaw_r', 'jaw_open'};
+nPredictFields = length(predictFields);
 % Set predictor fields
-nSamples = length(ld.timestamp);
-predictors = zeros(nSamples, nTrackingFields);
-for fieldNo = 1:nTrackingFields
-	predictors(:,fieldNo) = ld.(trackingFields{fieldNo});
+nSamples = length(data.timestamp);
+predictors = zeros(nSamples, nPredictFields);
+for fieldNo = 1:nPredictFields
+	predictors(:,fieldNo) = data.(predictFields{fieldNo});
+end;
+optionArgs.verbose;
+if (optionArgs.verbose)
+	disp('Set predictor fields');
 end;
 % Set label fields
-nBehaviours = length(behaviourNames);
-labels = zeros(nSamples, nBehaviours);
-for behavNo = 1:nBehaviours
-	labels(:,behavNo) = ld.(behaviourNames{behavNo});
+nTargetFields = length(targetFields);
+labels = zeros(nSamples, nTargetFields);
+for targetNo = 1:nTargetFields
+	labels(:,targetNo) = data.(targetFields{targetNo});
 end;
 
 % Set basic info about the data
 nSamples = size(predictors, 1);
 if (nSamples ~= size(labels, 1)) % Labels and predictors must have corresponding rows
-	error('The number of rows in the predictor matrix and label mamtrix are not equal');
+	error('There are an unequal number of predictors and target training values');
 end;
 nTrainSamples = round(nSamples*(optionArgs.trainsize)); % Number of rows, since 
 nTestSamples = nSamples - nTrainSamples; % All non-training samples are for testing
-nPartitions = ceil((1)/(1-optionArgs.trainsize));
+nPartitions = optionArgs.npartitions;
 
 % PARTITION DATA ==========================================================
 % Partition data into learning and testing sets for training and evaluation
+
+% TODO: Change to structs
 
 testStartI = zeros(nPartitions, 1);
 testEndI = zeros(nPartitions, 1);
