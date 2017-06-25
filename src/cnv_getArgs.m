@@ -1,8 +1,8 @@
-% Loads a struct with the parameters
+% Loads a struct with paramters given in field value pairs
 % By Shayaan Syed Ali
-% Last updated 19-Jun-17
-function outArgs = cnv_getArgs(defaults, vargs) % TODO: Change signature to cnv_getArgs(defaults, vargin) and set args = defaults, update as needed
-if (mod(length(vargs), 2) ~= 0)
+% Last updated 25-Jun-17
+function outArgs = cnv_getArgs(defaults, vargs)
+if (~isempty(vargs) && (mod(length(vargs), 2) ~= 0))
     error('Must have an equal number of fields and values');
 end;
 outArgs = defaults;

@@ -1,6 +1,5 @@
 function cnvTrackingData = cnv_loadTrackingData(varargin)
-% CNV_DLOAD: loads a tab delimited text file of motion tracking data
-%       into memory
+% Loads a tab delimited text file of motion tracking data into a struct
 % Usage
 %   cnvTrackingData=cnvLoad('fileName')
 %   cnvTrackingData=cnvLoad()

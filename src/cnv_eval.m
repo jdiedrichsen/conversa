@@ -12,14 +12,14 @@ function outError = cnv_eval(data, algoNames, targetFields, varargin)
 % Initialize optional arguments default values
 % Format is struct('fieldName1', 'defaultValue1', 'fieldName2', 'defaultValue2', ...)
 optionArgs = struct( ... % TODO: Setup optionArgs with default vals and then set via getArgs
-	'trainsize', 0.8, ... % Testing with 80% of the data by default, giving 20% of the data for testing
+	'trainratio', 0.8, ... % Testing with 80% of the data by default, giving 20% of the data for testing
 	'errorfunc', 'immse', ... % Defaults to mean square error
 	'npartitions', 5, ... % The number of partitions is 5 by default
 	'verbose', false ...
 	);
 % 		'predictorfields', {'timestamp', 'neckposx', 'neckposy', 'neckposz', 'neckrotx', 'neckroty', 'neckrotz', 'headposx', 'headposy', 'headposz', 'headrotx', 'headroty', 'headrotz', 'brow_up_l', 'brow_up_r', 'brow_down_l', 'brow_down_r', 'eye_closed_l', 'eye_closed_r', 'cheek_puffed_l', 'cheek_puffed_r', 'lips_pucker', 'lips_stretch_l', 'lips_stretch_r', 'lip_lower_down_l', 'lip_lower_down_r', 'smile_l', 'smile_r', 'frown_l', 'frown_r', 'jaw_l', 'jaw_r', 'jaw_open'} ... 
 optionArgs = cnv_getArgs(optionArgs, varargin); % Get and set args as provided
-% TODO: Check optionArgs for error (e.g. trainsize <= 0 or trainsize > 1)
+% TODO: Check optionArgs for error (e.g. trainratio <= 0 or trainratio > 1)
 
 % TODO: Refactor to work with struct instead of translating to matrix
 
@@ -48,7 +48,7 @@ nSamples = size(predictors, 1);
 if (nSamples ~= size(labels, 1)) % Labels and predictors must have corresponding rows
 	error('There are an unequal number of predictors and target training values');
 end;
-nTrainSamples = round(nSamples*(optionArgs.trainsize)); % Number of rows, since 
+nTrainSamples = round(nSamples*(optionArgs.trainratio)); % Number of rows, since 
 nTestSamples = nSamples - nTrainSamples; % All non-training samples are for testing
 nPartitions = optionArgs.npartitions;
 

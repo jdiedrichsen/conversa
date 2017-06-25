@@ -1,5 +1,5 @@
 function labels = cnv_loadLabelFile(filename)
-% Loads a files of labels into a dataframe
+% Loads a files of labels into a dataframe struct
 % By Shayaan Syed Ali
 % Last updated 05-Jun-17
 
