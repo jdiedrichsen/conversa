@@ -1,25 +1,39 @@
-function out = cnv_struct2Matrix(inStruct, varargin)
-% Converts a struct to a matrix
+function outMatrix = cnv_struct2Matrix(inStruct, varargin)
+% Converts a struct to a matrix, assumes all included field lengths are
+% equal
 % Varargin options:
 %	includefields
 %		A cell list of fields to include or the string 'all' to include all
 %		fields, 'all' is assumed by default
 %	excludefields
-%		A cell list of fields to exclude. Assumes an empty list by default
+%		A cell list of fields to exclude or the string 'none' so no fields
+%		are excluded, 'none' is assumed by default
 
-defaultOptions = struct( ...
+% Load options
+optionArgs = struct( ...
 	'includefields', 'all', ...
-	'excludefields', {} ...
+	'excludefields', 'none' ...
 	);
+optionArgs = cnv_getArgs(optionArgs, varargin);
 
-optionArgs = cnv_getArgs(defaultOptions, varargin);
-
-% Add 
-fields = fieldname(inStruct);
-if(ischar(optionArgs.includefields) && strcmp(optionArgs.includefields, 'all')) % Use all fields in 'all' case
-	
+% Add fields to include
+fields = fieldnames(inStruct); % Use all fields in 'all' case
+if (~(ischar(optionArgs.includefields) && strcmp(optionArgs.includefields, 'all'))) % Otherwise modified as required
+	fields = optionArgs.includefields
+end;
+% Remove fields to exclude
+if (~(ischar(optionArgs.excludefields) && strcmp(optionArgs.excludefields, 'none'))) % Otherwise modified as required
+	excludeFields = optionArgs.excludefields;
 else
-	
+	excludeFields = {};
+end;
+fields = setdiff(fields, excludeFields);
+
+% Add fields to matrix with columns as fields and rows as entries
+nFields = length(fields);
+outMatrix = zeros(length(inStruct.(fields{1})), nFields);
+for i = 1:nFields
+	outMatrix(:,i) = inStruct.(fields{i});
 end;
 
 end
