@@ -54,22 +54,22 @@ function out = cnv_plot(plotData, varargin)
 optionArgs = [];
 if (nargin>0)
     optionArgs = cnv_getArgs(optionArgs, varargin); % Load args TODO: implement easy default behaviour, as in cnv_eval
-end;
+end
 
 if (~exist('plotData', 'var'))
     plotData = cnv_loadTrackingData('C:\Users\Shayn\Documents\Work\AI Research\conversa\data\par1001Cam2\cam2par1001.txt');
-end;
+end
 
 % Remove and add plot groups as needed
 if (isfield(optionArgs, {'plotgroups'}))
     plotGroups = optionArgs.plotgroups;
     plotMap = containers.Map();
-    for i = 1:length(plotGroups)
+	for i = 1:length(plotGroups)
         plotMap(plotGroups{i}) = defaultPlotMap(plotGroups{i});
-    end;
+	end
 else % Initialize defaults
     plotMap = defaultPlotMap;
-end;
+end
 if (isfield(optionArgs, {'plotfields'}))
 	plotFieldArgs = [];
     plotFieldArgs = cnv_getArgs(plotFieldArgs, optionArgs.plotfields); % TODO: implement easy default behaviour, as in cnv_eval
@@ -78,8 +78,8 @@ if (isfield(optionArgs, {'plotfields'}))
     for i = 1:nPlotFields
         fieldName = plotFieldNames{i};
         plotMap(fieldName) = plotFieldArgs.(plotFieldArgs);
-    end;
-end;
+	end
+end
 
 % TODO: Refactor time ranging
 % Get timestamps
@@ -89,18 +89,18 @@ startFrame = cnv_firstChangeI(plotData, 'exclude', {'timestamp', 'istracked', 'b
 endFrame = length(time);
 if (isfield(optionArgs, {'start'}))
     startFrame = optionArgs.start;
-end;
+end
 if (isfield(optionArgs, {'end'}))
     endFrame = optionArgs.end;
-end;
+end
 startTime = indexToTime(startFrame);
 endTime = indexToTime(endFrame);
 if (isfield(optionArgs, {'starttime'}))
     startTime = optionArgs.starttime;
-end;
+end
 if (isfield(optionArgs, {'endtime'}))
     endTime = optionArgs.endtime;
-end;
+end
 range = startFrame:endFrame;
 time = time(range); % Restrict to range
 
@@ -117,7 +117,7 @@ labelColorMap = containers.Map({'smiling', 'laughing', 'talking'}, {...
 annotations = true;
 if(isfield(optionArgs, {'annotations'}))
     annotations = optionArgs.annotations;
-end;
+end
 
 % Load label arg
 labels = [];
@@ -125,13 +125,13 @@ labelsIncl = false;
 if (isfield(optionArgs, {'labels'}))
     labels = optionArgs.labels;
     labelsIncl = true;
-end;
+end
 
 % Load plottype
 plotType = 'linear';
 if(isfield(optionArgs, {'plottype'}))
     plotType = optionArgs.plottype;
-end;
+end
 
 % Plot data
 
@@ -145,20 +145,20 @@ maxNFields = 0;
 for i = 1:length(plotGroups)
     maxNFields = max(maxNFields, length(plotMap(plotGroups{i})));
 %     disp(horzcat(plotGroups{i}, ' ', num2str(length(plotMap(plotGroups{i})))))
-end;
+end
 
 % Set number of horizontal and vertical cells for subplots
 % Default format is a column
 nFigRows = length(plotMap);
 if (isfield(optionArgs, {'nrows'}))
     nFigRows = optionArgs.nrows;
-end;
+end
 nFigCols = 1;
 if (isfield(optionArgs, {'ncols'}))
     nFigCols = optionArgs.ncols;
 elseif (strcmp(plotType, 'spectro') == 1)
     nFigCols = maxNFields;
-end;
+end
 
 for i = 1:min(nFigCols*nFigRows, length(plotGroups)) % Iterate through groups, stop when no more plot positions or all groups plotted
     % Plot tracking data
@@ -172,7 +172,7 @@ for i = 1:min(nFigCols*nFigRows, length(plotGroups)) % Iterate through groups, s
             subplot(nFigRows, nFigCols, i)
             for j = 1:nFields
                 plot(time, plotData.(fields{j})(range)); hold on;
-            end;
+            end
             % Get axis data and set axis limits
             yLimits = ylim;
             lowerYLim = yLimits(1);
@@ -194,19 +194,19 @@ for i = 1:min(nFigCols*nFigRows, length(plotGroups)) % Iterate through groups, s
             %             if (annotations)
             %                 annotation('textbox', [startT lowerYLim endT-startT 1], ...
             %                 'String', labels.behaviour{j}); % Position must be percentage, e.g. [0.3 0.4 0.1 0.2]
-            %             end;
-                    end;
-                end;
+            %             end
+                    end
+                end
                 for j = 1:nFields
                     plot(time, plotData.(fields{j})(range)); hold on;
-                end;
+                end
                     % Add legend and axis labels
                     l=legend(fields); % ADD: hide/how legend option
                     set(l,'interpreter','none'); % Prevents interpretation of underscores as subscripts in legends
                 %     xlabel('time (seconds)'); % ADD: different time unit option and hide xlabel option
                 %     ylabel('magnitude (a.u.)'); % ADD: hide ylabel option
                     title(plotGroup);
-            end;
+            end
             % Add legend and axis labels
             l=legend(fields); % ADD: hide/how legend option
             set(l,'interpreter','none'); % Prevents interpretation of underscores as subscripts in legends
@@ -219,11 +219,11 @@ for i = 1:min(nFigCols*nFigRows, length(plotGroups)) % Iterate through groups, s
                 spectrogram(plotData.(fields{j})(range), 'yaxis');
                 t = title(fields{j}); hold on;
                 set(t,'interpreter','none')
-            end;
+            end
         otherwise
             error('Invalid plottype');
-    end;
-end;
+    end
+end
 
 end % cnv_plotTracking
 

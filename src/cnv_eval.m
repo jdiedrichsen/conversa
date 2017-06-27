@@ -31,23 +31,23 @@ nSamples = length(data.timestamp);
 predictors = zeros(nSamples, nPredictFields);
 for fieldNo = 1:nPredictFields
 	predictors(:,fieldNo) = data.(predictFields{fieldNo});
-end;
+end
 optionArgs.verbose;
 if (optionArgs.verbose)
 	disp('Set predictor fields');
-end;
+end
 % Set label fields
 nTargetFields = length(targetFields);
 labels = zeros(nSamples, nTargetFields);
 for targetNo = 1:nTargetFields
 	labels(:,targetNo) = data.(targetFields{targetNo});
-end;
+end
 
 % Set basic info about the data
 nSamples = size(predictors, 1);
 if (nSamples ~= size(labels, 1)) % Labels and predictors must have corresponding rows
 	error('There are an unequal number of predictors and target training values');
-end;
+end
 nTrainSamples = round(nSamples*(optionArgs.trainratio)); % Number of rows, since 
 nTestSamples = nSamples - nTrainSamples; % All non-training samples are for testing
 nPartitions = optionArgs.npartitions;
@@ -63,7 +63,7 @@ testEndI = zeros(nPartitions, 1);
 for i = 1:(nPartitions-1)
 	testStartI(i) = (i-1)*nTestSamples;
 	testEndI(i) = (i)*nTestSamples;
-end;
+end
 % Set last partition, may overlap with second last partition
 testStartI(nPartitions) = nSamples - nTestSamples;
 testEndI(nPartitions) = nSamples;
@@ -81,7 +81,7 @@ for i = 1:nAlgos
 	algoName = algoNames{i};
 	learnFunc(algoName) = preSufFunc(learnPrefix, algoName);
 	predictFunc(algoName) = preSufFunc(predictPrefix, algoName);
-end;
+end
 
 % Function signatures for learning, prediction:
 %	model = cnv_learn_algo(predictors, labels)
@@ -106,9 +106,9 @@ for algoNo = 1:nAlgos
 			predict(model, predictors(max(testStart,1):min(testEnd,nSamples),:)), ... % Predicted by model
 			labels(max(testStart,1):min(testEnd,nSamples)), ... % Actual labels
 			optionArgs.errorfunc);
-	end;
+	end
 	evalError(algoNo, nPartitions+1) = mean(evalError(algoNo, 1:nPartitions)); % Update average error
-end;
+end
 
 outError = evalError;
 

@@ -20,27 +20,48 @@ function out = cnv_eval2(data, algoNames, targetFields, varargin)
 % Set parameters (optional arguments, and structs of predictors and labels)
 
 optionArgs = struct( ...
-	'trainratio', 0.8, ... % The ratio of the data to show algorithms before testing, 80% by default
-	'npartitions', 5, ... % The number of partitions to break the data into
+	'trainratio', 0.8, ... % The ratio of the data to show algorithms before testing, 80% by default, implying 20% for testing
+	'nparts', 5, ... % The number of partitions to break the data into for training and testing
+	'partitiontype', 'random', ... % The partition type to make, can set to random, 
 	'errorfunc', 'immse', ... % The error function to use for evaluating models after training
 	'verbose', false, ...
 	'excludefields', 'none' ...
 	);
 optionArgs = cnv_getArgs(optionArgs, varargin);
-if (optionArgs.verbose), disp('cnv_eval: Initialized optional arguments, setting predictor and label structs'), end;
+v = optionArgs.verbose; % For brevity
+if (v), disp('cnv_eval: Initialized optional arguments, setting predictor and label structs'); end
 % Setting up structs of predictors and labels
 if (~strcmp(optionArgs.excludefields, 'none')) % Strip away excludefields if required
-	if (optionArgs.verbose), disp('cnv_eval: Removing fields: '), fprintf('\b'), disp(optionArgs.excludefields), end;
+	if (v), disp('cnv_eval: Removing fields: '); fprintf('\b'); disp(optionArgs.excludefields); end
 	data = rmfield(data, optionArgs.excludefields);
 end
 predictors = rmfield(data, targetFields);
 labels = rmfield(data, fieldnames(predictors)); % Everything which is not a predictor is a label
-if (optionArgs.verbose), disp('cnv_eval: Predictor and label structs set, partitioning data'), end;
+if (v), disp('cnv_eval: Predictor and label structs set, partitioning data'); end
 
 % Partition data
 
+partitions = zeros(optionArgs.nparts, 2); % Matrix of starts and ends for partitions, 
+switch (optionArgs.partitiontype)
+	case 'random'
+		if (v), disp('cnv_eval: Setting random partitions'); end
+		for i = 1:optionArgs.nparts
+			
+		end
+	case 'contiguous'
+		if (v), disp('cnv_eval: Setting contiguous partitions'); end
+		
+	otherwise
+		if (v), disp('cnv_eval: Partition type not found'); end
+		error('Invalid partitiontype');
+end
 
 % Train and test
+
+% Function signatures for learning, prediction:
+%	model = cnv_learn_algo(predictors, labels)
+%	predictedLabels = cnv_predict_algo(model, predictors)
+
 
 
 end % cnv_eval2

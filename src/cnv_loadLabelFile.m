@@ -52,7 +52,7 @@ elseif (isfield(dlf,'frame')) % Decode by using frame numbers
     toSeconds = @framesToSeconds;
 else % Error - neither frames nor milliseconds provided
     error('Label file does not contain milliseconds or frame numbers');
-end;
+end
 
 pid = dlf.pid(1); % Set pid
 cam = dlf.cam(1); % Set cam number array (does not vary)
@@ -65,8 +65,8 @@ for i = 1:length(dlfFields)
     chkField = dlfFields{i};
     if (isKey(FIELD_MAP, chkField) && strcmp(FIELD_MAP(chkField), 'behaviour') == 1) % Field is a behaviour field
         behaviourFields{end+1} = chkField;
-    end;
-end;
+    end
+end
 
 entryNo = 1;
 for i = 1:length(behaviourFields)
@@ -78,11 +78,11 @@ for i = 1:length(behaviourFields)
     while (behavStartI < behavLength)
         while (behavStartI < behavLength && behav(behavStartI) ~= 1) % Go to next 1
            behavStartI = behavStartI+1;
-        end;
+        end
         behavEndI = behavStartI;
         while (behavEndI < behavLength && behav(behavEndI) == 1) % Go to end of '1' state (i.e. end of on state')
            behavEndI = behavEndI+1;
-        end;
+        end
         % Add to label struct
         labels.pid(entryNo, 1) = pid;
         labels.cam(entryNo, 1) = cam;
@@ -92,8 +92,8 @@ for i = 1:length(behaviourFields)
         labels.end(entryNo, 1) = toSeconds(dlf, behavEndI);
         entryNo = entryNo+1;
         behavStartI = behavEndI+1;
-    end;
-end;
+    end
+end
 
 end % cnv_loadLabelFile
 

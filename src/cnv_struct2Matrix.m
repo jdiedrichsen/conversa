@@ -19,13 +19,13 @@ optionArgs = cnv_getArgs(defaults, varargin)
 fields = fieldnames(inStruct); % Use all fields in 'all' case
 if (~(ischar(optionArgs.includefields) && strcmp(optionArgs.includefields, 'all'))) % Otherwise modified as required
 	fields = optionArgs.includefields
-end;
+end
 % Remove fields to exclude
 if (~(ischar(optionArgs.excludefields) && strcmp(optionArgs.excludefields, 'none'))) % Otherwise modified as required
 	excludeFields = optionArgs.excludefields;
 else
 	excludeFields = {};
-end;
+end
 fields = setdiff(fields, excludeFields);
 
 % Add fields to matrix with columns as fields and rows as entries
@@ -33,6 +33,6 @@ nFields = length(fields);
 outMatrix = zeros(length(inStruct.(fields{1})), nFields);
 for i = 1:nFields
 	outMatrix(:,i) = inStruct.(fields{i});
-end;
+end
 
 end

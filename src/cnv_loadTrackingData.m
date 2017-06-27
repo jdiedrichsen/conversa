@@ -24,17 +24,17 @@ if (nargin == 1)
     fileName = varargin{1};
 else
     fileName = DEFAULT_FILE;
-end;
+end
 fid = fopen(fileName,'r'); % Open the file for reading
 if (fid == -1) % Indicates file not found
     fprintf('Error: Did not find file\n');
     return;
-end;
+end
 % Read in the metadata file from file header
 % Ignore some metadata lines in file
 for i = 0:6
     fgetl(fid);
-end;
+end
 % Get the number of frames from metadata
 nFrameLnStr = fgetl(fid); % The line in the file containing the number of frames
 nFrames = str2double(nFrameLnStr(regexp(nFrameLnStr, '(\d*)$'):end)); % Finds number in line by searching from back of string
@@ -42,14 +42,14 @@ nFrames = str2double(nFrameLnStr(regexp(nFrameLnStr, '(\d*)$'):end)); % Finds nu
 nextL = fgetl(fid);
 while(~feof(fid) && (isempty(nextL) || strcmp(nextL, TOP_HEADER_LN) ~= 1))
     nextL = fgetl(fid);
-end;
+end
 faceNo = 0;
 % Read until no tracked faces are left (eof)
 while(~feof(fid))
     % Ignore face header
     for i = 2:N_HEADER_LNS
         fgetl(fid);
-    end;
+    end
     faceNo = faceNo+1; % Update the number of faces for indexing
     % Parsing while reading, can be spedup
     % Read the data header
@@ -60,26 +60,26 @@ while(~feof(fid))
         [readHeader, tempHeaderStr] = strtok(tempHeaderStr);
         if (~isempty(readHeader))
             fieldCells{end + 1} = lower(readHeader);
-        end;
-    end;
+        end
+    end
     % Allocate for frames
     for j = 1:size(fieldCells,2)
         cnvTrackingData(faceNo).(fieldCells{j}) = zeros(nFrames, 1);
-    end;
+    end
     
     % Read the frame data
     for i = 1:nFrames
         frameVec = str2num(fgetl(fid));
         for j = 1:size(fieldCells,2)
             cnvTrackingData(faceNo).(fieldCells{j})(i, 1) = frameVec(j);
-        end;
-    end;    
+        end
+    end    
     % Go to next face
     nextL = fgetl(fid);
     while(~feof(fid) && (~isempty(nextL) && strcmp(nextL, TOP_HEADER_LN) ~= 1))
         nextL = fgetl(fid);
-    end;
-end;
+    end
+end
 % End of file is reached
 fclose(fid);
 
