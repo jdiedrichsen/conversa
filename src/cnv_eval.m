@@ -1,5 +1,5 @@
 function outError = cnv_eval(data, algoNames, targetFields, varargin)
-% Evaluates learning algorithms
+% Evaluates learning algorithms, soon to replaced
 % Takes a matrix of predictors, array of labels, and cell array of the
 % names of the algorithms to evaluate
 % Returns an array of error rates for each algorithm in algoNames
