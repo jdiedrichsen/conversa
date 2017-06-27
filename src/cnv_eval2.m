@@ -24,6 +24,7 @@ optionArgs = struct( ...
 	'nparts', 5, ... % The number of partitions to break the data into for training and testing
 	'partitiontype', 'random', ... % The partition type to make, can set to random, 
 	'errorfunc', 'immse', ... % The error function to use for evaluating models after training
+	'ntests', 1, ... % The number of overall times to test the set of partitions, for example nparts = 5 and ntests = 2 would train and test the models 10 times
 	'verbose', false, ...
 	'excludefields', 'none' ...
 	);
@@ -38,6 +39,14 @@ end
 predictors = rmfield(data, targetFields);
 labels = rmfield(data, fieldnames(predictors)); % Everything which is not a predictor is a label
 if (v), disp('cnv_eval: Predictor and label structs set, partitioning data'); end
+predictorFields = fieldnames(predictors);
+labelFields = fieldnames(labels);
+% Set some basic info to be used when partitioning
+nSamples = length(predictors.(predictorFields{1}));
+if (nSamples ~= length(labels.(labelFields{1}))) % Can make this error call more robust and check all fields
+	error('Number of predictors and labels is not equal');
+end
+nTestSamples = nSamples*(1-optionArgs.trainratio);
 
 % Partition data
 
@@ -46,7 +55,8 @@ switch (optionArgs.partitiontype)
 	case 'random'
 		if (v), disp('cnv_eval: Setting random partitions'); end
 		for i = 1:optionArgs.nparts
-			
+			partitions(i,1) = 1 + round((nSamples-nTestSamples)*rand);
+			partitions(i,2) = partitions(i,1) + nTestSamples - 1;
 		end
 	case 'contiguous'
 		if (v), disp('cnv_eval: Setting contiguous partitions'); end
