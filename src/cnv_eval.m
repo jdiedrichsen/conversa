@@ -27,7 +27,7 @@ optionArgs = cnv_getArgs(optionArgs, varargin); % Get and set args as provided
 predictFields = {'timestamp', 'neckposx', 'neckposy', 'neckposz', 'neckrotx', 'neckroty', 'neckrotz', 'headposx', 'headposy', 'headposz', 'headrotx', 'headroty', 'headrotz', 'brow_up_l', 'brow_up_r', 'brow_down_l', 'brow_down_r', 'eye_closed_l', 'eye_closed_r', 'cheek_puffed_l', 'cheek_puffed_r', 'lips_pucker', 'lips_stretch_l', 'lips_stretch_r', 'lip_lower_down_l', 'lip_lower_down_r', 'smile_l', 'smile_r', 'frown_l', 'frown_r', 'jaw_l', 'jaw_r', 'jaw_open'};
 nPredictFields = length(predictFields);
 % Set predictor fields
-nSamples = length(data.timestamp);
+nSamples = length(data.timestamp);g
 predictors = zeros(nSamples, nPredictFields);
 for fieldNo = 1:nPredictFields
 	predictors(:,fieldNo) = data.(predictFields{fieldNo});

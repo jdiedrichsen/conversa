@@ -50,7 +50,7 @@ nTestSamples = nSamples*(1-optionArgs.trainratio);
 
 % Partition data
 
-partitions = zeros(optionArgs.nparts, 2); % Matrix of starts and ends for partitions, 
+partitions = zeros(optionArgs.nparts, 2); % Matrix of starts and ends for partitions
 switch (optionArgs.partitiontype)
 	case 'random'
 		if (v), disp('cnv_eval: Setting random partitions'); end
@@ -58,13 +58,20 @@ switch (optionArgs.partitiontype)
 			partitions(i,1) = 1 + round((nSamples-nTestSamples)*rand);
 			partitions(i,2) = partitions(i,1) + nTestSamples - 1;
 		end
-	case 'contiguous'
+	case 'contiguous' % TO DO: test contiguous partitioning
 		if (v), disp('cnv_eval: Setting contiguous partitions'); end
-		
+		if (optionArgs.nparts*nTestSamples > nSamples)
+			error('To many partitions for contiguous partitioning');
+		end
+		for i = 1:optionArgs.nparts
+			partitions(i,1) = 1 + (i-1)*nTestSamples;
+			partitions(i,2) = partitions(i,1) + nTestSamples - 1;
+		end
 	otherwise
 		if (v), disp('cnv_eval: Partition type not found'); end
 		error('Invalid partitiontype');
 end
+if (v), disp('cnv_eval: Data partitioned successfully'); end
 
 % Train and test
 
@@ -72,6 +79,8 @@ end
 %	model = cnv_learn_algo(predictors, labels)
 %	predictedLabels = cnv_predict_algo(model, predictors)
 
-
+for i=1:optionArgs.nparts
+	
+end
 
 end % cnv_eval2
