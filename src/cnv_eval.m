@@ -61,7 +61,7 @@ if (nSamples ~= length(labels.(labelFields{1}))) % ADD: Can make this error call
 end
 nTestSamples = round(nSamples*(1-optionArgs.trainratio));
 
-% Partition using selected method
+% Set parition indices using selected method
 testParts = zeros(nParts, 2); % Each row is a partition
 switch (optionArgs.partitiontype)
 	case 'random'
@@ -170,7 +170,7 @@ for i = 1:nTests
 			algoName = algoNames{k};
 			predictionError = evalError(predictions{i,k}, cnv_struct2Matrix(labelTestPart), optionArgs.errorfunc);
 			if (v), fprintf('cnv_eval: %s had an error of %f\n', algoName, predictionError); end
-			outError.(algoName)((i-1)*nParts + j,1) = predictionError;
+			outError.(strcat(algoName, ERROR_FIELD_SUFFIX))((i-1)*nParts + j,1) = predictionError;
 		end
 	end
 end

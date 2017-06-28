@@ -1,4 +1,4 @@
-function labels = cnv_loadLabelFile(filename)
+function labels = cnv_loadLabelFile(fileName)
 % Loads a files of labels into a dataframe struct
 % By Shayaan Syed Ali
 % Last updated 05-Jun-17
@@ -42,7 +42,7 @@ FIELD_MAP = containers.Map( ...
 
 labels = [];
 
-dlf = dload(filename); % dlf for dloadFile
+dlf = dload(fileName); % dlf for dloadFile
 
 % Figure out which conversion function to use (frames or seconds)
 toSeconds = [];

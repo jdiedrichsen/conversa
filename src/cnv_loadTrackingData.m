@@ -1,4 +1,4 @@
-function cnvTrackingData = cnv_loadTrackingData(varargin)
+function cnvTrackingData = cnv_loadTrackingData(fileName)
 % Loads a tab delimited text file of motion tracking data into a struct
 % Usage
 %   cnvTrackingData=cnvLoad('fileName')
@@ -11,7 +11,7 @@ function cnvTrackingData = cnv_loadTrackingData(varargin)
 % By Shayaan Syed Ali
 % Last updated 26-May-17
 
-DEFAULT_FILE = 'C:\Users\Shayn\Documents\Work\AI Research\conversa\Test Data\par1001Cam1\cam1par1001.txt';
+% DEFAULT_FILE = 'C:\Users\Shayn\Documents\Work\AI Research\conversa\Test Data\par1001Cam1\cam1par1001.txt';
 TOP_HEADER_LN = '==========';
 N_HEADER_LNS = 3;
 % We use the above since this entry delimits each face (where i is replaced by the faceNo):
@@ -19,12 +19,6 @@ N_HEADER_LNS = 3;
 %  Face: i
 % ==========
 cnvTrackingData = [];
-% Load file location
-if (nargin == 1)
-    fileName = varargin{1};
-else
-    fileName = DEFAULT_FILE;
-end
 fid = fopen(fileName,'r'); % Open the file for reading
 if (fid == -1) % Indicates file not found
     fprintf('Error: Did not find file\n');
