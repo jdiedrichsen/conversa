@@ -13,12 +13,12 @@ defaults = struct( ...
 	'includefields', 'all', ...
 	'excludefields', 'none' ...
 	);
-optionArgs = cnv_getArgs(defaults, varargin)
+optionArgs = cnv_getArgs(defaults, varargin);
 
 % Add fields to include
 fields = fieldnames(inStruct); % Use all fields in 'all' case
 if (~(ischar(optionArgs.includefields) && strcmp(optionArgs.includefields, 'all'))) % Otherwise modified as required
-	fields = optionArgs.includefields
+	fields = optionArgs.includefields;
 end
 % Remove fields to exclude
 if (~(ischar(optionArgs.excludefields) && strcmp(optionArgs.excludefields, 'none'))) % Otherwise modified as required

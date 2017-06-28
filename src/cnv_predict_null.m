@@ -1,3 +1,4 @@
 function prediction = cnv_predict_null(model, predictors)
-prediction = zeros(length(predictors),1);
+predictFields = fieldnames(predictors);
+prediction = zeros(length(predictors.(predictFields{1})),model.nLabelFields);
 end

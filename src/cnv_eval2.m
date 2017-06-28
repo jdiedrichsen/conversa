@@ -59,7 +59,7 @@ nSamples = length(predictors.(predictorFields{1}));
 if (nSamples ~= length(labels.(labelFields{1}))) % ADD: Can make this error call more robust and check all field lengths
 	error('Number of predictors and labels is not equal');
 end
-nTestSamples = nSamples*(1-optionArgs.trainratio);
+nTestSamples = round(nSamples*(1-optionArgs.trainratio));
 
 % Partition using selected method
 testParts = zeros(nParts, 2); % Each row is a partition
@@ -70,10 +70,11 @@ switch (optionArgs.partitiontype)
 			testParts(i,1) = 1 + round((nSamples-nTestSamples)*rand);
 			testParts(i,2) = testParts(i,1) + nTestSamples - 1;
 		end
+		if (v), disp('cnv_eval: Random test partitions set at:'); disp(testParts); end
 	case 'contiguous' % TO DO: test contiguous partitioning
 		if (v), disp('cnv_eval: Setting contiguous partitions'); end
 		if (nParts*nTestSamples > nSamples)
-			error('To many partitions for contiguous partitioning');
+			error('Too many partitions for contiguous partitioning');
 		end
 		% ADD: Can be refactored to have sliding window behaviour when
 		% partitions cannot give mutually exclusive testing sets
@@ -94,29 +95,34 @@ if (v), disp('cnv_eval: Data partitioned successfully'); end
 %	predictedLabels = cnv_predict_algo(model, predictors)
 
 % Set learning and prediction function map
+if (v), disp('cnv_eval: Setting learning and prediction functions'); end
 learnFunc = containers.Map();
 predictFunc = containers.Map();
 nAlgos = length(algoNames);
 for i = 1:nAlgos
 	algoName = algoNames{i};
-	lF = preSufFunc(LEARN_PREFIX, algoName);
-	if (~exist(lF, 'file'))
+	% Set learning function
+	lfName = strcat(LEARN_PREFIX, algoName);
+	if (~exist(lfName, 'file'))
 		error('Learning function not found');
 	end
-	learnFunc(algoName) = lF;
-	pF = preSufFunc(PREDICT_PREFIX, algoName);
-	if (~exist(pF, 'file'))
+	learnFunc(algoName) = str2func(lfName);
+	% Set prediction function
+	pfName = strcat(PREDICT_PREFIX, algoName);
+	if (~exist(pfName, 'file'))
 		error('Prediction function not found');
 	end
-	predictFunc(algoName) = pF;
+	predictFunc(algoName) = str2func(pfName);
 end
+if (v), disp('cnv_eval: Learning and prediction functions set successfully'); end
 % Iterate through partitions, train and test, update error
+if (v), disp('cnv_eval: Beginning training and testing'); end
 outError = struct();
 models = cell(nTests, nParts, nAlgos);
-predictions = cell(nTests, nTestSamples, nAlgos);
+predictions = cell(nTests, nAlgos);
 for i = 1:nTests
 	for j = 1:nParts
-		testPart = testParts(j, 1):testParts(j, 2);
+		testPart = testParts(j,1):testParts(j,2);
 		trainPart = setdiff(1:nSamples, testPart);
 		% Partition predictors
 		predictTestPart = struct();
@@ -144,24 +150,19 @@ for i = 1:nTests
 		for k = 1:nAlgos
 			algoName = algoNames{k};
 			predict = predictFunc(algoName);
-			predictions{i,:,k} = predict(models{i,j,k}, predictTestPart);
+			predictions{i,k} = predict(models{i,j,k}, predictTestPart);
 		end
 		% Update error
 		for k = 1:nAlgos
 			algoName = algoNames{k};
-			outError.(algoName)((i-1)*nParts + j) = evalError(predictions{i,:,k}, labelTestPart, optionArgs.errorfunc);
+			outError.(algoName)((i-1)*nParts + j,1) = evalError(predictions{i,k}, cnv_struct2Matrix(labelTestPart), optionArgs.errorfunc);
 		end
 	end
 end
 
 end % cnv_eval2
 
-% Returns a function handle for the function with the name prefix ||
-% suffix, i.e. the prefix and suffix concatenated as in @prefixsuffix
-function out = preSufFunc(prefix, suffix)
-out = str2func(strcat(prefix, suffix));
-end
-
+% Recieves predicted and actual as matrices (or vectors)
 function out = evalError(predicted, actual, errorFuncStr)
 errorFunc = str2func(errorFuncStr);
 out = errorFunc(predicted, actual);

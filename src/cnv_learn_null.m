@@ -1,3 +1,3 @@
 function model = cnv_learn_null(predictors, labels)
-model = [];
+model.nLabelFields = length(fieldnames(labels));
 end
