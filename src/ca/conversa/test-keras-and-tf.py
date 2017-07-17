@@ -1,3 +1,5 @@
+# Code by Jason Brownlee from http://machinelearningmastery.com/tutorial-first-neural-network-python-keras/
+
 # Create your first MLP in Keras
 from keras.models import Sequential
 from keras.layers import Dense
