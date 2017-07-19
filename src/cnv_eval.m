@@ -37,18 +37,19 @@ optionArgs = struct( ...
 optionArgs = cnv_getArgs(optionArgs, varargin);
 % For brevity
 v = optionArgs.verbose;
+if (v), fprintf('cnv_eval.m: Beginning execution\n'); end
 nParts = optionArgs.nparts;
 nTests = optionArgs.ntests;
-if (v), fprintf('cnv_eval: Initialized optional arguments\n'); end
+if (v), fprintf('cnv_eval.m: Initialized optional arguments\n'); end
 % Setting up structs of predictors and labels
-if (v), fprintf('cnv_eval: Setting predictor and label structs\n'); end
+if (v), fprintf('cnv_eval.m: Setting predictor and label structs\n'); end
 if (~strcmp(optionArgs.excludefields, 'none')) % Strip away excludefields if required
-	if (v), fprintf('cnv_eval: Removing fields: '); disp(optionArgs.excludefields); end
+	if (v), fprintf('cnv_eval.m: Removing fields: '); disp(optionArgs.excludefields); end
 	data = rmfield(data, optionArgs.excludefields);
 end
 predictors = rmfield(data, targetFields);
 labels = rmfield(data, fieldnames(predictors)); % Everything which is not a predictor is a label
-if (v), fprintf('cnv_eval: Predictor and label structs set successfully\n'); end
+if (v), fprintf('cnv_eval.m: Predictor and label structs set successfully\n'); end
 
 % Partition data
 
@@ -65,14 +66,14 @@ nTestSamples = round(nSamples*(1-optionArgs.trainratio));
 testParts = zeros(nParts, 2); % Each row is a partition
 switch (optionArgs.partitiontype)
 	case 'random'
-		if (v), fprintf('cnv_eval: Setting random partition indices\n'); end
+		if (v), fprintf('cnv_eval.m: Setting random partition indices\n'); end
 		for i = 1:nParts
 			testParts(i,1) = 1 + round((nSamples-nTestSamples)*rand);
 			testParts(i,2) = testParts(i,1) + nTestSamples - 1;
 		end
-		if (v), fprintf('cnv_eval: Random test partitions indices set at:\n'); disp(testParts); end
+		if (v), fprintf('cnv_eval.m: Random test partitions indices set at:\n'); disp(testParts); end
 	case 'contiguous' % TO DO: test contiguous partitioning
-		if (v), fprintf('cnv_eval: Setting contiguous partition indices\n'); end
+		if (v), fprintf('cnv_eval.m: Setting contiguous partition indices\n'); end
 		if (nParts*nTestSamples > nSamples)
 			error('Too many partitions for contiguous partitioning');
 		end
@@ -83,10 +84,10 @@ switch (optionArgs.partitiontype)
 			testParts(i,2) = testParts(i,1) + nTestSamples - 1;
 		end
 	otherwise
-		if (v), fprintf('cnv_eval: Partition type not found\n'); end
+		if (v), fprintf('cnv_eval.m: Partition type not found\n'); end
 		error('Invalid partitiontype');
 end
-if (v), fprintf('cnv_eval: Data partition indices set successfully\n'); end
+if (v), fprintf('cnv_eval.m: Data partition indices set successfully\n'); end
 
 % Train and test
 
@@ -95,7 +96,7 @@ if (v), fprintf('cnv_eval: Data partition indices set successfully\n'); end
 %	predictedLabels = cnv_predict_algo(model, predictors)
 
 % Set learning and prediction function map
-if (v), fprintf('cnv_eval: Setting learning and prediction functions\n'); end
+if (v), fprintf('cnv_eval.m: Setting learning and prediction functions\n'); end
 learnFunc = containers.Map();
 predictFunc = containers.Map();
 nAlgos = length(algoNames);
@@ -114,19 +115,19 @@ for i = 1:nAlgos
 	end
 	predictFunc(algoName) = str2func(pfName);
 end
-if (v), fprintf('cnv_eval: Learning and prediction functions set successfully\n'); end
+if (v), fprintf('cnv_eval.m: Learning and prediction functions set successfully\n'); end
 % Iterate through partitions, train and test, update error
-if (v), fprintf('cnv_eval: Beginning training and testing\n'); end
+if (v), fprintf('cnv_eval.m: Beginning training and testing\n'); end
 outError = struct();
 models = cell(nTests, nParts, nAlgos);
 predictions = cell(nTests, nAlgos);
 for i = 1:nTests
-	if (v), fprintf('cnv_eval: Test number: %d\n', i); end
+	if (v), fprintf('cnv_eval.m: Test number: %d\n', i); end
 	for j = 1:nParts
-		if (v), fprintf('cnv_eval: Partition number: %d\n', j); end
+		if (v), fprintf('cnv_eval.m: Partition number: %d\n', j); end
 		testPart = testParts(j,1):testParts(j,2);
 		trainPart = setdiff(1:nSamples, testPart);
-		if (v), fprintf('cnv_eval: Partitioning predictor and label data\n'); end
+		if (v), fprintf('cnv_eval.m: Partitioning predictor and label data\n'); end
 		% Partition predictors
 		predictTestPart = struct();
 		predictTrainPart = struct();
@@ -143,39 +144,39 @@ for i = 1:nTests
 			labelTestPart.(field) = labels.(field)(testPart);
 			labelTrainPart.(field) = labels.(field)(trainPart);
 		end
-		if (v), fprintf('cnv_eval: Partitioning complete\n'); end
+		if (v), fprintf('cnv_eval.m: Partitioning complete\n'); end
 		% Train and get models
-		if (v), fprintf('cnv_eval: Beginning training\n'); end
+		if (v), fprintf('cnv_eval.m: Beginning training\n'); end
 		for k = 1:nAlgos
 			algoName = algoNames{k};
-			if (v), fprintf('cnv_eval: Training %s\n', algoName); end
+			if (v), fprintf('cnv_eval.m: Training %s\n', algoName); end
 			learn = learnFunc(algoName);
 			models{i,j,k} = learn(predictTrainPart, labelTrainPart);
-			if (v), fprintf('cnv_eval: %s trained\n', algoName); end
+			if (v), fprintf('cnv_eval.m: %s trained\n', algoName); end
 		end
-		if (v), fprintf('cnv_eval: All training complete\n'); end
+		if (v), fprintf('cnv_eval.m: All training complete\n'); end
 		% Get model predictions
-		if (v), fprintf('cnv_eval: Getting predictions on test set\n'); end
+		if (v), fprintf('cnv_eval.m: Getting predictions on test set\n'); end
 		for k = 1:nAlgos
 			algoName = algoNames{k};
-			if (v), fprintf('cnv_eval: Predicting with %s\n', algoName); end
+			if (v), fprintf('cnv_eval.m: Predicting with %s\n', algoName); end
 			predict = predictFunc(algoName);
 			predictions{i,k} = predict(models{i,j,k}, predictTestPart);
-			if (v), fprintf('cnv_eval: %s completed prediction\n', algoName); end
+			if (v), fprintf('cnv_eval.m: %s completed prediction\n', algoName); end
 		end
-		if (v), fprintf('cnv_eval: All predictions complete\n'); end
+		if (v), fprintf('cnv_eval.m: All predictions complete\n'); end
 		% Update error
-		if (v), fprintf('cnv_eval: Evaluating error with %s\n', optionArgs.errorfunc); end
+		if (v), fprintf('cnv_eval.m: Evaluating error with %s\n', optionArgs.errorfunc); end
 		for k = 1:nAlgos
 			algoName = algoNames{k};
 			predictionError = evalError(predictions{i,k}, cnv_struct2Matrix(labelTestPart), optionArgs.errorfunc);
-			if (v), fprintf('cnv_eval: %s had an error of %f\n', algoName, predictionError); end
+			if (v), fprintf('cnv_eval.m: %s had an error of %f\n', algoName, predictionError); end
 			outError.(strcat(algoName, ERROR_FIELD_SUFFIX))((i-1)*nParts + j,1) = predictionError;
 		end
 	end
 end
-if(v), fprintf('cnv_eval: Completed execution\n'); end
-end % cnv_eval2
+if(v), fprintf('cnv_eval.m: Completed execution\n'); end
+end % cnv_eval
 
 % Recieves predicted and actual as matrices (or vectors)
 function out = evalError(predicted, actual, errorFuncStr)
