@@ -1,3 +1,4 @@
-etc/Meeting Notes/*
 *.asv
+etc/Meeting Notes/*
 src/test*
+src/__pycache__/*
