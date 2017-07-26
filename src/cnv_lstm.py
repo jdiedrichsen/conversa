@@ -6,7 +6,7 @@ import tensorflow as tf
 from keras.models import Sequential
 from keras.layers import LSTM, Dense
 # Numpy imports
-import numpy as mp
+import numpy as np
 
 # Constants
 
@@ -29,3 +29,19 @@ model.add(LSTM(layer_dim,
 model.add(LSTM(layer_dim))  # Returns a single vector of dimension layer_dim
 # Output layer
 model.add(Dense(output_dim, activation ='softmax'))
+
+model.compile(optimizer='rmsprop',
+              loss='mse')
+
+'''
+# Alternatively, use mean prediction metric for comparison
+
+import keras.backend as K
+
+def mean_pred(y_true, y_pred):
+    return K.mean(y_pred)
+
+model.compile(optimizer='rmsprop',
+              loss='mse',
+              metrics=['accuracy', mean_pred])
+'''
