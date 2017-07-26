@@ -14,7 +14,7 @@ layer_dim = 32  # Number of default units in each layer
 output_dim = 1  # Output dimension
 timesteps = 8  # Total number of times to consider
 n_classes = 1  # Binary classification, either smiling or not, talking or not, etc.
-
+test_ratio = 0.2  # Proportion of the data to use for cross-validation
 
 # Set up model architecture
 
@@ -38,8 +38,25 @@ model.compile(optimizer='rmsprop',
 predictors = np.loadtxt('C:\\Users\\Shayn\\Documents\\Work\\AI Research\\conversa\\data\\tracking\\par2024Cam1\\cam1par2024.txt', skiprows=13)
 labels = np.loadtxt('C:\\Users\\Shayn\\Documents\\Work\\AI Research\\conversa\\data\\labels\\p2024cam1.dat', skiprows=1)
 
-# Train
-x_train = predictors
+# Split into training and testing sets
+
+# Set indices
+n_samples = predictors.shape[2]
+test_n_samples = test_ratio * n_samples
+train_n_samples = n_samples - test_n_samples
+
+train_start = 0
+train_end = train_n_samples
+test_start = train_end  # Last index in range of nump array is exclusive
+test_end = test_start+test_n_samples
+
+assert test_end == n_samples, 'cnv_test_lstm.py: test set does not end at end of data set'
+
+# Set test and train predictors and labels
+x_train = predictors[:][train_start:train_end]
+y_train = labels[:][train_start:train_end]
+x_test = predictors[:][test_start:test_end]
+y_test = labels[:][test_start:test_end]
 
 # Test
 
