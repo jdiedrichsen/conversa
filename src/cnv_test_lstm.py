@@ -9,6 +9,10 @@ from keras.layers import LSTM, Dense
 
 # Constants
 
+# Temp
+tracking_file = 'C:\\Users\\Shayn\\Documents\\Work\\AI Research\\conversa\\data\\tracking\\par2024Cam1\\cam1par2024.txt'
+label_file = 'C:\\Users\\Shayn\\Documents\\Work\\AI Research\\conversa\\data\\labels\\p2024cam1.dat'
+
 data_dim = 32  # Each time contains 32 pieces of tracking data
 layer_dim = 32  # Number of default units in each layer
 output_dim = 2  # Output dimension
@@ -16,6 +20,7 @@ timesteps = 30  # Total number of times to consider
 n_classes = 1  # Binary classification, either smiling or not, talking or not, etc.
 test_ratio = 0.2  # Proportion of the data to use for cross-validation
 n_epochs = 100
+batch_sz = 1
 
 # Set up model architecture
 
@@ -36,11 +41,12 @@ model.compile(optimizer='rmsprop',
               metrics=['accuracy'])  # See bottom of file for comparing against mean prediction
 
 # Initialize data into numpy arrays
-predictors = np.loadtxt('C:\\Users\\Shayn\\Documents\\Work\\AI Research\\conversa\\data\\tracking\\par2024Cam1\\cam1par2024.txt', skiprows=13)
-labels = np.loadtxt('C:\\Users\\Shayn\\Documents\\Work\\AI Research\\conversa\\data\\labels\\p2024cam1.dat', skiprows=1)
+import cnv_load  # Ignore the import error
+predictors = cnv_load.tracking(tracking_file)
+labels = cnv_load.labels(label_file)
 
 # Fit and test
-model.fit(predictors, labels, batch_size=1, epochs=n_epochs, validation_split=test_ratio)
+model.fit(predictors, labels, batch_size=batch_sz, epochs=n_epochs, validation_split=test_ratio)
 
 print('cnv_test_lstm.py: Completed execution')
 

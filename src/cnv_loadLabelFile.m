@@ -1,4 +1,4 @@
-function labels = cnv_loadLabelFile(fileName)
+function labels = cnv_loadLabelFile(fileName, varargin)
 % Loads a files of labels into a dataframe struct
 % By Shayaan Syed Ali
 % Last updated 05-Jun-17
@@ -31,6 +31,9 @@ function labels = cnv_loadLabelFile(fileName)
 % 1001  1   smile		1.432	1.788
 % 1001  1   smile		2.3     2.7
 % 1001  1   talk        0.015	4.7
+
+% ADD: Alternatively, we can load in a one hot encoding with timestamps for each
+% frame
 
 global FRAME_RATE;
 FRAME_RATE = 30; % Assumed 30 fps for frame encoding
