@@ -36,8 +36,8 @@ global FRAME_RATE;
 FRAME_RATE = 30; % Assumed 30 fps for frame encoding
 
 FIELD_MAP = containers.Map( ...
-    {'smiling', 'talking', 'laughing'}, ... % Behaviours
-    {'behaviour', 'behaviour', 'behaviour'} ...
+    {'smiling', 'smile', 'talking', 'talk', 'laughing', 'laugh'}, ... % Behaviours
+    {'behaviour', 'behaviour', 'behaviour', 'behaviour', 'behaviour', 'behaviour'} ...
     );
 
 labels = [];

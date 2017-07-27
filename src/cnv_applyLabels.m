@@ -9,8 +9,8 @@ start = cnv_firstChangeI(trackingData, 'exclude', excludeFields);
 trackingFields = fieldnames(trackingData);
 nTrackingFields = length(trackingFields);
 for i = 1:nTrackingFields
-    fieldName = trackingFields{i};
-    labelledDf.(fieldName) = trackingData.(fieldName)(start:end);
+	fieldName = trackingFields{i};
+	labelledDf.(fieldName) = trackingData.(fieldName)(start:end);
 end;
 % Zero timestamps to true start
 labelledDf.timestamp = labelledDf.timestamp - labelledDf.timestamp(1);
@@ -41,4 +41,4 @@ end % cnv_applyLabels
 % Gets the index of a given timestamp
 function index = timestampIndex(time)
     index = round(30*time + 1);
-end 
+end
