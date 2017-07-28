@@ -41,7 +41,7 @@ model.compile(optimizer='rmsprop',
               metrics=['accuracy'])  # See bottom of file for comparing against mean prediction
 
 # Initialize data into numpy arrays
-import cnv_load  # Ignore the import error
+import cnv_load  # Ignore the import error if one is shown
 predictors = cnv_load.tracking(tracking_file)
 labels = cnv_load.labels(label_file)
 
