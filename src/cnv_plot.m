@@ -57,9 +57,9 @@ if (nargin>0)
     optionArgs = cnv_getArgs(optionArgs, varargin); % Load args TODO: implement easy default behaviour, as in cnv_eval
 end
 
-if (~exist('plotData', 'var'))
-    plotData = cnv_loadTrackingData('C:\Users\Shayn\Documents\Work\AI Research\conversa\data\par1001Cam2\cam2par1001.txt');
-end
+% if (~exist('plotData', 'var'))
+%     plotData = cnv_loadTrackingData('C:\Users\Shayn\Documents\Work\AI Research\conversa\data\par1001Cam2\cam2par1001.txt');
+% end
 
 % Remove and add plot groups as needed
 if (isfield(optionArgs, {'plotgroups'}))
