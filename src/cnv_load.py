@@ -7,7 +7,7 @@ def tracking(filename):
     return np.genfromtxt(filename, dtype=float, skip_header=12, names=True)
 
 
-def labels(filename, include_timestamps=False, frame_rate=30, start_time=0):
+def labels(filename, include_timestamps=False, frame_rate=30, start_time_offset=0):
     pre_labels = np.genfromtxt(filename, dtype=float, names=True)
     length = pre_labels.shape[1]
     
