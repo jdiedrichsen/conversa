@@ -10,55 +10,41 @@ _LABEL_NON_BEHAV_FIELDS = {'pid', 'cam', _FIELD_NAME_MIN, _FIELD_NAME_SEC, _FIEL
 
 
 def data(tracking_filename, label_filename):
-    return apply_labels(label_filename, tracking(tracking_filename))
+    return labels(label_filename, tracking(tracking_filename))
 
 
 def tracking(filename):
     try:
-        # # Get file data
-        # tr = np.genfromtxt(filename, dtype=float, skip_header=12, names=True)
-        # # Get header
-        # fh = open(filename, 'r')
-        # for i in range(0, 12):
-        #     fh.readline()
-        # header = fh.readline().rstrip('\n').split('\t')
-        # fh.close()
-        # tr_2 = np.recarray(tr.shape, dtype=float, names=tuple(header))
-        # n_fields = len(header)
-        # for i in range(0, n_fields):
-        #     print(tr_2)
-        #     tr_2[i] = tr[header[i]];
         return np.genfromtxt(filename, dtype=float, skip_header=12, names=True)
     except IOError:
         print('Failed to open tracking file at ' + filename)
 
 
-def apply_labels(filename, tracking_data):
-    # Alternatively, can import into dict via approach at https://stackoverflow.com/questions/9171157/#9174892
+
+def labels(label_file, tracking_data):
+
+    # Load tracking data
+
+    # Load label data
     try:
-        label_data = np.genfromtxt(filename, dtype=float, names=True)
+        label_data = np.genfromtxt(label_file, dtype=float, names=True)
     except IOError:
-        print('Failed to open label file at ' + filename)
-    # mins = label_data[_FIELD_NAME_MIN]
-    # secs = label_data[_FIELD_NAME_SEC]
-    # frames = label_data[_FIELD_NAME_FRAME]
+        print('Failed to open label file data at ' + label_file)
+
     # Get behaviour fields
     label_fields = label_data.dtype.names
-    n_label_fields = len(label_fields)
-    behaviour_names = []
-    for name_i in range(0, n_label_fields):
-        label = label_fields[name_i]
+    behav_names = []
+    for label in label_fields:
         if not(label in _LABEL_NON_BEHAV_FIELDS):
-            behaviour_names.append(label)
+            behav_names.append(label)
     n_samples = tracking_data.shape[0]
-    n_behavs = len(behaviour_names)
-    behav_labels = np.recarray((n_samples, n_behavs), dtype=float, names=tuple(behaviour_names))
-    print(tracking_data.shape)
-    print(behav_labels.shape)
-    # Fill labels
+    n_behavs = len(behav_names)
+
+    # Set labels
+    behav_labels = np.zeros(n_samples, dtype=[tuple((behav_names[i], '<f8')) for i in range(0, n_behavs)])
     label_length = label_data.shape[0]
     for behav_i in range(0, n_behavs):
-        behav_name = behaviour_names[behav_i]
+        behav_name = behav_names[behav_i]
         # print('Applying behaviour label: ' + behav_name)
         behav_data = label_data[behav_name]
         curr_i = 0
@@ -71,14 +57,8 @@ def apply_labels(filename, tracking_data):
                 next_i = next_i + 1
                 next_state = behav_data[next_i]
             # Set data from beginning to point of change
-            start_i = time_to_frame(
-                label_data[_FIELD_NAME_MIN][curr_i],
-                label_data[_FIELD_NAME_SEC][curr_i],
-                label_data[_FIELD_NAME_FRAME][curr_i])
-            end_i = time_to_frame(
-                label_data[_FIELD_NAME_MIN][next_i],
-                label_data[_FIELD_NAME_SEC][next_i],
-                label_data[_FIELD_NAME_FRAME][next_i])
+            start_i = index_to_frame(label_data, curr_i)
+            end_i = index_to_frame(label_data, next_i)
             # print('Setting ' + behav_name + ' label to ' + str(curr_state) + ' from indices ' + str(start_i) + ' to ' + str(end_i))
             for j in range(start_i, end_i):
                 behav_labels[j][behav_i] = curr_state
@@ -86,12 +66,21 @@ def apply_labels(filename, tracking_data):
             # print('Resetting states')
             curr_i = next_i
             curr_state = behav_data[curr_i]
-    print('Applied labels')
-    return np.hstack((tracking_data, behav_labels))
+
+    # Return
+    # print('Returning labels')
+    return tracking_data, behav_labels
 
 
-def time_to_frame(min, sec, frame, frame_rate=30):
-    return int((min*60 + sec)*frame_rate + frame)
+def time_to_frame(minute, second, frame, frame_rate=30):
+    return int((minute * 60 + second) * frame_rate + frame)
+
+
+def index_to_frame(data, index):
+    return time_to_frame(
+        data[_FIELD_NAME_MIN][index],
+        data[_FIELD_NAME_SEC][index],
+        data[_FIELD_NAME_FRAME][index])
 
 
 print('cnv_load.py: Completed execution')
