@@ -46,7 +46,6 @@ predictors, labels = cnv_data.load(tracking_file, label_file)
 
 predictors_arr = predictors.view((float, len(predictors.dtype.names)))
 
-
 # Fit and test
 model.fit(predictors, labels, batch_size=batch_sz, epochs=n_epochs, validation_split=test_ratio)
 
