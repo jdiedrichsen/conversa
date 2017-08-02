@@ -4,6 +4,7 @@ print('cnv_test_lstm.py: Beginning execution')
 
 import tensorflow as tf
 import numpy as np
+import cnv_data
 from keras.models import Sequential
 from keras.layers import LSTM, Dense
 
@@ -15,11 +16,11 @@ label_file = 'C:\\Users\\Shayn\\Documents\\Work\\AI Research\\conversa\\data\\la
 
 data_dim = 32  # Each time contains 32 pieces of tracking data
 layer_dim = 32  # Number of default units in each layer
-output_dim = 2  # Output dimension
-timesteps = 30  # Total number of times to consider
+output_dim = 1  # Output dimension
+timesteps = 1  # Total number of times to consider
 n_classes = 1  # Binary classification, either smiling or not, talking or not, etc.
 test_ratio = 0.2  # Proportion of the data to use for cross-validation
-n_epochs = 100
+n_epochs = 10
 batch_sz = 1
 
 # Set up model architecture
@@ -28,7 +29,7 @@ model = Sequential()
 # Input layer
 model.add(LSTM(data_dim,
                return_sequences=True,
-               input_shape=(timesteps, data_dim)))
+               input_shape=(timesteps, 1)))
 # Hidden layers
 model.add(LSTM(layer_dim,
                return_sequences=True))
@@ -41,9 +42,10 @@ model.compile(optimizer='rmsprop',
               metrics=['accuracy'])  # See bottom of file for comparing against mean prediction
 
 # Initialize data into numpy arrays
-import cnv_load  # Ignore the import error if one is shown
-predictors = cnv_load.tracking(tracking_file)
-labels = cnv_load.labels(label_file)
+predictors, labels = cnv_data.load(tracking_file, label_file)
+
+predictors_arr = predictors.view((float, len(predictors.dtype.names)))
+
 
 # Fit and test
 model.fit(predictors, labels, batch_size=batch_sz, epochs=n_epochs, validation_split=test_ratio)

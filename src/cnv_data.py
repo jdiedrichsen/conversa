@@ -33,7 +33,7 @@ def load_tracking(tracking_file):
 #     return
 
 
-def load(tracking_file, label_file, join=False):
+def load(tracking_file, label_file, join=False, structured=True):
     '''
     Loads a tracking and label file
     :param tracking_file: The tracking file address
@@ -92,7 +92,7 @@ def load(tracking_file, label_file, join=False):
             curr_i = next_i
             curr_state = behav_data[curr_i]
 
-    # TODO: Add behaviour for join=True
+    # TODO: Add behaviour for join=True, structured=False
 
     # Return data
     # print('Returning labels')
@@ -108,6 +108,10 @@ def index_to_frame(data, index):
         data[_FIELD_NAME_MIN][index],
         data[_FIELD_NAME_SEC][index],
         data[_FIELD_NAME_FRAME][index])
+
+
+def unstructure(data):
+    return data.view((data.dtype[0], len(data.dtype.names)))
 
 
 print('Imported cnv_data')
