@@ -1,6 +1,8 @@
 import numpy as np
 
-print('cnv_load.py: Beginning execution')
+'''
+cnv_data - Deals with data loading of predictors and labels
+'''
 
 # Constants
 _FIELD_NAME_MIN = 'min'
@@ -16,7 +18,9 @@ def load_tracking(filename):
         print('Failed to open tracking file at ' + filename)
 
 
-def load(label_file, tracking_file):
+def load(tracking_file, label_file):
+
+    tracking_data, label_data = None, None  # Initialize before loading files
 
     # Load tracking data
     try:
@@ -58,7 +62,8 @@ def load(label_file, tracking_file):
             # Set data from beginning to point of change
             start_i = index_to_frame(label_data, curr_i)
             end_i = index_to_frame(label_data, next_i)
-            # print('Setting ' + behav_name + ' label to ' + str(curr_state) + ' from indices ' + str(start_i) + ' to ' + str(end_i))
+            # print('Setting ' + behav_name + ' label to ' + str(curr_state) + ' from indices ' + str(start_i)
+            #       + ' to ' + str(end_i))
             for j in range(start_i, end_i):
                 behav_labels[j][behav_i] = curr_state
             # Reset states
@@ -82,4 +87,4 @@ def index_to_frame(data, index):
         data[_FIELD_NAME_FRAME][index])
 
 
-print('cnv_load.py: Completed execution')
+print('Imported cnv_data')
