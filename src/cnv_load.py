@@ -9,27 +9,26 @@ _FIELD_NAME_FRAME = 'frame'
 _LABEL_NON_BEHAV_FIELDS = {'pid', 'cam', _FIELD_NAME_MIN, _FIELD_NAME_SEC, _FIELD_NAME_FRAME, 'ms', 'absoluteframe'}
 
 
-def data(tracking_filename, label_filename):
-    return labels(label_filename, tracking(tracking_filename))
-
-
-def tracking(filename):
+def load_tracking(filename):
     try:
         return np.genfromtxt(filename, dtype=float, skip_header=12, names=True)
     except IOError:
         print('Failed to open tracking file at ' + filename)
 
 
-
-def labels(label_file, tracking_data):
+def load(label_file, tracking_file):
 
     # Load tracking data
+    try:
+        tracking_data = np.genfromtxt(tracking_file, dtype=float, skip_header=12, names=True)
+    except IOError:
+        print('Failed to open tracking file at ' + tracking_file)
 
     # Load label data
     try:
         label_data = np.genfromtxt(label_file, dtype=float, names=True)
     except IOError:
-        print('Failed to open label file data at ' + label_file)
+        print('Failed to open label file at ' + label_file)
 
     # Get behaviour fields
     label_fields = label_data.dtype.names
