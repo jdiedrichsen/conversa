@@ -1,8 +1,8 @@
-import numpy as np
+'''
+cnv_data - Deals with data loading for Conversa
+'''
 
-'''
-cnv_data - Deals with data loading of predictors and labels
-'''
+import numpy as np
 
 # Constants
 _FIELD_NAME_MIN = 'min'
@@ -12,14 +12,35 @@ _LABEL_NON_BEHAV_FIELDS = {'pid', 'cam', _FIELD_NAME_MIN, _FIELD_NAME_SEC, _FIEL
 _FRAME_SHIFT = 0  # Describes the amount to label frames forward by - compensates for misalignments
 
 
-def load_tracking(filename):
+def load_tracking(tracking_file):
+    '''
+    Loads tracking file data into a structured array
+    :param tracking_file: 
+    :return: 
+    '''
     try:
-        return np.genfromtxt(filename, dtype=float, skip_header=12, names=True)
+        return np.genfromtxt(tracking_file, dtype=float, skip_header=12, names=True)
     except IOError:
-        print('Failed to open tracking file at ' + filename)
+        print('Failed to open tracking file at ' + tracking_file)
 
 
-def load(tracking_file, label_file):
+# def load_labels(label_file):
+#     '''
+#     TODO: Implement
+#     :param label_file:
+#     :return:
+#     '''
+#     return
+
+
+def load(tracking_file, label_file, join=False):
+    '''
+    Loads a tracking and label file
+    :param tracking_file: The tracking file address
+    :param label_file: The label file address
+    :param join: Whether to join the data into one structured array
+    :return: A structured array of tracking data and label data
+    '''
 
     tracking_data, label_data = None, None  # Initialize before loading files
 
@@ -65,12 +86,13 @@ def load(tracking_file, label_file):
             end_i = index_to_frame(label_data, next_i)
             # print('Setting ' + behav_name + ' label to ' + str(curr_state) + ' from indices ' + str(start_i)
             #       + ' to ' + str(end_i))
-            for j in range(start_i, end_i):
-                behav_labels[j][behav_i] = curr_state
+            behav_labels[start_i:end_i][behav_i] = curr_state
             # Reset states
             # print('Resetting states')
             curr_i = next_i
             curr_state = behav_data[curr_i]
+
+    # TODO: Add behaviour for join=True
 
     # Return data
     # print('Returning labels')
