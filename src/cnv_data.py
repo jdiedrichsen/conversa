@@ -9,6 +9,7 @@ _FIELD_NAME_MIN = 'min'
 _FIELD_NAME_SEC = 'sec'
 _FIELD_NAME_FRAME = 'frame'
 _LABEL_NON_BEHAV_FIELDS = {'pid', 'cam', _FIELD_NAME_MIN, _FIELD_NAME_SEC, _FIELD_NAME_FRAME, 'ms', 'absoluteframe'}
+_FRAME_SHIFT = 0  # Describes the amount to label frames forward by - compensates for misalignments
 
 
 def load_tracking(filename):
@@ -71,13 +72,13 @@ def load(tracking_file, label_file):
             curr_i = next_i
             curr_state = behav_data[curr_i]
 
-    # Return
+    # Return data
     # print('Returning labels')
     return tracking_data, behav_labels
 
 
 def time_to_frame(minute, second, frame, frame_rate=30):
-    return int((minute * 60 + second) * frame_rate + frame)
+    return _FRAME_SHIFT + int((minute * 60 + second) * frame_rate + frame)
 
 
 def index_to_frame(data, index):
