@@ -15,8 +15,8 @@ _FRAME_SHIFT = 0  # Describes the amount to label frames forward by - compensate
 def load_tracking(tracking_file):
     '''
     Loads tracking file data into a structured array
-    :param tracking_file: 
-    :return: 
+    :param tracking_file: The address of the tracking file
+    :return: A structured array containing the information in the tracking file with field names
     '''
     try:
         return np.genfromtxt(tracking_file, dtype=float, skip_header=12, names=True)
@@ -94,6 +94,16 @@ def load(tracking_file, label_file, join=False, structured=True):
 
     # TODO: Add behaviour for join=True, structured=False
 
+    # Reshape to be 3D tensor (required for Keras)
+    tracking_data = add_dim(tracking_data)
+    tracking_data = add_dim(tracking_data)
+    behav_labels = add_dim(behav_labels)
+    behav_labels = add_dim(behav_labels)
+    print(tracking_data.shape)
+    print(tracking_data)
+    print(behav_labels.shape)
+    print(behav_labels)
+
     # Return data
     # print('Returning labels')
     return tracking_data, behav_labels
@@ -110,8 +120,17 @@ def index_to_frame(data, index):
         data[_FIELD_NAME_FRAME][index])
 
 
-def unstructure(data):
+def destructure(data):
     return data.view((data.dtype[0], len(data.dtype.names)))
 
+
+def add_dim(data):
+    '''
+    Adds a given number of dimensions to an ndarray
+    :param data: The ndarray
+    :param n: The number of dimensions to add
+    :return: The ndarray with added dimensions
+    '''
+    return data[..., np.newaxis]
 
 print('Imported cnv_data')

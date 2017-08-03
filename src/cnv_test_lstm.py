@@ -1,10 +1,8 @@
-print('cnv_test_lstm.py: Beginning execution')
-
 # Imports
 
-import tensorflow as tf
-import numpy as np
-import cnv_data
+# import tensorflow as tf
+# import numpy as np
+import cnv_data  # Ignore import error
 from keras.models import Sequential
 from keras.layers import LSTM, Dense
 
@@ -14,14 +12,21 @@ from keras.layers import LSTM, Dense
 tracking_file = 'C:\\Users\\Shayn\\Documents\\Work\\AI Research\\conversa\\data\\tracking\\par2024Cam1\\cam1par2024.txt'
 label_file = 'C:\\Users\\Shayn\\Documents\\Work\\AI Research\\conversa\\data\\labels\\p2024cam1.dat'
 
+# Initialize data into numpy arrays
+predictors, labels = cnv_data.load(tracking_file, label_file)
+
+predictors_arr = cnv_data.destructure(predictors)
+label_arr = cnv_data.destructure(labels)
+
 data_dim = 32  # Each time contains 32 pieces of tracking data
 layer_dim = 32  # Number of default units in each layer
 output_dim = 1  # Output dimension
-timesteps = 1  # Total number of times to consider
+timesteps = 16  # Total number of times to consider
 n_classes = 1  # Binary classification, either smiling or not, talking or not, etc.
 test_ratio = 0.2  # Proportion of the data to use for cross-validation
-n_epochs = 10
+n_epochs = 16
 batch_sz = 1
+in_shape = predictors.shape
 
 # Set up model architecture
 
@@ -29,22 +34,17 @@ model = Sequential()
 # Input layer
 model.add(LSTM(data_dim,
                return_sequences=True,
-               input_shape=(timesteps, 1)))
+               input_shape=in_shape))
 # Hidden layers
 model.add(LSTM(layer_dim,
                return_sequences=True))
-model.add(LSTM(layer_dim))  # Returns a single vector of dimension layer_dim
+model.add(LSTM(layer_dim))
 # Output layer
 model.add(Dense(output_dim, activation ='softmax'))
 # Compile
 model.compile(optimizer='rmsprop',
               loss='binary_crossentropy',
               metrics=['accuracy'])  # See bottom of file for comparing against mean prediction
-
-# Initialize data into numpy arrays
-predictors, labels = cnv_data.load(tracking_file, label_file)
-
-predictors_arr = predictors.view((float, len(predictors.dtype.names)))
 
 # Fit and test
 model.fit(predictors, labels, batch_size=batch_sz, epochs=n_epochs, validation_split=test_ratio)
