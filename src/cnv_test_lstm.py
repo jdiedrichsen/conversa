@@ -15,10 +15,11 @@ label_file = 'C:\\Users\\Shayn\\Documents\\Work\\AI Research\\conversa\\data\\la
 # Initialize data into numpy arrays
 predictors, labels = cnv_data.load(tracking_file, label_file)
 
-predictors_arr = cnv_data.destructure(predictors)
-label_arr = cnv_data.destructure(labels)
+predictors = cnv_data.destructure(predictors)
+labels = cnv_data.destructure(labels)
 
-data_dim = 32  # Each time contains 32 pieces of tracking data
+in_dim = 32  # Each time contains 32 pieces of tracking data
+n_in_features = 35
 layer_dim = 32  # Number of default units in each layer
 output_dim = 1  # Output dimension
 timesteps = 16  # Total number of times to consider
@@ -26,15 +27,16 @@ n_classes = 1  # Binary classification, either smiling or not, talking or not, e
 test_ratio = 0.2  # Proportion of the data to use for cross-validation
 n_epochs = 16
 batch_sz = 1
-in_shape = predictors.shape
+print(predictors.shape)
+in_shape = predictors.shape[3:]
 
 # Set up model architecture
 
 model = Sequential()
 # Input layer
-model.add(LSTM(data_dim,
+model.add(LSTM(in_dim,
                return_sequences=True,
-               input_shape=in_shape))
+               input_shape=(None, n_in_features)))
 # Hidden layers
 model.add(LSTM(layer_dim,
                return_sequences=True))

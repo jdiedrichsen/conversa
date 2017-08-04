@@ -96,13 +96,13 @@ def load(tracking_file, label_file, join=False, structured=True):
 
     # Reshape to be 3D tensor (required for Keras)
     tracking_data = add_dim(tracking_data)
-    tracking_data = add_dim(tracking_data)
+    # tracking_data = add_dim(tracking_data)
     behav_labels = add_dim(behav_labels)
-    behav_labels = add_dim(behav_labels)
-    print(tracking_data.shape)
-    print(tracking_data)
-    print(behav_labels.shape)
-    print(behav_labels)
+    # behav_labels = add_dim(behav_labels)
+    # print(tracking_data.shape)
+    # print(tracking_data)
+    # print(behav_labels.shape)
+    # print(behav_labels)
 
     # Return data
     # print('Returning labels')
