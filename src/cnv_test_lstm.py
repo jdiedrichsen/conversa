@@ -6,6 +6,17 @@ import cnv_data  # Ignore import error
 from keras.models import Sequential
 from keras.layers import LSTM, Dense
 
+
+# Trial on test data ===================================================================================================
+
+
+
+
+
+# Trial on tracking data ===============================================================================================
+
+'''
+
 # Constants
 
 # Temp
@@ -51,7 +62,16 @@ model.compile(optimizer='rmsprop',
 # Fit and test
 model.fit(predictors, labels, batch_size=batch_sz, epochs=n_epochs, validation_split=test_ratio)
 
+'''
+
+
+# End ==================================================================================================================
+
+
 print('cnv_test_lstm.py: Completed execution')
+exit()  # To ensure code in next section does not run, remove line later
+
+# Code snippets ========================================================================================================
 
 '''
 # Use mean prediction metric for comparison
@@ -88,3 +108,4 @@ y_train = labels[:][train_start:train_end]
 x_test = predictors[:][test_start:test_end]
 y_test = labels[:][test_start:test_end]
 '''
+\
