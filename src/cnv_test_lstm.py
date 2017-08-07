@@ -11,33 +11,34 @@ except ImportError:
 
 # Parameters -----------------------------------------------------------------------------------------------------------
 
+ # TODO: Add to params
+
 # File params
-tracking_file = 'C:\\Users\\Shayn\\Documents\\Work\\AI Research\\conversa\\data\\test\\sequence_0110_predictors.txt'
-label_file = 'C:\\Users\\Shayn\\Documents\\Work\\AI Research\\conversa\\data\\test\\sequence_0011_labels.txt'
+tracking_file = 'C:\\Users\\Shayn\\Documents\\Work\\AI Research\\conversa\\data\\tracking\\par2024Cam1\\cam1par2024.txt'
+label_file = 'C:\\Users\\Shayn\\Documents\\Work\\AI Research\\conversa\\data\\labels\\p2024cam1.dat'
 
 # Input params
-TIMESTEPS = 4  # TODO: Add to params
+TIMESTEPS = 100
 
 # Layer params
-DEFAULT_LAYER_WIDTH = 4  # TODO: Add to params
-N_HIDDEN_LAYERS = 2  # TODO: Add to params
+DEFAULT_LAYER_WIDTH = 4
+N_HIDDEN_LAYERS = 2
 
 # Compilation params
-N_EPOCHS = 1000  # TODO: Add to params
-VALIDATION_SPLIT = 0.5  # TODO: Add to
+N_EPOCHS = 1000
+VALIDATION_SPLIT = 0.5
 
 # Functions
-# INPUT_FUNCTION = 'relu'  # TODO: Add to params
-# HIDDEN_ACT_FUNC = 'relu'  # TODO: Add to params
-OUTPUT_FUNCTION = 'softmax'  # TODO: Add to params
+# INPUT_FUNCTION = 'relu'
+# HIDDEN_ACT_FUNC = 'relu'
+OUTPUT_FUNCTION = 'softmax'
 
 
 # Load data ------------------------------------------------------------------------------------------------------------
 
 # Load files
 try:
-    predictors = np.genfromtxt(tracking_file)
-    labels = np.genfromtxt(label_file)
+    (predictors, labels) = (cnv_data.load(tracking_file, label_file))
 except IOError:
     print('Failed to open files')
 print('Loaded files')
@@ -48,6 +49,10 @@ if SEQ_LENGTH != labels.shape[0]:
 BATCH_SIZE = int(SEQ_LENGTH/TIMESTEPS)
 INPUT_DIM = predictors.shape[1]
 OUTPUT_DIM = labels.shape[1]
+# Trim before reshaping into batches
+new_len = BATCH_SIZE*TIMESTEPS
+predictors = predictors[:new_len]
+labels = labels[:new_len]
 # Reshape into batches
 predictors = np.reshape(predictors, (BATCH_SIZE, TIMESTEPS, INPUT_DIM))
 labels = np.reshape(labels, (BATCH_SIZE, TIMESTEPS, OUTPUT_DIM))
