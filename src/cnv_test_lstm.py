@@ -7,11 +7,18 @@ try:
 except ImportError:
     print('Unable to import cnv_data')
 from keras.models import Sequential
-from keras.layers import LSTM, Dense
+from keras.layers import LSTM, Dense, TimeDistributed
 
 
 # Trial on test data ===================================================================================================
 
+# Constants
+TIMESTEPS = 4
+INPUT_DIM = 1
+DEFAULT_LAYER_WIDTH = 4
+OUTPUT_DIM = 1
+BATCH_SIZE = 64
+N_EPOCHS = 10
 
 tr_file = 'C:\\Users\\Shayn\\Documents\\Work\\AI Research\\conversa\\data\\test\\sequence_0011_labels.txt'
 la_file = 'C:\\Users\\Shayn\\Documents\\Work\\AI Research\\conversa\\data\\test\\sequence_0110_predictors.txt'
@@ -25,34 +32,32 @@ except IOError:
 print('Loaded files')
 
 # Add dimensions
-# Predictors need to be 3D (batch_size, )
+# Predictors need to be 3D (batch_size, timesteps, input_dimension)
 predictors = cnv_data.add_dim(predictors)
 predictors = cnv_data.add_dim(predictors)
-
+# Labels need to be 2D (timesteps, output_dimension
 labels = cnv_data.add_dim(labels)
 
-# print('Input shapes:' + str(predictors.shape) + ', ' + str(labels.shape))
+print('Input shapes:' + str(predictors.shape) + ', ' + str(labels.shape))
+
+# Shape into timesteps of appropriate size
+predictors = np.reshape(predictors, (BATCH_SIZE, TIMESTEPS, INPUT_DIM))
+labels = np.reshape(labels, (BATCH_SIZE, TIMESTEPS, OUTPUT_DIM))
+
+print('Input shapes after reshape:' + str(predictors.shape) + ', ' + str(labels.shape))
 
 # Set up model
 
-# Constants
-TIMESTEPS = 16
-INPUT_DIM = 16
-DEFAULT_LAYER_WIDTH = 16
-OUTPUT_DIM = 1
-BATCH_SIZE = 10
-N_EPOCHS = 10
-
 model = Sequential()
 # Input layer
-model.add(LSTM(DEFAULT_LAYER_WIDTH, return_sequences=True, input_shape=(TIMESTEPS, INPUT_DIM)))
+model.add(LSTM(DEFAULT_LAYER_WIDTH, return_sequences=True, input_shape=(None, INPUT_DIM)))
 # Hidden layer(s)
 model.add(LSTM(DEFAULT_LAYER_WIDTH, return_sequences=True))
 model.add(LSTM(DEFAULT_LAYER_WIDTH, return_sequences=True))
 model.add(LSTM(DEFAULT_LAYER_WIDTH, return_sequences=True))
 model.add(LSTM(DEFAULT_LAYER_WIDTH, return_sequences=True))
+model.add(LSTM(DEFAULT_LAYER_WIDTH, return_sequences=True))
 # Output layers
-model.add(LSTM(DEFAULT_LAYER_WIDTH))
 model.add(Dense(OUTPUT_DIM))
 # Compile
 model.compile(optimizer='rmsprop',
