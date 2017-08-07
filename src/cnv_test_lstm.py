@@ -12,6 +12,7 @@ from keras.layers import LSTM, Dense, TimeDistributed, Embedding
 
 # Trial on test data ===================================================================================================
 
+# 
 
 tr_file = 'C:\\Users\\Shayn\\Documents\\Work\\AI Research\\conversa\\data\\test\\sequence_0110_predictors.txt'
 la_file = 'C:\\Users\\Shayn\\Documents\\Work\\AI Research\\conversa\\data\\test\\sequence_0011_labels.txt'
@@ -33,7 +34,7 @@ BATCH_SIZE = 64
 INPUT_DIM = 1
 DEFAULT_LAYER_WIDTH = 4
 OUTPUT_DIM = 1
-N_EPOCHS = 1000
+N_EPOCHS = 100
 VALIDATION_SPLIT = 0.5
 
 # Functions
