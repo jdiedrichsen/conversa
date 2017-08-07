@@ -124,13 +124,15 @@ def destructure(data):
     return data.view((data.dtype[0], len(data.dtype.names)))
 
 
-def add_dim(data):
+def add_dim(data, n_dims=1):
     '''
     Adds a given number of dimensions to an ndarray
     :param data: The ndarray
-    :param n: The number of dimensions to add
+    :param n_dims: The number of dimensions to add
     :return: The ndarray with added dimensions
     '''
-    return data[..., np.newaxis]
+    for i in range(0, n_dims):
+        data = data[..., np.newaxis]
+    return data
 
 print('Imported cnv_data')
