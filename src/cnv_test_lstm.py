@@ -13,22 +13,17 @@ except ImportError:
 
  # TODO: Add to params
 
-# File params
+# Maccro params
 tracking_file = 'C:\\Users\\Shayn\\Documents\\Work\\AI Research\\conversa\\data\\tracking\\par2024Cam1\\cam1par2024.txt'
 label_file = 'C:\\Users\\Shayn\\Documents\\Work\\AI Research\\conversa\\data\\labels\\p2024cam1.dat'
-
-# Input params
-TIMESTEPS = 100
-
-# Layer params
-DEFAULT_LAYER_WIDTH = 4
-N_HIDDEN_LAYERS = 2
-
-# Compilation params
-N_EPOCHS = 1000
+TIMESTEPS = 150
+N_EPOCHS = 100
 VALIDATION_SPLIT = 0.5
 
-# Functions
+# Layer params
+DEFAULT_LAYER_WIDTH = 32
+N_HIDDEN_LAYERS = 8
+# Functions, TODO: change to array of layer properties
 # INPUT_FUNCTION = 'relu'
 # HIDDEN_ACT_FUNC = 'relu'
 OUTPUT_FUNCTION = 'softmax'
@@ -43,19 +38,19 @@ except IOError:
     print('Failed to open files')
 print('Loaded files')
 # Set constants
-SEQ_LENGTH = predictors.shape[0]
-if SEQ_LENGTH != labels.shape[0]:
+seq_len = predictors.shape[0]
+if seq_len != labels.shape[0]:
     raise RuntimeError('Predictor and label length mismatch')
-BATCH_SIZE = int(SEQ_LENGTH/TIMESTEPS)
-INPUT_DIM = predictors.shape[1]
-OUTPUT_DIM = labels.shape[1]
+batch_sz = int(seq_len / TIMESTEPS)
+input_dim = predictors.shape[1]
+output_dim = labels.shape[1]
 # Trim before reshaping into batches
-new_len = BATCH_SIZE*TIMESTEPS
+new_len = batch_sz * TIMESTEPS
 predictors = predictors[:new_len]
 labels = labels[:new_len]
 # Reshape into batches
-predictors = np.reshape(predictors, (BATCH_SIZE, TIMESTEPS, INPUT_DIM))
-labels = np.reshape(labels, (BATCH_SIZE, TIMESTEPS, OUTPUT_DIM))
+predictors = np.reshape(predictors, (batch_sz, TIMESTEPS, input_dim))
+labels = np.reshape(labels, (batch_sz, TIMESTEPS, output_dim))
 
 
 # Set up model ---------------------------------------------------------------------------------------------------------
@@ -64,12 +59,12 @@ model = Sequential()
 # Input layer
 model.add(LSTM(DEFAULT_LAYER_WIDTH,
                return_sequences=True,
-               input_shape=(TIMESTEPS, INPUT_DIM)))
+               input_shape=(TIMESTEPS, input_dim)))
 # Hidden layer(s)
 for i in range(0, N_HIDDEN_LAYERS):
     model.add(LSTM(DEFAULT_LAYER_WIDTH, return_sequences=True))
 # Output layer
-model.add(LSTM(OUTPUT_DIM,
+model.add(LSTM(output_dim,
                return_sequences=True,
                activation=OUTPUT_FUNCTION))
 # Compile
@@ -79,7 +74,7 @@ model.compile(optimizer='rmsprop',
               metrics=['accuracy'])
 
 # Train
-model.fit(predictors, labels, batch_size=BATCH_SIZE, epochs=N_EPOCHS, validation_split=0.8)
+model.fit(predictors, labels, batch_size=batch_sz, epochs=N_EPOCHS, validation_split=0.8)
 
 
 # End ------------------------------------------------------------------------------------------------------------------

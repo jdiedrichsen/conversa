@@ -30,7 +30,7 @@ BATCH_SIZE = 64
 INPUT_DIM = 1
 DEFAULT_LAYER_WIDTH = 4
 OUTPUT_DIM = 1
-N_EPOCHS = 1000
+N_EPOCHS = 100
 VALIDATION_SPLIT = 0.5
 
 # Functions
@@ -78,9 +78,9 @@ for i in range(0, 1):
 model.add(LSTM(OUTPUT_DIM,
                return_sequences=True,
                activation=OUTPUT_FUNCTION))
-# model.add(Dense(OUTPUT_DIM,
+# model.add(Dense(output_dim,
 #                 activation=OUTPUT_FUNCTION))
-# model.add(TimeDistributed(Dense(OUTPUT_DIM, activation=OUTPUT_FUNCTION)))
+# model.add(TimeDistributed(Dense(output_dim, activation=OUTPUT_FUNCTION)))
 # model.add(LSTM(TIMESTEPS))
 # Compile
 print(model.summary())
