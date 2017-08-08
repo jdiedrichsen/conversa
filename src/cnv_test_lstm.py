@@ -11,11 +11,9 @@ except ImportError:
 
 # Parameters -----------------------------------------------------------------------------------------------------------
 
- # TODO: Add to params
-
-# Maccro params
-tracking_file = 'C:\\Users\\Shayn\\Documents\\Work\\AI Research\\conversa\\data\\tracking\\par2024Cam1\\cam1par2024.txt'
-label_file = 'C:\\Users\\Shayn\\Documents\\Work\\AI Research\\conversa\\data\\labels\\p2024cam1.dat'
+# Macro params
+TRACKING_FILE = 'C:\\Users\\Shayn\\Documents\\Work\\AI Research\\conversa\\data\\tracking\\par2024Cam1\\cam1par2024.txt'
+LABLE_FILE = 'C:\\Users\\Shayn\\Documents\\Work\\AI Research\\conversa\\data\\labels\\p2024cam1.dat'
 TIMESTEPS = 150
 N_EPOCHS = 100
 VALIDATION_SPLIT = 0.5
@@ -23,7 +21,7 @@ VALIDATION_SPLIT = 0.5
 # Layer params
 DEFAULT_LAYER_WIDTH = 32
 N_HIDDEN_LAYERS = 8
-# Functions, TODO: change to array of layer properties
+# Functions
 # INPUT_FUNCTION = 'relu'
 # HIDDEN_ACT_FUNC = 'relu'
 OUTPUT_FUNCTION = 'softmax'
@@ -33,7 +31,7 @@ OUTPUT_FUNCTION = 'softmax'
 
 # Load files
 try:
-    (predictors, labels) = (cnv_data.load(tracking_file, label_file))
+    (predictors, labels) = (cnv_data.load(TRACKING_FILE, LABLE_FILE))
 except IOError:
     print('Failed to open files')
 print('Loaded files')

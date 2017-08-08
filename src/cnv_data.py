@@ -1,6 +1,4 @@
-'''
-cnv_data - Deals with data loading for Conversa
-'''
+''' cnv_data - Deals with data loading for Conversa '''
 
 import numpy as np
 
@@ -24,10 +22,10 @@ def load_tracking(tracking_file):
         print('Failed to open tracking file at ' + tracking_file)
 
 
-# def load_labels(label_file):
+# def load_labels(LABLE_FILE):
 #     '''
 #     TODO: Implement
-#     :param label_file:
+#     :param LABLE_FILE:
 #     :return:
 #     '''
 #     return

@@ -1,11 +1,10 @@
-# import tensorflow as tf
 import numpy as np
+from keras.models import Sequential
+from keras.layers import LSTM
 try:
     import cnv_data  # Ignore import error, import works
 except ImportError:
     print('Unable to import cnv_data')
-from keras.models import Sequential
-from keras.layers import LSTM, Dense, TimeDistributed, Embedding
 
 
 # Trial on test data
@@ -140,11 +139,11 @@ y_test = labels[:][test_start:test_end]
 # Constants
 
 # Temp
-tracking_file = 'C:\\Users\\Shayn\\Documents\\Work\\AI Research\\conversa\\data\\tracking\\par2024Cam1\\cam1par2024.txt'
-label_file = 'C:\\Users\\Shayn\\Documents\\Work\\AI Research\\conversa\\data\\labels\\p2024cam1.dat'
+TRACKING_FILE = 'C:\\Users\\Shayn\\Documents\\Work\\AI Research\\conversa\\data\\tracking\\par2024Cam1\\cam1par2024.txt'
+LABLE_FILE = 'C:\\Users\\Shayn\\Documents\\Work\\AI Research\\conversa\\data\\labels\\p2024cam1.dat'
 
 # Initialize data into numpy arrays
-predictors, labels = cnv_data.load(tracking_file, label_file)
+predictors, labels = cnv_data.load(TRACKING_FILE, LABLE_FILE)
 
 predictors = cnv_data.destructure(predictors)
 labels = cnv_data.destructure(labels)
