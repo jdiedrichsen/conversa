@@ -1,5 +1,6 @@
 ''' cnv_data - Deals with data loading for Conversa '''
 
+# TODO: File docuementation tags
 import numpy as np
 
 # Constants
@@ -66,47 +67,45 @@ def load(tracking_file, label_file, join=False, structured=True):
     n_behavs = len(behav_names)
 
     # Set labels
-    behav_labels = np.zeros(n_samples, dtype=[tuple((behav_names[i], '<f8')) for i in range(0, n_behavs)])
+    behav_data = np.zeros(n_samples, dtype=[tuple((behav_names[i], '<f8')) for i in range(0, n_behavs)])
     label_length = label_data.shape[0]
     for behav_i in range(0, n_behavs):
         behav_name = behav_names[behav_i]
         # print('Applying behaviour label: ' + behav_name)
-        behav_data = label_data[behav_name]
+        behav_column = label_data[behav_name]
         curr_i = 0
         next_i = curr_i + 1
-        curr_state = behav_data[curr_i]
-        next_state = behav_data[next_i]
+        curr_state = behav_column[curr_i]
+        next_state = behav_column[next_i]
         while next_i + 1 < label_length:
             # Go to point of change and fill data from current point to point of change
             while (next_state == curr_state) and (next_i + 1 < label_length):
                 next_i = next_i + 1
-                next_state = behav_data[next_i]
+                next_state = behav_column[next_i]
             # Set data from beginning to point of change
             start_i = _LA_FRAME_SHIFT + index_to_frame(label_data, curr_i)
             end_i = _LA_FRAME_SHIFT + index_to_frame(label_data, next_i)
             # print('Setting ' + behav_name + ' label to ' + str(curr_state) + ' from indices ' + str(start_i)
             #       + ' to ' + str(end_i))
-            behav_labels[start_i:end_i][behav_i] = curr_state
+            behav_data[start_i:end_i][behav_i] = curr_state
             # Reset states
             # print('Resetting states')
             curr_i = next_i
-            curr_state = behav_data[curr_i]
+            curr_state = behav_column[curr_i]
 
-    # TODO: Add behaviour for join=True, structured=False
+    # TODO: Add behaviour for join=True
 
-    # Reshape to be 3D tensor (required for Keras)
+    # Add dimension to get 2D (required for Keras)
     tracking_data = add_dim(tracking_data)
-    # tracking_data = add_dim(tracking_data)
-    behav_labels = add_dim(behav_labels)
-    # behav_labels = add_dim(behav_labels)
-    # print(tracking_data.shape)
-    # print(tracking_data)
-    # print(behav_labels.shape)
-    # print(behav_labels)
+    behav_data = add_dim(behav_data)
+
+    # Destructure if needed
+    if not structured:
+        tracking_data = destructure(tracking_data)
+        behav_data = destructure(behav_data)
 
     # Return data
-    # print('Returning labels')
-    return tracking_data, behav_labels
+    return tracking_data, behav_data
 
 
 def time_to_frame(minute, second, frame, frame_rate=30):

@@ -14,13 +14,14 @@ except ImportError:
 # Macro params
 TRACKING_FILE = 'C:\\Users\\Shayn\\Documents\\Work\\AI Research\\conversa\\data\\tracking\\par2024Cam1\\cam1par2024.txt'
 LABLE_FILE = 'C:\\Users\\Shayn\\Documents\\Work\\AI Research\\conversa\\data\\labels\\p2024cam1.dat'
-TIMESTEPS = 150
+
+TIMESTEPS = 1  # Keep in mind that batch_sz = int(seq_len / TIMESTEPS)
 N_EPOCHS = 100
 VALIDATION_SPLIT = 0.5
 
 # Layer params
-DEFAULT_LAYER_WIDTH = 32
-N_HIDDEN_LAYERS = 8
+DEFAULT_LAYER_WIDTH = 4
+N_HIDDEN_LAYERS = 2
 # Functions
 # INPUT_FUNCTION = 'relu'
 # HIDDEN_ACT_FUNC = 'relu'
