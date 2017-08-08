@@ -3,11 +3,13 @@
 import numpy as np
 
 # Constants
-_FIELD_NAME_MIN = 'min'
-_FIELD_NAME_SEC = 'sec'
-_FIELD_NAME_FRAME = 'frame'
-_LABEL_NON_BEHAV_FIELDS = {'pid', 'cam', _FIELD_NAME_MIN, _FIELD_NAME_SEC, _FIELD_NAME_FRAME, 'ms', 'absoluteframe'}
-_FRAME_SHIFT = 0  # Describes the amount to label frames forward by - compensates for misalignments
+# TR for tracking constants, LA for label constants
+_TR_N_SKIP_LINES = 12
+_LA_FIELD_NAME_MIN = 'min'
+_LA_FIELD_NAME_SEC = 'sec'
+_LA_FIELD_NAME_FRAME = 'frame'
+_LA_NON_BEHAV_FIELDS = {'pid', 'cam', _LA_FIELD_NAME_MIN, _LA_FIELD_NAME_SEC, _LA_FIELD_NAME_FRAME, 'ms', 'absoluteframe'}
+_LA_FRAME_SHIFT = 0  # Describes the amount to label frames forward by - compensates for misalignments
 
 
 def load_tracking(tracking_file):
@@ -44,7 +46,7 @@ def load(tracking_file, label_file, join=False, structured=True):
 
     # Load tracking data
     try:
-        tracking_data = np.genfromtxt(tracking_file, dtype=float, skip_header=12, names=True)
+        tracking_data = np.genfromtxt(tracking_file, dtype=float, skip_header=_TR_N_SKIP_LINES, names=True)
     except IOError:
         print('Failed to open tracking file at ' + tracking_file)
 
@@ -58,7 +60,7 @@ def load(tracking_file, label_file, join=False, structured=True):
     label_fields = label_data.dtype.names
     behav_names = []
     for label in label_fields:
-        if not(label in _LABEL_NON_BEHAV_FIELDS):
+        if not(label in _LA_NON_BEHAV_FIELDS):
             behav_names.append(label)
     n_samples = tracking_data.shape[0]
     n_behavs = len(behav_names)
@@ -80,8 +82,8 @@ def load(tracking_file, label_file, join=False, structured=True):
                 next_i = next_i + 1
                 next_state = behav_data[next_i]
             # Set data from beginning to point of change
-            start_i = index_to_frame(label_data, curr_i)
-            end_i = index_to_frame(label_data, next_i)
+            start_i = _LA_FRAME_SHIFT + index_to_frame(label_data, curr_i)
+            end_i = _LA_FRAME_SHIFT + index_to_frame(label_data, next_i)
             # print('Setting ' + behav_name + ' label to ' + str(curr_state) + ' from indices ' + str(start_i)
             #       + ' to ' + str(end_i))
             behav_labels[start_i:end_i][behav_i] = curr_state
@@ -108,14 +110,14 @@ def load(tracking_file, label_file, join=False, structured=True):
 
 
 def time_to_frame(minute, second, frame, frame_rate=30):
-    return _FRAME_SHIFT + int((minute * 60 + second) * frame_rate + frame)
+    return int((minute * 60 + second) * frame_rate + frame)
 
 
 def index_to_frame(data, index):
     return time_to_frame(
-        data[_FIELD_NAME_MIN][index],
-        data[_FIELD_NAME_SEC][index],
-        data[_FIELD_NAME_FRAME][index])
+        data[_LA_FIELD_NAME_MIN][index],
+        data[_LA_FIELD_NAME_SEC][index],
+        data[_LA_FIELD_NAME_FRAME][index])
 
 
 def destructure(data):
