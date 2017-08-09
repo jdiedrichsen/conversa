@@ -24,14 +24,15 @@ DROPOUTS_N_SAMPLES = 4
 # General available values for layer parameters
 units = [2**i for i in range(0, int(math.log(UNITS_MAX, 2))+1)]
 # units = np.linspace(1, UNITS_MAX, num=DROPOUTS_N_SAMPLES)
-activations = ['relu', 'tanh', 'sigmoid', 'hard_sigmoid', 'softmax']
-# activations = ['relu', 'tanh', 'sigmoid', 'hard_sigmoid', 'softmax', 'elu', 'selu', 'softplus', 'softsign', 'linear']
+activations = ['\'relu\'', '\'tanh\'', '\'sigmoid\'', '\'hard_sigmoid\'', '\'softmax\'']
+# activations = ['\'relu\'', '\'tanh\'', '\'sigmoid\'', '\'hard_sigmoid\'', '\'softmax\'', '\'elu\'', '\'selu\'',
+# '\'softplus\'', '\'softsign\'', '\'linear\'']
 bools = [True, False]
 dropouts = np.linspace(0, 1, num=DROPOUTS_N_SAMPLES, endpoint=False)
 
 # Options for each layer type
 
-LSTM_options = {
+LSTM_options = {  # Maps parameters to trail values
     'units': units,
     'activation': activations,
     'recurrent_activation': activations,
@@ -61,7 +62,7 @@ compiler_options = {
 }
 
 for i in range(0, 10):
-    layer_opt = [str(key) + '= ' + str(random.choice(LSTM_options[key])) for key in LSTM_options.keys()]
+    layer_opt = ', '.join([str(param) + '=' + str(random.choice(LSTM_options[param])) for param in LSTM_options.keys()])
     print(layer_opt)
 
 
