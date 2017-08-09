@@ -1,11 +1,14 @@
 ''' cnv_data - Deals with data loading for Conversa '''
 
-# TODO: File docuementation tags
+# TODO: File documentation tags
+
 import numpy as np
 
 # Constants
-# TR for tracking constants, LA for label constants
+
+# Tracking constants
 _TR_N_SKIP_LINES = 12
+# Label constants
 _LA_FIELD_NAME_MIN = 'min'
 _LA_FIELD_NAME_SEC = 'sec'
 _LA_FIELD_NAME_FRAME = 'frame'
