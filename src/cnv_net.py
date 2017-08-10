@@ -38,7 +38,8 @@ LSTM_options = {  # Maps parameters to trail values
     'recurrent_activation': activations,
     'use_bias': bools,
     'dropout': dropouts,
-    'recurrent_dropout': dropouts
+    'recurrent_dropout': dropouts,
+    'return_sequences': [True]
     # Not using all availible options for now
     # 'kernel_initializer': None,
     # 'recurrent_initializer': None,
@@ -61,13 +62,13 @@ compiler_options = {
 
 }
 
-for i in range(0, 10):
-    layer_opt = ', '.join([str(param) + '=' + str(random.choice(LSTM_options[param])) for param in LSTM_options.keys()])
-    print(layer_opt)
+
+def gen_layer_params(layer_options):  # TODO: Add non-random generation
+    return ', '.join([str(param) + '=' + str(random.choice(layer_options[param])) for param in layer_options.keys()])
 
 
-def gen_layer(layer_type, args):
-    return eval(''.format())
+def gen_layer(layer_name, layer_options):
+    return eval('{0}({1})'.format(layer_name, gen_layer_params(layer_options)))
 
 
 def gen_model(input_layer, hidden_layers, output_layer, compile_args):
@@ -82,6 +83,16 @@ def gen_model(input_layer, hidden_layers, output_layer, compile_args):
     # Compilation
     model.compile()
     return model
+
+model = Sequential()
+model.add(LSTM(16,
+               return_sequences=True,
+               input_shape=(16, 1)))
+model.add(gen_layer('LSTM', LSTM_options))
+print(model.summary())
+model.compile(optimizer='rmsprop',
+              loss='binary_crossentropy',
+              metrics=['accuracy'])
 
 
 print('Imported cnv_data')
