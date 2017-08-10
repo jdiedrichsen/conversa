@@ -4,16 +4,15 @@ import numpy as np
 from keras.models import Sequential
 from keras.layers import LSTM
 try:
-    import cnv_data  # Ignore import error, import works
+    import cnv_data
 except ImportError:
     print('Unable to import cnv_data')
 
 
 # Parameters -----------------------------------------------------------------------------------------------------------
 
-# Macro params
 TRACKING_FILE = 'C:\\Users\\Shayn\\Documents\\Work\\AI Research\\conversa\\data\\tracking\\par2024Cam1\\cam1par2024.txt'
-LABLE_FILE = 'C:\\Users\\Shayn\\Documents\\Work\\AI Research\\conversa\\data\\labels\\p2024cam1.dat'
+LABEL_FILE = 'C:\\Users\\Shayn\\Documents\\Work\\AI Research\\conversa\\data\\labels\\p2024cam1.dat'
 
 TIMESTEPS = 1  # Keep in mind that batch_sz = int(seq_len / TIMESTEPS)
 N_EPOCHS = 100
@@ -32,7 +31,7 @@ OUTPUT_FUNCTION = 'softmax'
 
 # Load files
 try:
-    (predictors, labels) = (cnv_data.load(TRACKING_FILE, LABLE_FILE))
+    (predictors, labels) = (cnv_data.load(TRACKING_FILE, LABEL_FILE))
 except IOError:
     print('Failed to open files')
 print('Loaded files')

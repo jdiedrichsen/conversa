@@ -140,10 +140,10 @@ y_test = labels[:][test_start:test_end]
 
 # Temp
 TRACKING_FILE = 'C:\\Users\\Shayn\\Documents\\Work\\AI Research\\conversa\\data\\tracking\\par2024Cam1\\cam1par2024.txt'
-LABLE_FILE = 'C:\\Users\\Shayn\\Documents\\Work\\AI Research\\conversa\\data\\labels\\p2024cam1.dat'
+LABEL_FILE = 'C:\\Users\\Shayn\\Documents\\Work\\AI Research\\conversa\\data\\labels\\p2024cam1.dat'
 
 # Initialize data into numpy arrays
-predictors, labels = cnv_data.load(TRACKING_FILE, LABLE_FILE)
+predictors, labels = cnv_data.load(TRACKING_FILE, LABEL_FILE)
 
 predictors = cnv_data.destructure(predictors)
 labels = cnv_data.destructure(labels)

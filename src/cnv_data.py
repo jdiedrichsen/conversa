@@ -1,6 +1,7 @@
 ''' cnv_data - Deals with data loading for Conversa '''
 
 # TODO: File documentation tags
+# TODO: Add functionalities in cnv_test_lstm.py
 
 import numpy as np
 
@@ -28,10 +29,10 @@ def load_tracking(tracking_file):
         print('Failed to open tracking file at ' + tracking_file)
 
 
-# def load_labels(LABLE_FILE):
+# def load_labels(LABEL_FILE):
 #     '''
 #     TODO: Implement
-#     :param LABLE_FILE:
+#     :param LABEL_FILE:
 #     :return:
 #     '''
 #     return
