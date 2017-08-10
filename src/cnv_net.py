@@ -7,7 +7,7 @@ from keras.layers import SimpleRNN, GRU, LSTM
 from keras.layers.convolutional import Conv1D, Conv2D
 
 __author__ = 'Shayaan Syed Ali'
-__copyright__ = "Copyright 2007, The Cogent Project"
+# __copyright__ = ''
 __credits__ = ['Shayaan Syed Ali']
 __maintainer__ = 'Shayaan Syed Ali'
 __email__ = 'shayaan.syed.ali@gmail.com'
