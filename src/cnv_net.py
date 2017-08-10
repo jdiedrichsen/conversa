@@ -95,7 +95,7 @@ model.compile(optimizer='rmsprop',
               metrics=['accuracy'])
 
 
-print('Imported cnv_data')
+print('Imported cnv_net')
 
 
 '''

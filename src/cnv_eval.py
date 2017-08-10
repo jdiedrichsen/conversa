@@ -47,6 +47,6 @@ print('Loaded files')
 model = Sequential()
 model.add()
 
-# TODO: mean prediction and LDA
+# TODO: mean prediction and LDA (and Naive Bayes?)
 
-
+print('Imported cnv_eval')
