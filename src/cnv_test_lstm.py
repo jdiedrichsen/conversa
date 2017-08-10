@@ -30,6 +30,7 @@ OUTPUT_FUNCTION = 'softmax'
 # Load data ------------------------------------------------------------------------------------------------------------
 
 # Load files
+predictors, labels = None, None
 try:
     (predictors, labels) = (cnv_data.load(TRACKING_FILE, LABEL_FILE))
 except IOError:
