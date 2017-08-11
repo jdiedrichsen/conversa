@@ -156,7 +156,7 @@ timesteps = 16  # Total number of times to consider
 n_classes = 1  # Binary classification, either smiling or not, talking or not, etc.
 test_ratio = 0.2  # Proportion of the data to use for cross-validation
 n_epochs = 16
-batch_sz = 1
+n_seqs = 1
 print(predictors.shape)
 in_shape = predictors.shape[3:]
 
@@ -179,6 +179,6 @@ model.compile(optimizer='rmsprop',
               metrics=['accuracy'])  # See bottom of file for comparing against mean prediction
 
 # Fit and test
-model.fit(predictors, labels, batch_size=batch_sz, epochs=n_epochs, validation_split=test_ratio)
+model.fit(predictors, labels, batch_size=n_seqs, epochs=n_epochs, validation_split=test_ratio)
 
 '''

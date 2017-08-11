@@ -43,7 +43,7 @@ def evaluate(models, predictors, labels, n_splits=5, n_epochs=100, batch_sz=10):
 TRACKING_FILE = 'C:\\Users\\Shayn\\Documents\\Work\\AI Research\\conversa\\data\\tracking\\par2024Cam1\\cam1par2024.txt'
 LABEL_FILE = 'C:\\Users\\Shayn\\Documents\\Work\\AI Research\\conversa\\data\\labels\\p2024cam1.dat'
 
-TIMESTEPS = 30  # Keep in mind that batch_sz = int(seq_len / TIMESTEPS)
+TIMESTEPS = 30  # Keep in mind that n_seqs = int(seq_len / TIMESTEPS)
 N_EPOCHS = 100
 VALIDATION_SPLIT = 0.5
 
