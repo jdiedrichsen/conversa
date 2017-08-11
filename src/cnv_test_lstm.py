@@ -75,6 +75,9 @@ model.compile(optimizer='rmsprop',
 # Train
 model.fit(predictors, labels, batch_size=batch_sz, epochs=N_EPOCHS, validation_split=0.8)
 
+# Evaluate
+model.evaluate(predictors, labels, batch_size=batch_sz)
+
 
 # End ------------------------------------------------------------------------------------------------------------------
 
