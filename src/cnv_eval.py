@@ -10,19 +10,20 @@ except ImportError:
 # TODO: Add verbose flags and vprint function
 
 
-def eval_models(models, predictors, labels, n_splits=5, n_epochs=100, batch_sz=10):
-    kfold = StratifiedKFold(n_splits=n_splits)
+def eval_models(models, predictors, labels, n_splits=5, train_n_epochs=10, train_batch_sz=10, test_n_epochs=10,
+                test_n_batch_sz=10):
+    folds = k_fold(predictors, labels, n_splits)
     accuracies = []
     print(predictors.shape)
     print(labels.shape)
-    for train_data, test_data in kfold.split(predictors, labels):
-        print('Train: ' + str(train_data))
-        print('Test: ' + str(test_data))
+    for (train_data, test_data) in folds:
+        (train_predictors, train_labels) = train_data
+        (test_predictors, test_labels) = test_data
         for model in models:
-            # Fit
-            model.fit(predictors[train_data], labels[train_data], epochs=n_epochs, batch_size=batch_sz, verbose=0)
-            # Evaluate
-            scores = model.evaluate(predictors[test_data], labels[test_data], batch_size=batch_sz, verbose=0)
+            # Train
+            model.fit(train_predictors, train_labels, epochs=train_n_epochs, batch_size=train_batch_sz, verbose=1)
+            # Test
+            scores = model.evaluate(test_predictors, test_labels, batch_size=test_n_batch_sz, verbose=1)
             accuracies.append(scores)  # TODO: Set to structured numpy array, fieldnames as model names
     print('Avg acc: ' + str(np.mean(accuracies)))
     return accuracies
