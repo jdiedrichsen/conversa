@@ -4,7 +4,7 @@ import numpy as np
 from keras.models import Sequential
 from keras.layers import LSTM
 try:
-    import cnv_data
+    import cnv_data, cnv_eval
 except ImportError:
     print('Unable to import cnv_data')
 
@@ -78,10 +78,14 @@ model.compile(optimizer='rmsprop',
 n_test_seqs = int(n_seqs / 5)
 n_train_seqs = n_seqs - n_test_seqs
 
-train_predictors = predictors[:n_train_seqs]
-train_labels = labels[:n_train_seqs]
-test_predictors = predictors[n_train_seqs:]
-test_labels = labels[n_train_seqs:]
+# train_predictors = predictors[:n_train_seqs]
+# train_labels = labels[:n_train_seqs]
+# test_predictors = predictors[n_train_seqs:]
+# test_labels = labels[n_train_seqs:]
+
+indices = cnv_eval.k_fold(predictors, labels, 5)
+
+(train_predictors, test_predictors, train_labels, test_labels) = indices[0]
 
 print('Predictor shape: ' + str(predictors.shape))
 print('Train predictor shape: ' + str(train_predictors.shape))
@@ -96,22 +100,26 @@ print('Testing timestamp range: [' + str(test_predictors['timestamp'][0][0][0]) 
 # print(train_predictors['timestamp'][0])
 # print(test_predictors['timestamp'][0])
 
-# Train
-print('Training')
-model.fit(train_predictors, train_labels,
-          batch_size=BATCH_SZ,
-          epochs=N_EPOCHS,
-          validation_split=VALIDATION_SPLIT,
-          verbose=1)
-# Can also use batch_size=train_predictors.shape[0]
 
-# Evaluate
-print('Evaluating')
-loss, acc = model.evaluate(test_predictors, test_labels,
-                     batch_size=test_predictors.shape[0],
-                     verbose=1)  # Accuracy is at index 1, loss at index 0
-# Can also use batch_size=test_predictors.shape[0]
-print('\n\bAccuracy: ' + str(acc))
+print()
+
+
+# Train
+# print('Training')
+# model.fit(train_predictors, train_labels,
+#           batch_size=BATCH_SZ,
+#           epochs=N_EPOCHS,
+#           validation_split=VALIDATION_SPLIT,
+#           verbose=1)
+# # Can also use batch_size=train_predictors.shape[0]
+#
+# # Evaluate
+# print('Evaluating')
+# loss, acc = model.evaluate(test_predictors, test_labels,
+#                      batch_size=test_predictors.shape[0],
+#                      verbose=1)  # Accuracy is at index 1, loss at index 0
+# # Can also use batch_size=test_predictors.shape[0]
+# print('\n\bAccuracy: ' + str(acc))
 
 
 # End ------------------------------------------------------------------------------------------------------------------
