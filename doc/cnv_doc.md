@@ -25,14 +25,15 @@ except IOError:
 
 ### Functions
 
-```load(tracking_file, label_file, label_fields=None, structured=True)```  
+**```load(tracking_file, label_file, label_fields=None, structured=True)```**  
     Loads data from a tracking file and a label file into structured arrays with corresponding entries  
     ```tracking_file```: The address of the tracking file, see File Format Examples      
     ```label_file```: The address of the tracking file, see File Format Examples  
     ```behaviour_fields```: A list of behaviours to include from the label file, leave as None if you want all behaviour included  
     Returns a 2 element tuple containing a strucutred array of the predictors and labels, as in (predictors, labels)   
 
-```load_tracking(tracking_file)```
+**```load_tracking(tracking_file)```**  
+    
 
 ### Usage
 
