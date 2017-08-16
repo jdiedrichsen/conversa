@@ -21,7 +21,7 @@ except IOError:
     print('Failed to open files')
 ```
 
-## Data Loading and Handling - ```cnv_data```
+## Data Loading and Handling - cnv_data
 
 ### Functions
 
@@ -50,7 +50,7 @@ except IOError:
 
 For examples of what tracking and label data should look like, see the File Format Examples section.
 
-## Evaluation - ```cnv_eval```
+## Evaluation - cnv_eval
 
 ### Functions
 
