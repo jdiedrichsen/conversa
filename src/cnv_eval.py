@@ -32,7 +32,7 @@ def eval_models(models, predictors, labels, n_splits=5, train_n_epochs=10, train
 def k_fold(predictors, labels, n_splits):
     '''
     Splits predictors and labels into a number of testing groups
-    :param predictors: All of the predictors data to be spllit
+    :param predictors: All of the predictors data to be split
     :param labels: All of the label data to be split
     :param n_splits: 
     :return: AEach fold is a nested tuple, of (train_data, test_data) where
