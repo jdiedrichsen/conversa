@@ -21,7 +21,7 @@ except IOError:
     print('Failed to open files')
 ```
 
-## Data Loading and Handling - cnv_data
+## Data Loading and Handling - ```cnv_data```
 
 ### Functions
 
@@ -50,11 +50,33 @@ except IOError:
 
 For examples of what tracking and label data should look like, see the File Format Examples section.
 
-### File Format Examples
+## Evaluation - ```cnv_eval```
+
+### Functions
+
+**```k_fold(predictors, labels, n_folds```**  
+    Splits predictors and labels into a number of testing groups  
+    ```predictors```: All of the predictors data to be split  
+    ```labels```: All of the label data to be split  
+    ```n_folds```: The number of folds to split the data into
+    Each fold is a nested tuple, of ```(train_data, test_data)``` where ```train_data = (train_predictors, train_labels) and test_data = (test_predictors, test_labels)```  
+
+### Usage
+
+Using k_fold to partition the data into exclusive folds:
+``` python
+folds = cnv_eval.k_fold(predictors, labels, n_folds=5)  # This splits the data into 5 folds
+for fold in folds:
+    (train_data, test_data) = fold
+    # Do something with the training and testing data
+```
+When using ```k_fold```, keep in mind that each elements in each fold may not keep their ordering. In order to use this function for sequence data, be sure to set each element of the predictor and label data to a sequence.
+
+## File Format Examples
 
 These files are given as tab-delimited files.  Note that the behaviour files typically have a header containing metadata which is ignored by ```cnv_data```.
 
-#### Behaviour file
+### Behaviour file
 
 | timestamp | isTracked | bodyId | neckPosX | neckPosY | neckPosZ | ... | Jaw_Open |
 |-----------|-----------|--------|----------|----------|----------|-----|----------|
@@ -66,7 +88,7 @@ These files are given as tab-delimited files.  Note that the behaviour files typ
 | ...       | ...       | ...    | ...      | ...      | ...      | ... | ...      |
 | 328.2     | 1         | 2      | 2.26969  | -2.58357 | -77.6746 | ... | 1.77907  |
 
-#### Label file
+### Label file
 
 | pid  | cam | min | sec | frame | absoluteframe | smile | talk | laugh |
 |------|-----|-----|-----|-------|---------------|-------|------|-------|
@@ -77,14 +99,3 @@ These files are given as tab-delimited files.  Note that the behaviour files typ
 | 2024 | 1   | 0   | 5   | 18    | 169           | 1     | 1    | 0     |
 | ...  | ... | ... | ... | ...   | ...           | ...   | ...  | ...   |
 | 2024 | 1   | 5   | 27  | 0     | 9811          | 0     | 0    | 0     |
-
-## Evaluation - cnv_eval
-
-Using k_fold to partition the data into exclusive folds:
-``` python
-folds = cnv_eval.k_fold(predictors, labels, n_folds=5)  # This splits the data into 5 folds
-for fold in folds:
-    (train_data, test_data) = fold
-    # Do something with the training and testing data
-```
-When using ```k_fold```, keep in mind that each elements in each fold may not keep their ordering. In order to use this function for sequence data, be sure to set each element of the predictor and label data to a sequence.
