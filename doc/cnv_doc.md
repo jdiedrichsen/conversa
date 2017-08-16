@@ -1,34 +1,13 @@
 # Conversa
 
-Example program:
-``` python
-# Load data and evaluation modules
-try:
-    import cnv_data, cnv_eval
-except ImportError:
-    print('Unable to import cnv_data, cnv_eval')
-
-# Load predictor and label data
-# Predictors are kinematic data, labels are behaviour data
-tracking_file = '..\\data\\tracking\\par2024Cam1\\cam1par2024.txt'
-label_file = '..\\data\\labels\\p2024cam1.dat'
-
-predictors, labels = None, None
-behaviours = {'smile'}  # We'll only be looking at the smile behaviour
-try:
-    (predictors, labels) = (cnv_data.load(tracking_file, label_file, behaviours))
-except IOError:
-    print('Failed to open files')
-```
-
 ## Data Loading and Handling - cnv_data
 
 ### Functions
 
 **```load(tracking_file, label_file, label_fields=None, structured=True)```**  
     Loads data from a tracking file and a label file into structured arrays with corresponding entries  
-    ```tracking_file```: The address of the tracking file, see File Format Examples      
-    ```label_file```: The address of the tracking file, see File Format Examples  
+    ```tracking_file```: The address of the tracking file, see File Format Examples for an example of a tracking file
+    ```label_file```: The address of the label file, see File Format Examples  for an example of a label file
     ```behaviour_fields```: A list of behaviours to include from the label file, leave as None if you want all behaviour included  
     Returns a 2 element tuple containing a strucutred array of the predictors and labels, as in (predictors, labels)   
 
@@ -71,6 +50,28 @@ for fold in folds:
     # Do something with the training and testing data
 ```
 When using ```k_fold```, keep in mind that each elements in each fold may not keep their ordering. In order to use this function for sequence data, be sure to set each element of the predictor and label data to a sequence.
+
+## Example program
+
+``` python
+# Load data and evaluation modules
+try:
+    import cnv_data, cnv_eval
+except ImportError:
+    print('Unable to import cnv_data, cnv_eval')
+
+# Load predictor and label data
+# Predictors are kinematic data, labels are behaviour data
+tracking_file = '..\\data\\tracking\\par2024Cam1\\cam1par2024.txt'
+label_file = '..\\data\\labels\\p2024cam1.dat'
+
+predictors, labels = None, None
+behaviours = {'smile'}  # We'll only be looking at the smile behaviour
+try:
+    (predictors, labels) = (cnv_data.load(tracking_file, label_file, behaviours))
+except IOError:
+    print('Failed to open files')
+```
 
 ## File Format Examples
 
