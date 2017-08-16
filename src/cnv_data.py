@@ -61,6 +61,11 @@ def load(tracking_file, label_file, join=False, structured=True):
     except IOError:
         print('Failed to open label file at ' + label_file)
 
+    # TEMP
+    # TODO: Change to be parameterized
+    label_data = rm_field(label_data, 'laugh')
+    label_data = rm_field(label_data, 'talk')
+
     # Get behaviour fields
     label_fields = label_data.dtype.names
     behav_names = []
@@ -124,7 +129,7 @@ def index_to_frame(data, index):
 
 
 def destructure(data):
-    return data.view((data.dtype[0], len(data.dtype.names)))
+    return data.view((data.dtype[0], len(data.dtype.names)))  # Assumes data type of data is homogeneous
 
 
 def add_dim(data, n_dims=1):
@@ -137,5 +142,37 @@ def add_dim(data, n_dims=1):
     for i in range(0, n_dims):
         data = data[..., np.newaxis]
     return data
+
+
+def to_seqs(data, seq_len, n_dims):
+    '''
+    Divides a numpy array into a series of sequences
+    :param data: The numpy array to be divided into sequences
+    :param seq_len: The length of sequences to produce
+    :param n_dims: The number of dimensions for each member of each sequence to have
+    :return: A numpy array which contains the original data divided into sequences of length seq_len. Data in the last 
+    few rows may be cut off if it does not fill an entire sequence
+    '''
+    # seq_len = data.shape[0]
+    # n_seqs = int(seq_len / seq_len)
+    # n_dims = data.shape[1]
+    # # Trim before reshaping
+    # new_len = n_seqs * seq_len
+    # data = data[:new_len]
+    # # # Reshape into batches
+    # data = np.reshape(data, (n_seqs, seq_len, n_dims))
+    data_len = data.shape[0]
+    n_seqs = int(data_len/seq_len)
+    # data_dim = data.shape[1]
+    return np.reshape(data, (n_seqs, seq_len, n_dims))
+
+
+def rm_field(arr, name):
+    names = list(arr.dtype.names)
+    if name in names:
+        names.remove(name)
+    b = arr[names]
+    return b
+
 
 print('Imported cnv_data')
