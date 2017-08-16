@@ -11,9 +11,27 @@ except ImportError:
 # TODO: mean prediction and LDA (and Naive Bayes?)
 
 
-def eval_models(models, predictors, labels, n_splits=5, train_n_epochs=10, train_batch_sz=10, test_n_epochs=10, # TODO
+def eval_models(models,
+                predictors,
+                labels,
+                n_folds=5,
+                train_n_epochs=10,
+                train_batch_sz=10,
+                test_n_epochs=10,  # TODO
                 test_n_batch_sz=10):
-    folds = k_fold(predictors, labels, n_splits)
+    '''
+    Evaluates models using data in predictors and labels. 
+    :param models: 
+    :param predictors: 
+    :param labels: 
+    :param n_folds: 
+    :param train_n_epochs: 
+    :param train_batch_sz: 
+    :param test_n_epochs: 
+    :param test_n_batch_sz: 
+    :return: 
+    '''
+    folds = k_fold(predictors, labels, n_folds)
     accuracies = []
     for (train_data, test_data) in folds:
         print('\n\nMoving to next fold')

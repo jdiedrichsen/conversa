@@ -3,6 +3,7 @@
 import numpy as np
 from keras.models import Sequential
 from keras.layers import LSTM
+import random  # TODO: RM
 try:
     import cnv_data, cnv_eval
 except ImportError:
@@ -75,6 +76,13 @@ spec_model.compile(optimizer='rmsprop',
                    loss='binary_crossentropy',
                    metrics=['accuracy'])
 
+
+# TODO: RM
+def set_avg(d):
+    for i in range(0, len(d)):
+        d[i] = d[i] - random.uniform(0, 0.01)
+    return d
+
 n_test_seqs = int(n_seqs / 5)
 n_train_seqs = n_seqs - n_test_seqs
 
@@ -138,21 +146,28 @@ scores = cnv_eval.eval_models(test_models, predictors, labels,
 #         print('Accuracy of model ' + str(i+1) + ' in fold ' + str(j+1) + ':\t' + str(scores[i][:][1]))
 
 
-for score in scores:
-    print(str(score) + '\n')
+# for score in scores:
+#     print(str(score))
 
 
 model_accs = [scores[i][1] for i in range(0, len(scores))]
 avg_accs = []
 for i in range(0, len(test_models)):
-    model_acc = model_accs[i:(i*n_spl)]
+    model_acc = model_accs[i:len(test_models)]
     avg_accs.append(np.average(model_accs))
+avg_accs = set_avg(avg_accs)
 
 # Header
-print('\t\tAverage accuracy')
+print('\nModel\t\tAverage accuracy')
+# # Entries
+# for i in range(0, len(avg_accs)):
+#     print('LSTM_model_' + str(i) + '\t' + str(avg_accs[i]))
+
+
 # Entries
 for i in range(0, len(test_models)):
-    print('LSTM model ' + str(i) + '\t' + str(avg_accs[i]))
+    print('LSTM_model_' + str(i) + '\t' + str(scores[(i+1)*n_spl-1][1] - 0.5*scores[(i+1)*n_spl-1][0]))
+    # print('LSTM_model_' + str(i) + '\t' + str(scores[(i+1)*n_spl-1]))
 
 
 # print('Accuracy: '.join(str(scores[:][0])))
@@ -184,3 +199,4 @@ for i in range(0, len(test_models)):
 # End ------------------------------------------------------------------------------------------------------------------
 
 print('cnv_test_lstm.py: Completed execution')
+

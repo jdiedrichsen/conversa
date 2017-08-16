@@ -15,12 +15,12 @@ def eval_models(models, predictors, labels, n_splits=5, train_n_epochs=10, train
                 test_n_batch_sz=10):
     folds = k_fold(predictors, labels, n_splits)
     accuracies = []
-    for (train_data, test_data) in folds:
-        print('\n\nMoving to next fold')
-        (train_predictors, train_labels) = train_data
-        (test_predictors, test_labels) = test_data
-        for model in models:
-            print('\nMoving to next model')
+    for model in models:
+        print('\n\nMoving to next model')
+        for (train_data, test_data) in folds:
+            print('\nMoving to next fold')
+            (train_predictors, train_labels) = train_data
+            (test_predictors, test_labels) = test_data
             # Train
             model.fit(train_predictors, train_labels, epochs=train_n_epochs, batch_size=train_batch_sz, verbose=1)
             # Test
