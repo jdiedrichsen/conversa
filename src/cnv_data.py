@@ -38,13 +38,14 @@ def load_tracking(tracking_file):
 #     return
 
 
-def load(tracking_file, label_file, join=False, structured=True):
+def load(tracking_file, label_file, label_fields=None, structured=True):
     '''
-    Loads a tracking and label file
-    :param tracking_file: The tracking file address
-    :param label_file: The label file address
-    :param join: Whether to join the data into one structured array
-    :return: A structured array of tracking data and label data
+    
+    :param tracking_file: 
+    :param label_file: 
+    :param label_fields: If None, all label fields are included
+    :param structured: 
+    :return: 
     '''
 
     tracking_data, label_data = None, None  # Initialize before loading files
@@ -61,10 +62,12 @@ def load(tracking_file, label_file, join=False, structured=True):
     except IOError:
         print('Failed to open label file at ' + label_file)
 
-    # TEMP
     # TODO: Change to be parameterized
-    label_data = rm_field(label_data, 'laugh')
-    label_data = rm_field(label_data, 'talk')
+    if label_fields is not None:  # Check if the label fields have been set
+        keep_fields = _LA_NON_BEHAV_FIELDS | label_fields  # Fields to keep
+        for name in label_data.dtype.names:
+            if name not in keep_fields:
+                label_data = rm_field(label_data, name)
 
     # Get behaviour fields
     label_fields = label_data.dtype.names
@@ -101,8 +104,6 @@ def load(tracking_file, label_file, join=False, structured=True):
             # print('Resetting states')
             curr_i = next_i
             curr_state = behav_column[curr_i]
-
-    # TODO: Add behaviour for join=True
 
     # Add dimension to get 2D (required for Keras)
     tracking_data = add_dim(tracking_data)
@@ -164,7 +165,7 @@ def to_seqs(data, seq_len, n_dims):
     data_len = data.shape[0]
     n_seqs = int(data_len/seq_len)
     # data_dim = data.shape[1]
-    return np.reshape(data, (n_seqs, seq_len, n_dims))
+    return np.reshape(data[:(n_seqs*seq_len)], (n_seqs, seq_len, n_dims))
 
 
 def rm_field(arr, name):

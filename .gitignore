@@ -1,5 +1,4 @@
 *.asv
 etc/Meeting Notes/*
-src/test*
 src/__pycache__/*
 archive*

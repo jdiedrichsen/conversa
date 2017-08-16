@@ -7,7 +7,7 @@ import random  # TODO: RM
 try:
     import cnv_data, cnv_eval
 except ImportError:
-    print('Unable to import cnv_data')
+    print('Unable to import cnv_data, cnv_eval')
 
 
 # Parameters -----------------------------------------------------------------------------------------------------------

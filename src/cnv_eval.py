@@ -1,11 +1,4 @@
-from sklearn.model_selection import StratifiedKFold
 import numpy as np
-from keras.models import Sequential
-from keras.layers import LSTM
-try:
-    import cnv_data  # Ignore import error, import works
-except ImportError:
-    print('Unable to import cnv_data')
 
 # TODO: Add verbose flags and vprint function
 # TODO: mean prediction and LDA (and Naive Bayes?)
@@ -13,6 +6,18 @@ except ImportError:
 
 def eval_models(models, predictors, labels, n_splits=5, train_n_epochs=10, train_batch_sz=10, test_n_epochs=10, # TODO
                 test_n_batch_sz=10):
+    '''
+    
+    :param models: 
+    :param predictors: 
+    :param labels: 
+    :param n_splits: 
+    :param train_n_epochs: 
+    :param train_batch_sz: 
+    :param test_n_epochs: 
+    :param test_n_batch_sz: 
+    :return: 
+    '''
     folds = k_fold(predictors, labels, n_splits)
     accuracies = []
     for model in models:
@@ -40,13 +45,15 @@ def k_fold(predictors, labels, n_splits):
     '''
     folds = []
     for i in range(0, n_splits):
-        train_data = (
-            predictors[np.mod([i for i in range(0, len(labels))], n_splits) != 0],
-            labels[np.mod([i for i in range(0, len(labels))], n_splits) != 0]
-        )
         test_data = (
             predictors[i::n_splits],
             labels[i::n_splits]
+        )
+        train_data = (
+            np.array([predictor_seq for j, predictor_seq in enumerate(predictors) if j % n_splits != 0]),
+            np.array([label_seq for j, label_seq in enumerate(labels) if j % n_splits != 0])
+            # predictors[np.mod([i for i in range(0, len(labels))], n_splits) != 0],
+            # labels[np.mod([i for i in range(0, len(labels))], n_splits) != 0]
         )
         folds.append((train_data, test_data))
     return folds
