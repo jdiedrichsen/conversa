@@ -1,6 +1,6 @@
 # Conversa
 
-Example program
+Example program:
 ```python
 # Load data and evaluation modules
 try:
@@ -23,7 +23,7 @@ except IOError:
 
 ## Data Loading - cnv_data
 
-Loading data into ```predictors``` and ```labels```.
+Loading data into ```predictors``` and ```labels```:
 ```
 try:
     (predictors, labels) = (cnv_data.load(
