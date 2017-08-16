@@ -7,10 +7,10 @@ except ImportError:
     print('Unable to import cnv_data')
 
 
-# Trial on test data
+# Trial on test_data data
 
-tr_file = 'C:\\Users\\Shayn\\Documents\\Work\\AI Research\\conversa\\data\\test\\sequence_0110_predictors.txt'
-la_file = 'C:\\Users\\Shayn\\Documents\\Work\\AI Research\\conversa\\data\\test\\sequence_0011_labels.txt'
+tr_file = 'C:\\Users\\Shayn\\Documents\\Work\\AI Research\\conversa\\data\\test_data\\sequence_0110_predictors.txt'
+la_file = 'C:\\Users\\Shayn\\Documents\\Work\\AI Research\\conversa\\data\\test_data\\sequence_0011_labels.txt'
 
 try:
     predictors = np.genfromtxt(tr_file)
@@ -124,9 +124,9 @@ train_end = train_n_samples
 test_start = train_end  # Last index in range of numpy array is exclusive
 test_end = test_start+test_n_samples
 
-assert test_end == n_samples, 'cnv_test_lstm.py: test set does not end at end of data set'
+assert test_end == n_samples, 'cnv_test_lstm.py: test_data set does not end at end of data set'
 
-# Set test and train predictors and labels
+# Set test_data and train_data predictors and labels
 x_train = predictors[:][train_start:train_end]
 y_train = labels[:][train_start:train_end]
 x_test = predictors[:][test_start:test_end]
@@ -178,7 +178,7 @@ spec_model.compile(optimizer='rmsprop',
               loss='binary_crossentropy',
               metrics=['accuracy'])  # See bottom of file for comparing against mean prediction
 
-# Fit and test
+# Fit and test_data
 spec_model.fit(predictors, labels, batch_size=n_seqs, epochs=n_epochs, validation_split=test_ratio)
 
 '''

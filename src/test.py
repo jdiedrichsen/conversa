@@ -4,17 +4,31 @@ try:
 except ImportError:
     print('Unable to import cnv_data')
 
+
 TRACKING_FILE = 'C:\\Users\\Shayn\\Documents\\Work\\AI Research\\conversa\\data\\tracking\\par2024Cam1\\cam1par2024.txt'
 LABEL_FILE = 'C:\\Users\\Shayn\\Documents\\Work\\AI Research\\conversa\\data\\labels\\p2024cam1.dat'
 
 predictors, labels = None, None
 try:
-    (predictors, labels) = (cnv_data.load(TRACKING_FILE, LABEL_FILE))
+    (predictors, labels) = (cnv_data.load(TRACKING_FILE, LABEL_FILE, {'smile'}))
 except IOError:
     print('Failed to open files')
 
-t = cnv_eval.k_fold(predictors, labels, 5)
-print(labels.dtype.names)
+
+# Testing folds
+
+n_folds = 5
+folds = cnv_eval.k_fold(predictors, labels, 5)
+for fold_no in range(0, len(folds)):
+    print('Fold number:\t' + str(fold_no))
+    fold = folds[fold_no]
+    train_data, test_data = fold
+    (train_predictors, train_labels) = train_data
+    (test_predictors, test_labels) = test_data
+    for i in range(0, 1):
+        print('Test:\t' + str(test_predictors['timestamp'][i]))
+        for j in range(0, 5):
+            print('Train:\t' + str(train_predictors['timestamp'][i*5+j]))
 
 # # Imports --------------------------------------------------------------------------------------------------------------
 #
