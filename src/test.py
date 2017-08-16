@@ -5,8 +5,8 @@ except ImportError:
     print('Unable to import cnv_data')
 
 
-TRACKING_FILE = 'C:\\Users\\Shayn\\Documents\\Work\\AI Research\\conversa\\data\\tracking\\par2024Cam1\\cam1par2024.txt'
-LABEL_FILE = 'C:\\Users\\Shayn\\Documents\\Work\\AI Research\\conversa\\data\\labels\\p2024cam1.dat'
+TRACKING_FILE = '..\\data\\tracking\\par2024Cam1\\cam1par2024.txt'
+LABEL_FILE = '..\\data\\labels\\p2024cam1.dat'
 
 predictors, labels = None, None
 try:
