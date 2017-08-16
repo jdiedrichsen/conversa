@@ -18,7 +18,7 @@ except IOError:
 # Testing folds
 
 n_folds = 5
-folds = cnv_eval.k_fold(predictors, labels, 5)
+folds = cnv_eval.k_fold(predictors, labels, n_folds=5)
 for fold_no in range(0, len(folds)):
     print('Fold number:\t' + str(fold_no))
     fold = folds[fold_no]

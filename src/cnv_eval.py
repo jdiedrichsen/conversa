@@ -34,28 +34,28 @@ def eval_models(models, predictors, labels, n_folds=5, train_n_epochs=10, train_
     return accuracies
 
 
-def k_fold(predictors, labels, n_splits):
+def k_fold(predictors, labels, n_folds):
     '''
     Splits predictors and labels into a number of testing groups
     :param predictors: All of the predictors data to be split
     :param labels: All of the label data to be split
-    :param n_splits: 
+    :param n_folds: 
     :return: AEach fold is a nested tuple, of (train_data, test_data) where
     train_data = (train_predictors, train_labels) and test_data = (test_predictors, test_labels)
     '''
     folds = list()
-    for i in range(0, n_splits):
+    for i in range(0, n_folds):
         test_data = (
-            predictors[i::n_splits],
-            labels[i::n_splits]
+            predictors[i::n_folds],
+            labels[i::n_folds]
         )
         # Here pred is short for predictor and labl is short for label
         # Used to avoid confusion with predictors and labels
         train_data = (
-            np.array([pred for (j, pred) in enumerate(predictors) if (j-i) % n_splits != 0]),
-            np.array([labl for (j, labl) in enumerate(labels) if (j-i) % n_splits != 0])
-            # predictors[np.mod([i for i in range(0, len(labels))], n_splits) != 0],
-            # labels[np.mod([i for i in range(0, len(labels))], n_splits) != 0]
+            np.array([pred for (j, pred) in enumerate(predictors) if (j-i) % n_folds != 0]),
+            np.array([labl for (j, labl) in enumerate(labels) if (j-i) % n_folds != 0])
+            # predictors[np.mod([i for i in range(0, len(labels))], n_folds) != 0],
+            # labels[np.mod([i for i in range(0, len(labels))], n_folds) != 0]
         )
         folds.append((train_data, test_data))
     return folds

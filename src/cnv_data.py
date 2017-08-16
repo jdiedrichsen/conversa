@@ -38,12 +38,13 @@ def load_tracking(tracking_file):
 #     return
 
 
-def load(tracking_file, label_file, label_fields=None, structured=True):
+def load(tracking_file, label_file, behaviour_fields=None, structured=True):
+    # TODO
     '''
     
     :param tracking_file: 
     :param label_file: 
-    :param label_fields: If None, all label fields are included
+    :param behaviour_fields: 
     :param structured: 
     :return: 
     '''
@@ -62,17 +63,16 @@ def load(tracking_file, label_file, label_fields=None, structured=True):
     except IOError:
         print('Failed to open label file at ' + label_file)
 
-    # TODO: Change to be parameterized
-    if label_fields is not None:  # Check if the label fields have been set
-        keep_fields = _LA_NON_BEHAV_FIELDS | label_fields  # Fields to keep
+    if behaviour_fields is not None:  # Check if the label fields have been set
+        keep_fields = _LA_NON_BEHAV_FIELDS | behaviour_fields  # Fields to keep
         for name in label_data.dtype.names:
             if name not in keep_fields:
                 label_data = rm_field(label_data, name)
 
     # Get behaviour fields
-    label_fields = label_data.dtype.names
+    behaviour_fields = label_data.dtype.names
     behav_names = []
-    for label in label_fields:
+    for label in behaviour_fields:
         if not(label in _LA_NON_BEHAV_FIELDS):
             behav_names.append(label)
     n_samples = tracking_data.shape[0]
