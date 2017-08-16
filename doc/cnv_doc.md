@@ -86,4 +86,4 @@ for fold in folds:
     (train_data, test_data) = fold
     # Do something with the training and testing data
 ```
-When using ```k_fold```
+When using ```k_fold```, keep in mind that each elements in each fold may not keep their ordering. In order to use this function for sequence data, be sure to set each element of the predictor and label data to a sequence.
