@@ -49,9 +49,11 @@ def k_fold(predictors, labels, n_splits):
             predictors[i::n_splits],
             labels[i::n_splits]
         )
+        # Here pred is short for predictor and labl is short for label
+        # Used to avoid confusion with predictors and labels
         train_data = (
-            np.array([predictor_seq for j, predictor_seq in enumerate(predictors) if (j+i) % n_splits != 0]),
-            np.array([label_seq for j, label_seq in enumerate(labels) if (j+i) % n_splits != 0])
+            np.array([pred for (j, pred) in enumerate(predictors) if (j-i) % n_splits != 0]),
+            np.array([labl for (j, labl) in enumerate(labels) if (j-i) % n_splits != 0])
             # predictors[np.mod([i for i in range(0, len(labels))], n_splits) != 0],
             # labels[np.mod([i for i in range(0, len(labels))], n_splits) != 0]
         )

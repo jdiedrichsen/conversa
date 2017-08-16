@@ -25,10 +25,10 @@ for fold_no in range(0, len(folds)):
     train_data, test_data = fold
     (train_predictors, train_labels) = train_data
     (test_predictors, test_labels) = test_data
-    for i in range(0, 1):
-        print('Test:\t' + str(test_predictors['timestamp'][i]))
-        for j in range(0, 5):
-            print('Train:\t' + str(train_predictors['timestamp'][i*5+j]))
+    for i in range(0, 3):
+        print('Test:\t' + str((test_predictors['timestamp'][i]*30)))
+        for j in range(0, n_folds-1):
+            print('Train:\t' + str((train_predictors['timestamp'][i*(n_folds-1)+j]*30)))
 
 # # Imports --------------------------------------------------------------------------------------------------------------
 #
