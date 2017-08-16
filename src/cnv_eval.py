@@ -39,8 +39,8 @@ def k_fold(predictors, labels, n_folds):
     Splits predictors and labels into a number of testing groups
     :param predictors: All of the predictors data to be split
     :param labels: All of the label data to be split
-    :param n_folds: 
-    :return: AEach fold is a nested tuple, of (train_data, test_data) where
+    :param n_folds: The number of folds to split the data into
+    :return: Each fold is a nested tuple, of (train_data, test_data) where
     train_data = (train_predictors, train_labels) and test_data = (test_predictors, test_labels)
     '''
     folds = list()
