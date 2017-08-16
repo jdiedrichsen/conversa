@@ -17,18 +17,32 @@ except IOError:
 
 # Testing folds
 
-n_folds = 5
-folds = cnv_eval.k_fold(predictors, labels, n_folds=5)
-for fold_no in range(0, len(folds)):
-    print('Fold number:\t' + str(fold_no))
-    fold = folds[fold_no]
-    train_data, test_data = fold
-    (train_predictors, train_labels) = train_data
-    (test_predictors, test_labels) = test_data
-    for i in range(0, 3):
-        print('Test:\t' + str((test_predictors['timestamp'][i]*30)))
-        for j in range(0, n_folds-1):
-            print('Train:\t' + str((train_predictors['timestamp'][i*(n_folds-1)+j]*30)))
+# Outputs via field indexing
+
+# n_folds = 5
+# folds = cnv_eval.k_fold(predictors, labels, n_folds=5)
+# for fold_no in range(0, len(folds)):
+#     print('Fold number:\t' + str(fold_no))
+#     fold = folds[fold_no]
+#     train_data, test_data = fold
+#     (train_predictors, train_labels) = train_data
+#     (test_predictors, test_labels) = test_data
+#     for i in range(0, 3):
+#         print('Test data:\t' + str((test_predictors['timestamp'][i]*30)))
+#         for j in range(0, n_folds-1):
+#             print('Train data\t:\t' + str((train_predictors['timestamp'][i*(n_folds-1)+j]*30)))
+
+# Outputs via index
+
+# n_folds = 5
+# folds = cnv_eval.k_fold(predictors, labels, n_folds=5)
+# for (train_data, test_data) in folds:
+#     (train_predictors, train_labels) = train_data
+#     (test_predictors, test_labels) = test_data
+#     for i in range(0, 3):
+#         print('Test data:\n' + str(test_predictors[i]))
+#         for j in range(0, n_folds - 1):
+#             print('Train data:\n' + str((train_predictors[i * (n_folds - 1) + j])))
 
 # # Imports --------------------------------------------------------------------------------------------------------------
 #

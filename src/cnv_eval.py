@@ -7,7 +7,7 @@ import numpy as np
 def eval_models(models, predictors, labels, n_folds=5, train_n_epochs=10, train_batch_sz=10, test_n_epochs=10,  # TODO
                 test_n_batch_sz=10):
     '''
-    
+    Evaluates models given predictor and label data to train and test the models on
     :param models: 
     :param predictors: 
     :param labels: 
