@@ -51,8 +51,9 @@ for fold in folds:
 ```
 When using ```k_fold```, keep in mind that each elements in each fold may not keep their ordering. In order to use this function for sequence data, be sure to set each element of the predictor and label data to a sequence.
 
-## Example program
+## Example Programs
 
+Load some data into numpy arrays:
 ``` python
 # Load data and evaluation modules
 try:
@@ -71,6 +72,19 @@ try:
     (predictors, labels) = (cnv_data.load(tracking_file, label_file, behaviours))
 except IOError:
     print('Failed to open files')
+```
+
+Partition existing data in numpy arrays ```predictors``` and ```labels``` using ```k_fold``` and printing some of the data:
+``` python
+n_folds = 5
+folds = cnv_eval.k_fold(predictors, labels, n_folds=5)
+for (train_data, test_data) in folds:
+    (train_predictors, train_labels) = train_data
+    (test_predictors, test_labels) = test_data
+    for i in range(0, 3):
+        print('Test data:\n' + str(test_predictors[i]))
+        for j in range(0, n_folds - 1):
+            print('Train data:\n' + str((train_predictors[i * (n_folds - 1) + j])))
 ```
 
 ## File Format Examples
