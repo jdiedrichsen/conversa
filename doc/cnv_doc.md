@@ -34,7 +34,6 @@
     Returns the ndarray with added dimensions  
     
 **```to_seqs(data, seq_len, n_dims)```**  
-    ***Work in progress, not fully functional***  
     Divides a numpy array into a series of sequences  
     Data in the last sequence may be cut off if the ndarray ```data``` does not have a number of rows which is divisile by ```seq_len```  
     Parameters:  
