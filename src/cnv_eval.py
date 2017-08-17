@@ -45,8 +45,8 @@ def eval_models(models,
     # TODO: Add verbose flags and vprint function
 
     # Function constants
-    FOLD_NO_STR = 'fold_no'
     MODEL_NO_STR = 'model_no'
+    FOLD_NO_STR = 'fold_no'
     ACC_STR = 'accuracy'
     LOSS_STR = 'loss'
 
@@ -58,10 +58,10 @@ def eval_models(models,
         (LOSS_STR, [])
     ])
     for model_no in range(0, len(models)):
-        print('\nMoving to model:\t' + str(model_no+1))
+        print('Moving to model: ' + str(model_no+1))
         model = models[model_no]
         for fold_no in range(0, len(folds)):
-            print('\nMoving to next fold:\t' + str(fold_no+1))
+            print('\tMoving to fold: ' + str(fold_no+1))
             fold = folds[fold_no]
             # Unpack data from fold
             (train_data, test_data) = fold
@@ -72,11 +72,22 @@ def eval_models(models,
             # Test
             (loss, accuracy) = model.evaluate(test_predictors, test_labels, batch_size=test_n_batch_sz, verbose=verbose)
             # Set accuracy and loss
-            evaluation[FOLD_NO_STR].append(fold_no)
-            evaluation[MODEL_NO_STR].append(model_no)
+            evaluation[MODEL_NO_STR].append(model_no+1)
+            evaluation[FOLD_NO_STR].append(fold_no+1)
             evaluation[ACC_STR].append(accuracy)
             evaluation[LOSS_STR].append(loss)
-    return pd.DataFrame(data=evaluation)
+    eval_df = pd.DataFrame(data=evaluation)
+    print('Evaluation complete')
+    return order(eval_df, [MODEL_NO_STR, FOLD_NO_STR, ACC_STR, LOSS_STR])
+
+# Refactored from https://stackoverflow.com/a/25023460/7195043
+def order(data, field_names):
+    '''
+    Re-orders the columns of data according to field_names
+    '''
+    back_fields =[col for col in data.columns if col not in field_names]
+    data = data[field_names + back_fields]
+    return data
 
 
 def k_fold(predictors, labels, n_folds):

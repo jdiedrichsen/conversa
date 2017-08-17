@@ -6,10 +6,10 @@ import numpy as np
 from keras.models import Sequential
 from keras.layers import LSTM
 try:
-    import cnv_data, cnv_eval, cnv_net
+    import cnv_data, cnv_eval
 except ImportError:
     print('Unable to import cnv_data')
-
+from tabulate import tabulate
 
 # Parameters -----------------------------------------------------------------------------------------------------------
 
@@ -22,7 +22,7 @@ N_EPOCHS = 10
 VALIDATION_SPLIT = 0.2
 
 # Layer params
-DEFAULT_LAYER_WIDTH = 1
+DEFAULT_LAYER_WIDTH = 16
 N_HIDDEN_LAYERS = 1
 # Functions
 # INPUT_FUNCTION = 'relu'
@@ -40,17 +40,22 @@ except IOError:
     print('Failed to open files')
 print('Loaded files')
 
-print(predictors.shape)
-print(labels.shape)
-
-input_dim = predictors.shape[1]
-output_dim = labels.shape[1]
+# print(predictors.shape)
+# print(labels.shape)
 
 predictors = cnv_data.to_subseqs(predictors, TIMESTEPS)
 labels = cnv_data.to_subseqs(labels, TIMESTEPS)
-print('Split into sub')
+print('Split data into subsequences')
+
+# print(predictors.shape)
+# print(labels.shape)
+
 
 # Set up models --------------------------------------------------------------------------------------------------------
+
+# First index of shape is the number of subsequences, second is length of subsequences, third is dimensions of data
+input_dim = predictors.shape[2]
+output_dim = labels.shape[2]
 
 spec_model = Sequential()
 # Input layer
@@ -59,7 +64,8 @@ spec_model.add(LSTM(DEFAULT_LAYER_WIDTH,
                     input_shape=(TIMESTEPS, input_dim)))
 # Hidden layer(s)
 for i in range(0, N_HIDDEN_LAYERS):
-    spec_model.add(LSTM(DEFAULT_LAYER_WIDTH, return_sequences=True))
+    spec_model.add(LSTM(DEFAULT_LAYER_WIDTH,
+                        return_sequences=True))
 # Output layer
 spec_model.add(LSTM(output_dim,
                     return_sequences=True,
@@ -69,6 +75,8 @@ print(spec_model.summary())
 spec_model.compile(optimizer='rmsprop',
                    loss='binary_crossentropy',
                    metrics=['accuracy'])
+
+models = [spec_model]
 
 # Train
 # print('Training')
@@ -131,6 +139,12 @@ spec_model.compile(optimizer='rmsprop',
 #             print('Train data:\n' + str((train_predictors[i * (n_folds - 1) + j])))
 #
 #
+# Testing model evalution ----------------------------------------------------------------------------------------------
+
+eval_results = cnv_eval.eval_models(models, predictors, labels)
+print(tabulate(eval_results, headers='keys'))
+
+
 # End ------------------------------------------------------------------------------------------------------------------
 #
 # print('cnv_test_lstm.py: Completed execution')
