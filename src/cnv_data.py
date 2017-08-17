@@ -161,23 +161,22 @@ def add_dim(data, n_dims=1):
     return data
 
 
-def to_seqs(data, timesteps):
+def to_subseqs(data, subseq_len):
     '''
-    Divides a numpy array into a series of sequences
-    :param data: The numpy array to be divided into sequences
-    :param p_seq_len: The length of sequences to produce
-    :param p_n_dims: The number of dimensions for each member of each sequence to have
-    :return: A numpy array which contains the original data divided into sequences of length p_seq_len. Data in the last 
-    few rows may be cut off if it does not fill an entire sequence
+    Divides a numpy array into a series of subsequences
+    Data in the last few rows may be cut off if it does not fill an entire subsequence
+    :param data: The numpy array to be divided into subsequences
+    :param subseq_len: The length of sequences to produce
+    :return: A numpy array which contains the original data divided into subsequences of length seq_len
     '''
     seq_len = data.shape[0]
-    n_seqs = int(seq_len / timesteps)
+    n_seqs = int(seq_len / subseq_len)
     data_dim = data.shape[1]
     # Trim before reshaping into sequences
-    new_len = n_seqs * timesteps
-    data = data[:new_len]  # TODO: Add partial sequence at end
+    new_len = n_seqs * subseq_len
+    data = data[:new_len]  # TODO: Add partial sequence at end instead of cutting
     # Reshape into sequences and return
-    return np.reshape(data, (n_seqs, timesteps, data_dim))
+    return np.reshape(data, (n_seqs, subseq_len, data_dim))
 
 
 def rm_field(data, field_name):

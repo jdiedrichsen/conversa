@@ -35,31 +35,20 @@ OUTPUT_FUNCTION = 'softmax'
 # Load files
 predictors, labels = None, None
 try:
-    (predictors, labels) = (cnv_data.load(TRACKING_FILE, LABEL_FILE))
+    (predictors, labels) = (cnv_data.load(TRACKING_FILE, LABEL_FILE, structured=True))
 except IOError:
     print('Failed to open files')
 print('Loaded files')
 
-# Set constants
-seq_len = predictors.shape[0]
-if seq_len != labels.shape[0]:
-    raise RuntimeError('Predictor and label length mismatch')
-n_seqs = int(seq_len / TIMESTEPS)
+print(predictors.shape)
+print(labels.shape)
+
 input_dim = predictors.shape[1]
 output_dim = labels.shape[1]
-# Trim before reshaping into batches
-new_len = n_seqs * TIMESTEPS
-predictors = predictors[:new_len]
-labels = labels[:new_len]
-# # Reshape into batches
-predictors = np.reshape(predictors, (n_seqs, TIMESTEPS, input_dim))
-labels = np.reshape(labels, (n_seqs, TIMESTEPS, output_dim))
-print(predictors.shape)
-print(labels.shape)
-predictors = cnv_data.to_seqs(predictors, TIMESTEPS)
-labels = cnv_data.to_seqs(labels, TIMESTEPS)
-print(predictors.shape)
-print(labels.shape)
+
+predictors = cnv_data.to_subseqs(predictors, TIMESTEPS)
+labels = cnv_data.to_subseqs(labels, TIMESTEPS)
+print('Split into sub')
 
 # Set up models --------------------------------------------------------------------------------------------------------
 
