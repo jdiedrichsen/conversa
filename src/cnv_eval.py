@@ -12,10 +12,8 @@ __status__ = 'Development'
 import numpy as np
 import pandas as pd
 
-# TODO: Add verbose flags and vprint function
-# TODO: mean prediction and LDA (and Naive Bayes?)
-# TODO: In doc add funciton guide/map
-
+# TODO: Mean prediction and LDA (and Naive Bayes?)
+# TODO: In doc add function guide/map
 
 # In each epoch of training, all data is used
 # The batch size specifies how many data points are given to the model at once
@@ -40,26 +38,45 @@ def eval_models(models,
     :param train_n_epochs: The number of passes each models gets on the data, defaults to 10
     :param train_batch_sz: The number of data points to train each model on at once, defaults to 10
     :param test_n_batch_sz: The number of data points to test each model on at once, defaults to 1
-    :param verbose: The verbosity level of training and testing - note that model console output often conflicts with 
-    outputs from cnv_eval - defaults to 0 (not verbose)
+    :param verbose: The verbosity level of model training and testing - note that model console output often conflicts
+    with outputs from cnv_eval - defaults to 0 (not verbose)
     :return: A pandas DataFrame with columns fold_no, model_no, and accuracy
     '''
-    # TODO: Change return to pandas DataFrame
+    # TODO: Add verbose flags and vprint function
+
+    # Function constants
+    FOLD_NO_STR = 'fold_no'
+    MODEL_NO_STR = 'model_no'
+    ACC_STR = 'accuracy'
+    LOSS_STR = 'loss'
+
     folds = k_fold(predictors, labels, n_folds)
-    pd.DataFrame()
-    accuracies = []
-    for model in models:
-        print('\nMoving to next model')
-        for (train_data, test_data) in folds:
-            print('\nMoving to next fold')
+    evaluation = dict([
+        (FOLD_NO_STR, []),
+        (MODEL_NO_STR, []),
+        (ACC_STR, []),
+        (LOSS_STR, [])
+    ])
+    for model_no in range(0, len(models)):
+        print('\nMoving to model:\t' + str(model_no+1))
+        model = models[model_no]
+        for fold_no in range(0, len(folds)):
+            print('\nMoving to next fold:\t' + str(fold_no+1))
+            fold = folds[fold_no]
+            # Unpack data from fold
+            (train_data, test_data) = fold
             (train_predictors, train_labels) = train_data
             (test_predictors, test_labels) = test_data
             # Train
             model.fit(train_predictors, train_labels, epochs=train_n_epochs, batch_size=train_batch_sz, verbose=verbose)
             # Test
             (loss, accuracy) = model.evaluate(test_predictors, test_labels, batch_size=test_n_batch_sz, verbose=verbose)
-            accuracies.append(accuracy)
-    return accuracies
+            # Set accuracy and loss
+            evaluation[FOLD_NO_STR].append(fold_no)
+            evaluation[MODEL_NO_STR].append(model_no)
+            evaluation[ACC_STR].append(accuracy)
+            evaluation[LOSS_STR].append(loss)
+    return pd.DataFrame(data=evaluation)
 
 
 def k_fold(predictors, labels, n_folds):
