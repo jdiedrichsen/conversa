@@ -171,7 +171,7 @@ def to_subseqs(data, subseq_len):
     '''
     seq_len = data.shape[0]
     n_seqs = int(seq_len / subseq_len)
-    data_dim = data.shape[1]
+    data_dim = data.shape[-1]
     # Trim before reshaping into sequences
     new_len = n_seqs * subseq_len
     data = data[:new_len]  # TODO: Add partial sequence at end instead of cutting

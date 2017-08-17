@@ -19,11 +19,11 @@ LABEL_FILE = '..\\data\\labels\\p2024cam1.dat'
 TIMESTEPS = 30  # Keep in mind that n_seqs = int(seq_len / TIMESTEPS)
 BATCH_SZ = 10  # Optionally can set batch_size in fitting/evaluation to number of sequences (n_seqs for all sequences)
 N_EPOCHS = 10
-VALIDATION_SPLIT = 0.2
+# VALIDATION_SPLIT = 0.2
 
 # Layer params
-DEFAULT_LAYER_WIDTH = 16
-N_HIDDEN_LAYERS = 1
+DEFAULT_LAYER_WIDTH = 32
+N_HIDDEN_LAYERS = 3
 # Functions
 # INPUT_FUNCTION = 'relu'
 # HIDDEN_ACT_FUNC = 'relu'
@@ -35,7 +35,8 @@ OUTPUT_FUNCTION = 'softmax'
 # Load files
 predictors, labels = None, None
 try:
-    (predictors, labels) = (cnv_data.load(TRACKING_FILE, LABEL_FILE, structured=True))
+    (predictors, labels) = (cnv_data.load(TRACKING_FILE, LABEL_FILE, behaviour_fields={'smile'}, structured=True))
+    # TODO: Figure out how to do this with structred numpy arrays - can implement diff in cnv_eval
 except IOError:
     print('Failed to open files')
 print('Loaded files')
@@ -142,6 +143,7 @@ models = [spec_model]
 # Testing model evalution ----------------------------------------------------------------------------------------------
 
 eval_results = cnv_eval.eval_models(models, predictors, labels, verbose=0)
+
 print(tabulate(eval_results, headers='keys'))
 
 

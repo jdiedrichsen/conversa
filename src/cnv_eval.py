@@ -12,8 +12,47 @@ __status__ = 'Development'
 import numpy as np
 import pandas as pd
 
+# Constants
+PID_STR = 'pid'
+CAM_STR = 'cam'
+BEHAV_STR = 'behaviour'
+MODEL_NO_STR = 'model_no'
+FOLD_NO_STR = 'fold_no'
+ACC_STR = 'accuracy'
+# LOSS_STR = 'loss'
+
 # TODO: Mean prediction and LDA (and Naive Bayes?)
 # TODO: In doc add function guide/map
+
+# # TODO
+# def diff(x, y):
+#     '''
+#     Returns the difference between two structured numpy arrays with the same fields
+#     '''
+#     pass
+#
+#
+# def pct_diff(prediction, actual):
+#     return np.mean(prediction - actual)
+#
+#
+# def rmse(prediction, actual):
+#     return np.sqrt(np.mean(np.square(prediction - actual)))
+#
+#
+# def evaluate(model, predictors, labels, error_func=pct_diff):
+#     # TODO: Add check if structured or not
+#     # try:
+#     #     from cnv_data import destructure
+#     # except ImportError:
+#     #     print('Unable to import cnv_data.load_subject')
+#     # print(type(predicted_labels))
+#     # print(destructure(predicted_labels).shape)
+#     # print(labels.shape)
+#     # print(destructure(labels).shape)
+#     predicted_labels = model.predict(predictors)
+#     return 1 - error_func(predicted_labels, labels)
+
 
 # In each epoch of training, all data is used
 # The batch size specifies how many data points are given to the model at once
@@ -28,6 +67,7 @@ def eval_models(models,
                 train_n_epochs=10,
                 train_batch_sz=10,
                 test_n_batch_sz=1,
+                return_dataframe=True,
                 verbose=0):
     '''
     Evaluates models given predictor and label data to train and test the models on
@@ -44,18 +84,12 @@ def eval_models(models,
     '''
     # TODO: Add verbose flags and vprint function
 
-    # Function constants
-    MODEL_NO_STR = 'model_no'
-    FOLD_NO_STR = 'fold_no'
-    ACC_STR = 'accuracy'
-    LOSS_STR = 'loss'
-
     folds = k_fold(predictors, labels, n_folds)
-    evaluation = dict([
+    eval_results = dict([
         (FOLD_NO_STR, []),
         (MODEL_NO_STR, []),
-        (ACC_STR, []),
-        (LOSS_STR, [])
+        (ACC_STR, [])
+        # (LOSS_STR, [])
     ])
     for model_no in range(0, len(models)):
         print('Moving to model: ' + str(model_no+1))
@@ -70,20 +104,25 @@ def eval_models(models,
             # Train
             model.fit(train_predictors, train_labels, epochs=train_n_epochs, batch_size=train_batch_sz, verbose=verbose)
             # Test
-            (loss, accuracy) = model.evaluate(test_predictors, test_labels, batch_size=test_n_batch_sz, verbose=verbose)
-            # Set accuracy and loss
-            evaluation[MODEL_NO_STR].append(model_no+1)
-            evaluation[FOLD_NO_STR].append(fold_no+1)
-            evaluation[ACC_STR].append(accuracy)
-            evaluation[LOSS_STR].append(loss)
-    eval_df = pd.DataFrame(data=evaluation)
+            (_, accuracy) = model.evaluate(test_predictors, test_labels, batch_size=test_n_batch_sz, verbose=verbose)
+            # accuracy = evaluate(model, test_predictors, test_labels)
+            # Set accuracy
+            eval_results[MODEL_NO_STR].append(model_no+1)
+            eval_results[FOLD_NO_STR].append(fold_no+1)
+            eval_results[ACC_STR].append(accuracy)
+            # evaluation[LOSS_STR].append(loss)
+    if return_dataframe:
+        output = order(pd.DataFrame(eval_results), [MODEL_NO_STR, FOLD_NO_STR, ACC_STR])
+    else:
+        output = eval_results
     print('Evaluation complete')
-    return order(eval_df, [MODEL_NO_STR, FOLD_NO_STR, ACC_STR, LOSS_STR])
+    return output
 
-# Refactored from https://stackoverflow.com/a/25023460/7195043
+
 def order(data, field_names):
     '''
     Re-orders the columns of data according to field_names
+    Refactored from https://stackoverflow.com/a/25023460/7195043
     '''
     back_fields =[col for col in data.columns if col not in field_names]
     data = data[field_names + back_fields]
@@ -117,9 +156,30 @@ def k_fold(predictors, labels, n_folds):
         folds.append((train_data, test_data))
     return folds
 
+
 # Subjects are tuplles of (pid, cam), where pid and cam are numbers, like (2024, 2)
 def eval_models_on_subjects(models, subjects):
-    pass
+
+    eval_results = dict([
+        (PID_STR, []),
+        (CAM_STR, []),
+        (BEHAV_STR, []),
+        (MODEL_NO_STR, []),
+        (FOLD_NO_STR, []),
+        (ACC_STR, []),
+    ])
+
+    try:
+        from cnv_data import load_subject
+    except ImportError:
+        print('Unable to import cnv_data.load_subject')
+
+    for (pid, cam) in subjects:
+        (predictors, labels) = load_subject(pid, cam)
+        for behav_name in labels.dtype.names:
+            t = eval_models(models, predictors, labels[behav_name])
+
+    return order(pd.DataFrame(eval_results), [PID_STR, CAM_STR, BEHAV_STR, MODEL_NO_STR, FOLD_NO_STR, ACC_STR])
 
 
 print('Imported cnv_eval')
