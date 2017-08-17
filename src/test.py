@@ -141,7 +141,7 @@ models = [spec_model]
 #
 # Testing model evalution ----------------------------------------------------------------------------------------------
 
-eval_results = cnv_eval.eval_models(models, predictors, labels)
+eval_results = cnv_eval.eval_models(models, predictors, labels, verbose=0)
 print(tabulate(eval_results, headers='keys'))
 
 

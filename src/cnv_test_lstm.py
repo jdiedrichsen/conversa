@@ -116,13 +116,13 @@ spec_model_2 = Sequential()
 spec_model_2.add(LSTM(DEFAULT_LAYER_WIDTH,
                     return_sequences=True,
                     input_shape=(TIMESTEPS, input_dim)))
-# # Hidden layer(s)
-# for i in range(0, N_HIDDEN_LAYERS):
-#     spec_model_2.add(LSTM(DEFAULT_LAYER_WIDTH, return_sequences=True))
+# Hidden layer(s)
+for i in range(0, N_HIDDEN_LAYERS):
+    spec_model_2.add(LSTM(DEFAULT_LAYER_WIDTH, return_sequences=True))
 # Output layer
-# spec_model_2.add(LSTM(output_dim,
-#                     return_sequences=True,
-#                     activation=OUTPUT_FUNCTION))
+spec_model_2.add(LSTM(output_dim,
+                    return_sequences=True,
+                    activation=OUTPUT_FUNCTION))
 # Compile
 print(spec_model_2.summary())
 spec_model_2.compile(optimizer='rmsprop',

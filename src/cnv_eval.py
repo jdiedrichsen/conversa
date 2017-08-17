@@ -118,8 +118,7 @@ def k_fold(predictors, labels, n_folds):
     return folds
 
 
-def print_summary(scores):
-    pass
+# def
 
 
 print('Imported cnv_eval')
