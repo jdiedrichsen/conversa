@@ -38,7 +38,7 @@ def eval_models(models,
     :param labels: Labels to test the models on
     :param n_folds: The number of folds to test the data on, defaults to 5
     :param train_n_epochs: The number of passes each models gets on the data, defaults to 10
-    :param train_batch_sz: The number of data points to give each model on at once, defaults to 10
+    :param train_batch_sz: The number of data points to train each model on at once, defaults to 10
     :param test_n_batch_sz: The number of data points to test each model on at once, defaults to 1
     :param verbose: The verbosity level of training and testing - note that model console output often conflicts with 
     outputs from cnv_eval - defaults to 0 (not verbose)
