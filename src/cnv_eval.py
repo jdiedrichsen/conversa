@@ -1,10 +1,34 @@
+''' cnv_eval - Model evaluation tools for Conversa '''
+
+__author__ = 'Shayaan Syed Ali'
+# __copyright__ = ''
+__credits__ = ['Shayaan Syed Ali']
+__maintainer__ = 'Shayaan Syed Ali'
+__email__ = 'shayaan.syed.ali@gmail.com'
+__status__ = 'Development'
+# __license__ = ''
+# __version__ = ''
+
 import numpy as np
 
 # TODO: Add verbose flags and vprint function
 # TODO: mean prediction and LDA (and Naive Bayes?)
+# TODO: In doc add funciton guide/map
 
 
-def eval_models(models, predictors, labels, n_folds=5, train_n_epochs=10, train_batch_sz=10, test_n_epochs=10,  # TODO
+# In each epoch of training, all data is used
+# The batch size specifies how many data points are given to the model at once
+# E.g. with 135 data points, n_epochs = 10, and batch_sz = 20, you get 7 batches per epoch where 6 of the batches are of
+# size 20 and one is of size 15 (so every data point is used once). The model trains on this data 10 times (10 epochs)
+# and each time it divides the data into 7 batches
+
+def eval_models(models,
+                predictors,
+                labels,
+                n_folds=5,
+                train_n_epochs=10,
+                train_batch_sz=10,
+                test_n_epochs=10,
                 test_n_batch_sz=10):
     '''
     Evaluates models given predictor and label data to train and test the models on

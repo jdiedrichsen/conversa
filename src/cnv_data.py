@@ -1,5 +1,14 @@
 ''' cnv_data - Deals with data loading for Conversa '''
 
+__author__ = 'Shayaan Syed Ali'
+# __copyright__ = ''
+__credits__ = ['Shayaan Syed Ali']
+__maintainer__ = 'Shayaan Syed Ali'
+__email__ = 'shayaan.syed.ali@gmail.com'
+__status__ = 'Development'
+# __license__ = ''
+# __version__ = ''
+
 # TODO: File documentation tags
 # TODO: Add functionalities in cnv_test_lstm.py
 
@@ -177,10 +186,11 @@ def to_seqs(data, seq_len, n_dims):
 
 def rm_field(data, field_name):
     '''
-    Removes a field from structutrecd
-    :param data: 
-    :param field_name: 
-    :return: 
+    Removes a field from structured numpy array
+    If the field is not in the array, the original array is returned
+    :param data: The structured numpy array 
+    :param field_name: A string of the field name to remove
+    :return: The numpy array without the given field or the original array if the field is not found
     '''
     names = list(data.dtype.names)
     if field_name in names:

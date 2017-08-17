@@ -1,4 +1,5 @@
 print('Beginning test script')
+import numpy as np
 try:
     import cnv_data, cnv_eval
 except ImportError:
@@ -17,23 +18,36 @@ except IOError:
 
 # Testing folds
 
-# Outputs via field indexing
-
+# # Check exclusivitiy of timestamps
 # n_folds = 5
 # folds = cnv_eval.k_fold(predictors, labels, n_folds=5)
 # for fold_no in range(0, len(folds)):
+#     print('Checking fold number: ' + str(fold_no+1))
+#     fold = folds[fold_no]
+#     train_data, test_data = fold
+#     (train_predictors, train_labels) = train_data
+#     (test_predictors, test_labels) = test_data
+#     train_timestamps = np.unique(train_predictors['timestamp'])
+#     test_timestamps = np.unique(test_predictors['timestamp'])
+#     exclusive = not np.any(np.isin(train_timestamps, test_timestamps))
+#     # Can also assert exclusive
+#     print('Fold is exclusive') if exclusive else print('TEST FAILED: FOLD IS NOT EXCLUSIVE')
+
+# # Outputs via field indexing
+# n_folds = 5
+# folds = cnv_eval.k_fold(predictors, labels, n_folds=5)
+# for fold_no in range(0, 1):
 #     print('Fold number:\t' + str(fold_no))
 #     fold = folds[fold_no]
 #     train_data, test_data = fold
 #     (train_predictors, train_labels) = train_data
 #     (test_predictors, test_labels) = test_data
-#     for i in range(0, 3):
+#     for i in range(0, 5):
 #         print('Test data:\t' + str((test_predictors['timestamp'][i]*30)))
 #         for j in range(0, n_folds-1):
-#             print('Train data\t:\t' + str((train_predictors['timestamp'][i*(n_folds-1)+j]*30)))
+#             print('Train data:\t' + str((train_predictors['timestamp'][i*(n_folds-1)+j]*30)))
 
-# Outputs via index
-
+# # Outputs via index
 # n_folds = 5
 # folds = cnv_eval.k_fold(predictors, labels, n_folds=5)
 # for (train_data, test_data) in folds:
