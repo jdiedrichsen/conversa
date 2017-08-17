@@ -9,6 +9,7 @@ import numpy as np
 
 # Tracking constants
 _TR_N_SKIP_LINES = 12
+
 # Label constants
 _LA_FIELD_NAME_MIN = 'min'
 _LA_FIELD_NAME_SEC = 'sec'
@@ -41,12 +42,13 @@ def load_tracking(tracking_file):
 def load(tracking_file, label_file, behaviour_fields=None, structured=True):
     # TODO
     '''
-    
-    :param tracking_file: 
-    :param label_file: 
-    :param behaviour_fields: 
-    :param structured: 
-    :return: 
+    Loads data from a tracking file and a label file into structured arrays with corresponding entries 
+    :param tracking_file: The address of the tracking file, see File Format Examples for an example of a tracking file
+    :param label_file: The address of the label file, see File Format Examples  for an example of a label file
+    :param behaviour_fields: A list of behaviours to include from the label file, leave as None if you want all
+    behaviours included
+    :param structured: Whether the returned numpy arrays are structured numpy array with fieldnames  
+    :return: A 2 element tuple containing a strucutred array of the predictors and labels, as in (predictors, labels
     '''
 
     tracking_data, label_data = None, None  # Initialize before loading files
@@ -130,6 +132,11 @@ def index_to_frame(data, index):
 
 
 def destructure(data):
+    '''
+    Converts a structured array to a standard numpy array
+    :param data: A structured array
+    :return: A view of the ndarray with no fieldnames
+    '''
     return data.view((data.dtype[0], len(data.dtype.names)))  # Assumes data type of data is homogeneous
 
 
@@ -168,12 +175,17 @@ def to_seqs(data, seq_len, n_dims):
     return np.reshape(data[:(n_seqs*seq_len)], (n_seqs, seq_len, n_dims))
 
 
-def rm_field(arr, name):
-    names = list(arr.dtype.names)
-    if name in names:
-        names.remove(name)
-    b = arr[names]
-    return b
+def rm_field(data, field_name):
+    '''
+    Removes a field from structutrecd
+    :param data: 
+    :param field_name: 
+    :return: 
+    '''
+    names = list(data.dtype.names)
+    if field_name in names:
+        names.remove(field_name)
+    return data[names]
 
 
 print('Imported cnv_data')
