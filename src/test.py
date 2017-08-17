@@ -36,7 +36,6 @@ OUTPUT_FUNCTION = 'softmax'
 predictors, labels = None, None
 try:
     (predictors, labels) = (cnv_data.load(TRACKING_FILE, LABEL_FILE, behaviour_fields={'smile'}, structured=True))
-    # TODO: Figure out how to do this with structred numpy arrays - can implement diff in cnv_eval
 except IOError:
     print('Failed to open files')
 print('Loaded files')
@@ -142,11 +141,24 @@ models = [spec_model]
 #
 # Testing model evalution ----------------------------------------------------------------------------------------------
 
-eval_results = cnv_eval.eval_models(models, predictors, labels, verbose=0)
+# small_eval_results = cnv_eval.eval_models(models, predictors, labels, verbose=0)
+#
+# print(tabulate(small_eval_results, headers='keys'))
+
+subjects = [
+    (1001, 1),
+    (1005, 1),
+    (2001, 1),
+    (2002, 1),
+    (2006, 1),
+    (2010, 1),
+    (2017, 1),
+    (2024, 1),
+]
+
+eval_results = cnv_eval.eval_models_on_subjects(models, [(2024, 1)])
 
 print(tabulate(eval_results, headers='keys'))
-
-
 
 
 # End ------------------------------------------------------------------------------------------------------------------

@@ -1,4 +1,7 @@
 ''' cnv_eval - Model evaluation tools for Conversa '''
+import numpy as np
+import pandas as pd
+from copy import copy
 
 __author__ = 'Shayaan Syed Ali'
 # __copyright__ = ''
@@ -9,8 +12,8 @@ __status__ = 'Development'
 # __license__ = ''
 # __version__ = ''
 
-import numpy as np
-import pandas as pd
+# TODO: Mean prediction and LDA (and Naive Bayes?)
+# TODO: In doc add function guide/map
 
 # Constants
 PID_STR = 'pid'
@@ -21,8 +24,8 @@ FOLD_NO_STR = 'fold_no'
 ACC_STR = 'accuracy'
 # LOSS_STR = 'loss'
 
-# TODO: Mean prediction and LDA (and Naive Bayes?)
-# TODO: In doc add function guide/map
+
+# TODO: Fix evaluation function to use model.predict and error_fun, also make it work with structured arrays
 
 # # TODO
 # def diff(x, y):
@@ -67,7 +70,7 @@ def eval_models(models,
                 train_n_epochs=10,
                 train_batch_sz=10,
                 test_n_batch_sz=1,
-                return_dataframe=True,
+                return_data_frame=True,
                 verbose=0):
     '''
     Evaluates models given predictor and label data to train and test the models on
@@ -82,7 +85,8 @@ def eval_models(models,
     with outputs from cnv_eval - defaults to 0 (not verbose)
     :return: A pandas DataFrame with columns fold_no, model_no, and accuracy
     '''
-    # TODO: Add verbose flags and vprint function
+    # TODO: Update doc
+    # TODO: Add verbose flags, vprint function, replace prints with vprint
 
     folds = k_fold(predictors, labels, n_folds)
     eval_results = dict([
@@ -93,9 +97,9 @@ def eval_models(models,
     ])
     for model_no in range(0, len(models)):
         print('Moving to model: ' + str(model_no+1))
-        model = models[model_no]
         for fold_no in range(0, len(folds)):
             print('\tMoving to fold: ' + str(fold_no+1))
+            model = copy(models[model_no])
             fold = folds[fold_no]
             # Unpack data from fold
             (train_data, test_data) = fold
@@ -111,7 +115,7 @@ def eval_models(models,
             eval_results[FOLD_NO_STR].append(fold_no+1)
             eval_results[ACC_STR].append(accuracy)
             # evaluation[LOSS_STR].append(loss)
-    if return_dataframe:
+    if return_data_frame:
         output = order(pd.DataFrame(eval_results), [MODEL_NO_STR, FOLD_NO_STR, ACC_STR])
     else:
         output = eval_results
@@ -158,7 +162,7 @@ def k_fold(predictors, labels, n_folds):
 
 
 # Subjects are tuplles of (pid, cam), where pid and cam are numbers, like (2024, 2)
-def eval_models_on_subjects(models, subjects):
+def eval_models_on_subjects(models, subjects, timesteps=30):
 
     eval_results = dict([
         (PID_STR, []),
@@ -170,15 +174,28 @@ def eval_models_on_subjects(models, subjects):
     ])
 
     try:
-        from cnv_data import load_subject
+        from cnv_data import load_subject, add_dim, to_subseqs
     except ImportError:
-        print('Unable to import cnv_data.load_subject')
+        print('Unable to import cnv_data functions')
 
     for (pid, cam) in subjects:
+        print('Subject: pid' + str(pid) + 'cam' + str(cam))
         (predictors, labels) = load_subject(pid, cam)
         for behav_name in labels.dtype.names:
-            t = eval_models(models, predictors, labels[behav_name])
+            print('Behaviour: ' + str(behav_name))
+            tmp = eval_models(models,
+                              to_subseqs(predictors, timesteps),
+                              to_subseqs(add_dim(labels[behav_name]), timesteps),
+                              return_data_frame=False)
+            n_rows = len(tmp[ACC_STR])
+            eval_results[PID_STR].extend([pid]*n_rows)
+            eval_results[CAM_STR].extend([cam]*n_rows)
+            eval_results[BEHAV_STR].extend([behav_name]*n_rows)
+            eval_results[MODEL_NO_STR].extend(tmp[MODEL_NO_STR])
+            eval_results[FOLD_NO_STR].extend(tmp[FOLD_NO_STR])
+            eval_results[ACC_STR].extend(tmp[ACC_STR])
 
+    print('Models evaluated on subjects')
     return order(pd.DataFrame(eval_results), [PID_STR, CAM_STR, BEHAV_STR, MODEL_NO_STR, FOLD_NO_STR, ACC_STR])
 
 

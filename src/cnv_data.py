@@ -1,5 +1,7 @@
 ''' cnv_data - Deals with data loading for Conversa '''
 
+import numpy as np
+
 __author__ = 'Shayaan Syed Ali'
 # __copyright__ = ''
 __credits__ = ['Shayaan Syed Ali']
@@ -12,7 +14,6 @@ __status__ = 'Development'
 # TODO: File documentation tags
 # TODO: Add functionalities in cnv_test_lstm.py
 
-import numpy as np
 
 # Constants
 
@@ -204,9 +205,9 @@ def load_subject(pid,
 
     # This is a temp solution
     # TODO: More flexible, modular approach
-    par_cam_str = ''.join('par', str(pid), 'cam', str(cam))
-    cam_par_str = ''.join('cam', str(cam), 'par', str(pid))
-    p_cam_str = ''.join('p', str(pid), 'cam', str(cam))
+    par_cam_str = ''.join(['par', str(pid), 'cam', str(cam)])
+    cam_par_str = ''.join(['cam', str(cam), 'par', str(pid)])
+    p_cam_str = ''.join(['p', str(pid), 'cam', str(cam)])
 
     tracking_file = '..\\data\\tracking\\' + par_cam_str + '\\' + cam_par_str + tracking_file_suffix
     label_file = '..\\data\\labels\\' + p_cam_str + label_file_suffix
