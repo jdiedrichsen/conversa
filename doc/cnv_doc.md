@@ -95,7 +95,7 @@ For examples of what tracking and label data should look like, see the File Form
         ```train_n_epochs```: The number of passes each models gets on the data, defaults to 10  
         ```train_batch_sz```: The number of data points to train each model on at once, defaults to 10  
         ```test_n_batch_sz```: The number of data points to test each model on at once, defaults to 1  
-        ```verbose```: The verbosity level of training and testing - note that model console output often conflicts with outputs from cnv_eval - defaults to 0 (not verbose)  
+        ```verbose```: The verbosity level of model training and testing - note that model console output often conflicts with outputs from cnv_eval - defaults to 0 (not verbose)  
     Returns a pandas DataFrame with columns fold_no, model_no, and accuracy  
     
 
