@@ -6,17 +6,18 @@
 
 **```load(tracking_file, label_file, label_fields=None, structured=True)```**  
     Loads data from a tracking file and a label file into structured arrays with corresponding entries  
-    ```tracking_file```: The address of the tracking file, see File Format Examples for an example of a tracking file
-    ```label_file```: The address of the label file, see File Format Examples  for an example of a label file
-    ```behaviour_fields```: A list of behaviours to include from the label file, leave as None if you want all behaviour included  
-    Returns a 2 element tuple containing a strucutred array of the predictors and labels, as in (predictors, labels)   
+    Parameters:  
+        ```tracking_file```: The address of the tracking file, see File Format Examples for an example of a tracking file  
+        ```label_file```: The address of the label file, see File Format Examples  for an example of a label file  
+        ```behaviour_fields```: A list of behaviours to include from the label file, leave as None if you want all behaviour included  
+    Returns a 2 element tuple containing a strucutred array of the predictors and labels, as in (predictors, labels)  
 
 **```load_tracking(tracking_file)```**  
     
 
 ### Usage
 
-Loading data into ```predictors``` and ```labels```:
+Loading data into ```predictors``` and ```labels```:  
 ``` python
 try:
     (predictors, labels) = (cnv_data.load(
@@ -33,12 +34,12 @@ For examples of what tracking and label data should look like, see the File Form
 
 ### Functions
 
-**```k_fold(predictors, labels, n_folds```**  
+**```k_fold(predictors, labels, n_folds)```**  
     Splits predictors and labels into a number of testing groups  
     ```predictors```: All of the predictors data to be split  
     ```labels```: All of the label data to be split  
-    ```n_folds```: The number of folds to split the data into
-    Each fold is a nested tuple, of ```(train_data, test_data)``` where ```train_data = (train_predictors, train_labels) and test_data = (test_predictors, test_labels)```  
+    ```n_folds```: The number of folds to split the data into  
+    Returns an array of fold where each fold is a nested tuple, of ```(train_data, test_data)``` where ```train_data = (train_predictors, train_labels) and test_data = (test_predictors, test_labels)```  
 
 ### Usage
 
