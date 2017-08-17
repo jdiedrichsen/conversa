@@ -33,14 +33,14 @@
         ```n_dims```: The number of dimensions to add  
     Returns the ndarray with added dimensions  
     
-**```to_seqs(data, seq_len, n_dims)```**  
-    Divides a numpy array into a series of sequences  
-    Data in the last sequence may be cut off if the ndarray ```data``` does not have a number of rows which is divisile by ```seq_len```  
+**```to_subseqs(data, seq_len, n_dims)```**  
+    Divides a numpy array into a series of subsequences
+    Data in the last few rows may be cut off if it does not fill an entire subsequence
     Parameters:  
-        ```data```: The numpy array to be divided into sequences  
+        ```data```: The numpy array to be divided into subsequences  
         ```seq_len```: The length of sequences to produce  
         ```n_dims```: The number of dimensions for each member of each sequence to have  
-    Returns a numpy array which contains the original data divided into sequences of length seq_len  
+    Returns a numpy array which contains the original data divided into subsequences of length seq_len  
     
 **```rm_field(data, field_name)```**  
     Removes a field from structured numpy array  
