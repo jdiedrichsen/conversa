@@ -33,7 +33,7 @@
         ```n_dims```: The number of dimensions to add  
     Returns the ndarray with added dimensions  
     
-**```to_seqs(data, seq_len, n_dims)```***  
+**```to_seqs(data, seq_len, n_dims)```**  
     ***Work in progress, not fully functional***  
     Divides a numpy array into a series of sequences  
     Data in the last sequence may be cut off if the ndarray ```data``` does not have a number of rows which is divisile by ```seq_len```  
@@ -43,13 +43,13 @@
         ```n_dims```: The number of dimensions for each member of each sequence to have  
     Returns a numpy array which contains the original data divided into sequences of length seq_len  
     
-**```rm_field(data, field_name)```**
-    Removes a field from structured numpy array
-    If the field is not in the array, the original array is returned
-    Parameters:
-        ```data```: The structured numpy array 
-        ```field_name```: A string of the field name to remove
-    Returns the numpy array without the given field or the original array if the field is not found
+**```rm_field(data, field_name)```**  
+    Removes a field from structured numpy array  
+    If the field is not in the array, the original array is returned  
+    Parameters:  
+        ```data```: The structured numpy array  
+        ```field_name```: A string of the field name to remove  
+    Returns the numpy array without the given field or the original array if the field is not found  
 
 ### Usage
 
