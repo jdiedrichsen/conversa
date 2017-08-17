@@ -42,7 +42,7 @@ def eval_models(models,
     :param test_n_batch_sz: The number of data points to test each model on at once, defaults to 1
     :param verbose: The verbosity level of training and testing - note that model console output often conflicts with 
     outputs from cnv_eval - defaults to 0 (not verbose)
-    :return: 
+    :return: A pandas DataFrame with columns fold_no, model_no, and accuracy
     '''
     # TODO: Change return to pandas DataFrame
     folds = k_fold(predictors, labels, n_folds)
