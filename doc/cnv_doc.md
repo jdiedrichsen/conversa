@@ -4,16 +4,52 @@
 
 ### Functions
 
-**```load(tracking_file, label_file, label_fields=None, structured=True)```**  
+**```load(tracking_file, label_file, behaviour_fields=None, structured=True)```**  
     Loads data from a tracking file and a label file into structured arrays with corresponding entries  
     Parameters:  
         ```tracking_file```: The address of the tracking file, see File Format Examples for an example of a tracking file  
         ```label_file```: The address of the label file, see File Format Examples  for an example of a label file  
-        ```behaviour_fields```: A list of behaviours to include from the label file, leave as None if you want all behaviour included  
-    Returns a 2 element tuple containing a strucutred array of the predictors and labels, as in (predictors, labels)  
+        ```behaviour_fields```: A list of behaviours to include from the label file, leave as None if you want all behaviours included  
+        ```structured```: Whether the returned numpy arrays are structured numpy array with fieldnames, see cnv_data.destructure for converting a structured array to a standard ndarray  
+    Returns a 2 element tuple containing numpy arrays of the predictors and labels, as in ```(predictors, labels) = cnv_data.load(...)```  
 
 **```load_tracking(tracking_file)```**  
+    Loads tracking file data into a structured array  
+    Parameters:  
+        ```tracking_file```: The address of the tracking file  
+    Returns structured array containing the information in the tracking file with field names  
     
+**```destructure(data)```**  
+    Converts a structured array to a standard numpy array  
+    Parameters:  
+        ```data```: A structured array  
+    Returns a view of the ndarray with no fieldnames  
+    
+**```add_dim(data, n_dims=1)```**
+    Adds a given number of dimensions to an ndarray, useful when a neural network layer requires higher dimensional input  
+    Dimensions are added such that an ndarray of shape (10, 3) would be returned with shape (10, 3, 1) if ```n_dims=1```  
+    Parameters:  
+        ```data```: The ndarray  
+        ```n_dims```: The number of dimensions to add  
+    Returns the ndarray with added dimensions  
+    
+**```to_seqs(data, seq_len, n_dims)```***  
+    ***Work in progress, not fully functional***  
+    Divides a numpy array into a series of sequences  
+    Data in the last sequence may be cut off if the ndarray ```data``` does not have a number of rows which is divisile by ```seq_len```  
+    Parameters:  
+        ```data```: The numpy array to be divided into sequences  
+        ```seq_len```: The length of sequences to produce  
+        ```n_dims```: The number of dimensions for each member of each sequence to have  
+    Returns a numpy array which contains the original data divided into sequences of length seq_len  
+    
+**```rm_field(data, field_name)```**
+    Removes a field from structured numpy array
+    If the field is not in the array, the original array is returned
+    Parameters:
+        ```data```: The structured numpy array 
+        ```field_name```: A string of the field name to remove
+    Returns the numpy array without the given field or the original array if the field is not found
 
 ### Usage
 
@@ -36,9 +72,10 @@ For examples of what tracking and label data should look like, see the File Form
 
 **```k_fold(predictors, labels, n_folds)```**  
     Splits predictors and labels into a number of testing groups  
-    ```predictors```: All of the predictors data to be split  
-    ```labels```: All of the label data to be split  
-    ```n_folds```: The number of folds to split the data into  
+    Parameters:
+        ```predictors```: All of the predictors data to be split  
+        ```labels```: All of the label data to be split  
+        ```n_folds```: The number of folds to split the data into  
     Returns an array of fold where each fold is a nested tuple, of ```(train_data, test_data)``` where ```train_data = (train_predictors, train_labels) and test_data = (test_predictors, test_labels)```  
 
 ### Usage
@@ -50,7 +87,7 @@ for fold in folds:
     (train_data, test_data) = fold
     # Do something with the training and testing data
 ```
-When using ```k_fold```, keep in mind that each elements in each fold may not keep their ordering. In order to use this function for sequence data, be sure to set each element of the predictor and label data to a sequence.
+When using ```k_fold```, keep in mind that each elements in each fold may not keep their ordering. In order to use this function for sequence data, be sure to set each element of the predictor and label data to a sequence using ```cnv_data.to_seqs``` or ```numpy.reshape```.
 
 ## Example Programs
 
