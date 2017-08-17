@@ -96,9 +96,9 @@ def eval_models(models,
         # (LOSS_STR, [])
     ])
     for model_no in range(0, len(models)):
-        print('Moving to model: ' + str(model_no+1))
+        print('Moving to model: ' + str(model_no+1) + '/' + str(len(models)))
         for fold_no in range(0, len(folds)):
-            print('\tMoving to fold: ' + str(fold_no+1))
+            print('\tMoving to fold: ' + str(fold_no+1) + '/' + str(len(folds)))
             model = copy(models[model_no])
             fold = folds[fold_no]
             # Unpack data from fold
