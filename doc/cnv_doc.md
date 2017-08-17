@@ -77,6 +77,27 @@ For examples of what tracking and label data should look like, see the File Form
         ```labels```: All of the label data to be split  
         ```n_folds```: The number of folds to split the data into  
     Returns an array of fold where each fold is a nested tuple, of ```(train_data, test_data)``` where ```train_data = (train_predictors, train_labels) and test_data = (test_predictors, test_labels)```  
+    
+**```eval_models(models,
+                predictors,
+                labels,
+                n_folds=5,
+                train_n_epochs=10,
+                train_batch_sz=10,
+                test_n_batch_sz=1,
+                verbose=0)```**  
+    Evaluates models given predictor and label data to train and test the models on  
+    Parameters:  
+        ```models```: The models to evaluate  
+        ```predictors```: Predictors to test the models on  
+        ```labels```: Labels to test the models on  
+        ```n_folds```: The number of folds to test the data on, defaults to 5  
+        ```train_n_epochs```: The number of passes each models gets on the data, defaults to 10  
+        ```train_batch_sz```: The number of data points to train each model on at once, defaults to 10  
+        ```test_n_batch_sz```: The number of data points to test each model on at once, defaults to 1  
+        ```verbose```: The verbosity level of training and testing - note that model console output often conflicts with outputs from cnv_eval - defaults to 0 (not verbose)  
+    Returns a pandas DataFrame with columns fold_no, model_no, and accuracy  
+    
 
 ### Usage
 
