@@ -117,8 +117,9 @@ def k_fold(predictors, labels, n_folds):
         folds.append((train_data, test_data))
     return folds
 
-
-# def
+# Subjects are tuplles of (pid, cam), where pid and cam are numbers, like (2024, 2)
+def eval_models_on_subjects(models, subjects):
+    pass
 
 
 print('Imported cnv_eval')

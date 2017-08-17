@@ -193,4 +193,25 @@ def rm_field(data, field_name):
     return data[names]
 
 
+# TRACKING_FILE = '..\\data\\tracking\\par2024Cam1\\cam1par2024.txt'
+# LABEL_FILE = '..\\data\\labels\\p2024cam1.dat'
+# TODO: Make modular and paramaterize more or use constants for dir structure
+def load_subject(pid,
+                 cam,
+                 tracking_file_suffix='.txt',
+                 label_file_suffix='.dat',
+                 structured=True):
+
+    # This is a temp solution
+    # TODO: More flexible, modular approach
+    par_cam_str = ''.join('par', str(pid), 'cam', str(cam))
+    cam_par_str = ''.join('cam', str(cam), 'par', str(pid))
+    p_cam_str = ''.join('p', str(pid), 'cam', str(cam))
+
+    tracking_file = '..\\data\\tracking\\' + par_cam_str + '\\' + cam_par_str + tracking_file_suffix
+    label_file = '..\\data\\labels\\' + p_cam_str + label_file_suffix
+
+    return load(tracking_file, label_file, structured=structured)
+
+
 print('Imported cnv_data')
