@@ -156,7 +156,7 @@ subjects = [
     (2024, 1),
 ]
 
-eval_results = cnv_eval.eval_models_on_subjects(models, [(2024, 1)])
+eval_results = cnv_eval.eval_models_on_subjects(models, subjects)
 
 print(tabulate(eval_results, headers='keys'))
 
