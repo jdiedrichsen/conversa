@@ -192,26 +192,21 @@ def eval_models_on_subjects(models, subjects, behaviours=None, timesteps=30):
 
         for behav_name in behaviours:
             print('Behaviour: ' + str(behav_name))
-
-            print('\tSum of labels: ' + str(np.sum(labels[behav_name])))
-
             predict_seqs = to_subseqs(predicts, timesteps)
             label_seqs = to_subseqs(add_dim(labels[behav_name]), timesteps)
-
-            print('\tSum of label_seqs: ' + str(np.sum(label_seqs)))
-
-            # t = [i for i, val in enumerate(labels[behav_name]) if val == 1]
-            # print(t)
-
+            # # Old implementation kept using same models for all subjects and behaviours
             # sub_eval_results = eval_models(models, predict_seqs, label_seqs, return_data_frame=False)
-            # # Add results to over evaluation results
-            # n_rows = len(sub_eval_results[ACC_STR])
-            # eval_results[PID_STR].extend([pid]*n_rows)
-            # eval_results[CAM_STR].extend([cam]*n_rows)
-            # eval_results[BEHAV_STR].extend([behav_name]*n_rows)
-            # eval_results[MODEL_NO_STR].extend(sub_eval_results[MODEL_NO_STR])
-            # eval_results[FOLD_NO_STR].extend(sub_eval_results[FOLD_NO_STR])
-            # eval_results[ACC_STR].extend(sub_eval_results[ACC_STR])
+            # Evaluate copy of models on the subject and behaviour - different instance of model used for each subject
+            # and behaviour
+            sub_eval_results = eval_models(copy(models), predict_seqs, label_seqs, return_data_frame=False)
+            # Add results to over evaluation results
+            n_rows = len(sub_eval_results[ACC_STR])
+            eval_results[PID_STR].extend([pid]*n_rows)
+            eval_results[CAM_STR].extend([cam]*n_rows)
+            eval_results[BEHAV_STR].extend([behav_name]*n_rows)
+            eval_results[MODEL_NO_STR].extend(sub_eval_results[MODEL_NO_STR])
+            eval_results[FOLD_NO_STR].extend(sub_eval_results[FOLD_NO_STR])
+            eval_results[ACC_STR].extend(sub_eval_results[ACC_STR])
 
     print('Models evaluated on subjects')
     return order(pd.DataFrame(eval_results), [PID_STR, CAM_STR, BEHAV_STR, MODEL_NO_STR, FOLD_NO_STR, ACC_STR])

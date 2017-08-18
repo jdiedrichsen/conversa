@@ -221,8 +221,9 @@ def load_subject(pid,
     tracking_file = '..\\data\\tracking\\' + par_cam_str + '\\' + cam_par_str + tracking_file_suffix
     label_file = '..\\data\\labels\\' + p_cam_str + label_file_suffix
 
-    print(tracking_file)
-    print(label_file)
+    # # For debugging
+    # print(tracking_file)
+    # print(label_file)
 
     return load(tracking_file, label_file, structured=structured)
 
