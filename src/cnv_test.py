@@ -60,7 +60,7 @@ labels = np.reshape(labels, (BATCH_SIZE, TIMESTEPS, OUTPUT_DIM))
 print('Input shape:' + str(predictors.shape))
 print('Output shape: ' + str(labels.shape))
 
-# Set up spec_model
+# Set up model_1
 model = Sequential()
 # Input layer
 model.add(LSTM(DEFAULT_LAYER_WIDTH,
@@ -69,7 +69,7 @@ model.add(LSTM(DEFAULT_LAYER_WIDTH,
 # Hidden layer(s)
 for i in range(0, 1):
     model.add(LSTM(DEFAULT_LAYER_WIDTH, return_sequences=True))
-    # spec_model.add(LSTM(DEFAULT_LAYER_WIDTH,
+    # model_1.add(LSTM(DEFAULT_LAYER_WIDTH,
     #                return_sequences=True,
     #                activation=HIDDEN_ACT_FUNC,
     #                recurrent_activation=HIDDEN_ACT_FUNC))
@@ -77,10 +77,10 @@ for i in range(0, 1):
 model.add(LSTM(OUTPUT_DIM,
                return_sequences=True,
                activation=OUTPUT_FUNCTION))
-# spec_model.add(Dense(output_dim,
+# model_1.add(Dense(output_dim,
 #                 activation=OUTPUT_FUNCTION))
-# spec_model.add(TimeDistributed(Dense(output_dim, activation=OUTPUT_FUNCTION)))
-# spec_model.add(LSTM(TIMESTEPS))
+# model_1.add(TimeDistributed(Dense(output_dim, activation=OUTPUT_FUNCTION)))
+# model_1.add(LSTM(TIMESTEPS))
 # Compile
 print(model.summary())
 model.compile(optimizer='rmsprop',
@@ -105,7 +105,7 @@ import keras.backend as K
 def mean_pred(y_true, y_pred):
     return K.mean(y_pred)
 
-spec_model.compile(optimizer='rmsprop',
+model_1.compile(optimizer='rmsprop',
               loss='mse',
               metrics=['accuracy', mean_pred])
 '''
@@ -160,25 +160,25 @@ n_seqs = 1
 print(predictors.shape)
 in_shape = predictors.shape[3:]
 
-# Set up spec_model architecture
+# Set up model_1 architecture
 
-spec_model = Sequential()
+model_1 = Sequential()
 # Input layer
-spec_model.add(LSTM(in_dim,
+model_1.add(LSTM(in_dim,
                return_sequences=True,
                input_shape=(None, n_in_features)))
 # Hidden layers
-spec_model.add(LSTM(layer_dim,
+model_1.add(LSTM(layer_dim,
                return_sequences=True))
-spec_model.add(LSTM(layer_dim))
+model_1.add(LSTM(layer_dim))
 # Output layer
-spec_model.add(Dense(output_dim, activation ='softmax'))
+model_1.add(Dense(output_dim, activation ='softmax'))
 # Compile
-spec_model.compile(optimizer='rmsprop',
+model_1.compile(optimizer='rmsprop',
               loss='binary_crossentropy',
               metrics=['accuracy'])  # See bottom of file for comparing against mean prediction
 
 # Fit and test_data
-spec_model.fit(predictors, labels, batch_size=n_seqs, epochs=n_epochs, validation_split=test_ratio)
+model_1.fit(predictors, labels, batch_size=n_seqs, epochs=n_epochs, validation_split=test_ratio)
 
 '''

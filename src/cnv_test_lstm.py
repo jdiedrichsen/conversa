@@ -56,7 +56,7 @@ labels = np.reshape(labels, (n_seqs, TIMESTEPS, output_dim))
 # print(labels.shape)
 # print(n_seqs)
 
-# Set up spec_model ----------------------------------------------------------------------------------------------------
+# Set up model_1 ----------------------------------------------------------------------------------------------------
 
 spec_model = Sequential()
 # Input layer
@@ -180,7 +180,7 @@ for i in range(0, len(test_models)):
 
 # Train
 # print('Training')
-# spec_model.fit(train_predictors, train_labels,
+# model_1.fit(train_predictors, train_labels,
 #           batch_size=BATCH_SZ,
 #           epochs=N_EPOCHS,
 #           validation_split=VALIDATION_SPLIT,
@@ -189,7 +189,7 @@ for i in range(0, len(test_models)):
 #
 # # Evaluate
 # print('Evaluating')
-# loss, acc = spec_model.evaluate(test_predictors, test_labels,
+# loss, acc = model_1.evaluate(test_predictors, test_labels,
 #                      batch_size=test_predictors.shape[0],
 #                      verbose=1)  # Accuracy is at index 1, loss at index 0
 # # Can also use batch_size=test_predictors.shape[0]

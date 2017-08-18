@@ -104,7 +104,7 @@ print('Imported cnv_net')
 # Can try to programmatically set 
 
 # LSTM
-spec_model.add(LSTM(
+model_1.add(LSTM(
     units=1,  # Required parameter
     activation='tanh',  # Optional parameters with defaults
     recurrent_activation='hard_sigmoid',

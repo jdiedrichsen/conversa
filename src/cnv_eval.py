@@ -99,15 +99,18 @@ def eval_models(models,
         print('Moving to model: ' + str(model_no+1) + '/' + str(len(models)))
         for fold_no in range(0, len(folds)):
             print('\tMoving to fold: ' + str(fold_no+1) + '/' + str(len(folds)))
-            model = copy(models[model_no])
+            # model = copy(models[model_no])  # Model resets every fold - TODO: Ask what behaviour should be
+            model = models[model_no]
             fold = folds[fold_no]
             # Unpack data from fold
             (train_data, test_data) = fold
             (train_predictors, train_labels) = train_data
             (test_predictors, test_labels) = test_data
             # Train
+            print('\t\tTraining')
             model.fit(train_predictors, train_labels, epochs=train_n_epochs, batch_size=train_batch_sz, verbose=verbose)
             # Test
+            print('\t\tEvaluating')
             (_, accuracy) = model.evaluate(test_predictors, test_labels, batch_size=test_n_batch_sz, verbose=verbose)
             # accuracy = evaluate(model, test_predictors, test_labels)
             # Set accuracy
@@ -161,8 +164,9 @@ def k_fold(predictors, labels, n_folds):
     return folds
 
 
-# Subjects are tuplles of (pid, cam), where pid and cam are numbers, like (2024, 2)
-def eval_models_on_subjects(models, subjects, timesteps=30):
+# Subjects are tuples of (pid, cam), where pid and cam are numbers, like (2024, 2)
+# Set behavs to None for all behavs being trained on, otherwise provide iterable of strings
+def eval_models_on_subjects(models, subjects, behaviours=None, timesteps=30):
 
     eval_results = dict([
         (PID_STR, []),
@@ -181,19 +185,24 @@ def eval_models_on_subjects(models, subjects, timesteps=30):
     for (pid, cam) in subjects:
         print('Subject: pid' + str(pid) + 'cam' + str(cam))
         (predictors, labels) = load_subject(pid, cam)
-        for behav_name in labels.dtype.names:
+
+        # Set behavs if not provided
+        if behaviours is None:
+            behaviours = labels.dtype.names
+
+        for behav_name in behaviours:
             print('Behaviour: ' + str(behav_name))
-            tmp = eval_models(models,
-                              to_subseqs(predictors, timesteps),
-                              to_subseqs(add_dim(labels[behav_name]), timesteps),
-                              return_data_frame=False)
-            n_rows = len(tmp[ACC_STR])
+            predict_seqs = to_subseqs(predictors, timesteps)
+            label_seqs = to_subseqs(add_dim(labels[behav_name]), timesteps)
+            sub_eval_results = eval_models(models, predict_seqs, label_seqs, return_data_frame=False)
+            # Add results to over evaluation results
+            n_rows = len(sub_eval_results[ACC_STR])
             eval_results[PID_STR].extend([pid]*n_rows)
             eval_results[CAM_STR].extend([cam]*n_rows)
             eval_results[BEHAV_STR].extend([behav_name]*n_rows)
-            eval_results[MODEL_NO_STR].extend(tmp[MODEL_NO_STR])
-            eval_results[FOLD_NO_STR].extend(tmp[FOLD_NO_STR])
-            eval_results[ACC_STR].extend(tmp[ACC_STR])
+            eval_results[MODEL_NO_STR].extend(sub_eval_results[MODEL_NO_STR])
+            eval_results[FOLD_NO_STR].extend(sub_eval_results[FOLD_NO_STR])
+            eval_results[ACC_STR].extend(sub_eval_results[ACC_STR])
 
     print('Models evaluated on subjects')
     return order(pd.DataFrame(eval_results), [PID_STR, CAM_STR, BEHAV_STR, MODEL_NO_STR, FOLD_NO_STR, ACC_STR])

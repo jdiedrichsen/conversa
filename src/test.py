@@ -17,13 +17,13 @@ TRACKING_FILE = '..\\data\\tracking\\par2024Cam1\\cam1par2024.txt'
 LABEL_FILE = '..\\data\\labels\\p2024cam1.dat'
 
 TIMESTEPS = 30  # Keep in mind that n_seqs = int(seq_len / TIMESTEPS)
-BATCH_SZ = 10  # Optionally can set batch_size in fitting/evaluation to number of sequences (n_seqs for all sequences)
-N_EPOCHS = 10
+# BATCH_SZ = 10  # Optionally can set batch_size in fitting/evaluation to number of sequences (n_seqs for all sequences)
+# N_EPOCHS = 10
 # VALIDATION_SPLIT = 0.2
 
 # Layer params
-DEFAULT_LAYER_WIDTH = 32
-N_HIDDEN_LAYERS = 3
+DEFAULT_LAYER_WIDTH = 35
+N_HIDDEN_LAYERS = 1
 # Functions
 # INPUT_FUNCTION = 'relu'
 # HIDDEN_ACT_FUNC = 'relu'
@@ -45,7 +45,7 @@ print('Loaded files')
 
 predictors = cnv_data.to_subseqs(predictors, TIMESTEPS)
 labels = cnv_data.to_subseqs(labels, TIMESTEPS)
-print('Split data into subsequences')
+# print('Split data into subsequences')
 
 # print(predictors.shape)
 # print(labels.shape)
@@ -54,33 +54,64 @@ print('Split data into subsequences')
 # Set up models --------------------------------------------------------------------------------------------------------
 
 # First index of shape is the number of subsequences, second is length of subsequences, third is dimensions of data
-input_dim = predictors.shape[2]
-output_dim = labels.shape[2]
 
-spec_model = Sequential()
+# input_dim = predictors.shape[2]
+# output_dim = labels.shape[2]
+# print(input_dim)
+# print(output_dim)
+
+input_dim = 1
+output_dim = 1
+
+input_shape = (TIMESTEPS, input_dim)
+
+# # There is a keras bug where the shape elements are converted to float, caused a tensorflow error
+# print(type(TIMESTEPS))
+# print(type(input_dim))
+
+model_1 = Sequential()
 # Input layer
-spec_model.add(LSTM(DEFAULT_LAYER_WIDTH,
-                    return_sequences=True,
-                    input_shape=(TIMESTEPS, input_dim)))
+model_1.add(LSTM(DEFAULT_LAYER_WIDTH,
+                 return_sequences=True,
+                 input_shape=input_shape))
 # Hidden layer(s)
 for i in range(0, N_HIDDEN_LAYERS):
-    spec_model.add(LSTM(DEFAULT_LAYER_WIDTH,
-                        return_sequences=True))
+    model_1.add(LSTM(DEFAULT_LAYER_WIDTH,
+                     return_sequences=True))
 # Output layer
-spec_model.add(LSTM(output_dim,
-                    return_sequences=True,
-                    activation=OUTPUT_FUNCTION))
+model_1.add(LSTM(output_dim,
+                 return_sequences=True,
+                 activation=OUTPUT_FUNCTION))
 # Compile
-print(spec_model.summary())
-spec_model.compile(optimizer='rmsprop',
-                   loss='binary_crossentropy',
-                   metrics=['accuracy'])
+print(model_1.summary())
+model_1.compile(optimizer='rmsprop',
+                loss='binary_crossentropy',
+                metrics=['accuracy'])
 
-models = [spec_model]
+model_2 = Sequential()
+# Input layer
+model_2.add(LSTM(int(DEFAULT_LAYER_WIDTH/2),
+                 return_sequences=True,
+                 input_shape=input_shape))
+# Hidden layer(s)
+for i in range(0, N_HIDDEN_LAYERS*2):
+    model_2.add(LSTM(int(DEFAULT_LAYER_WIDTH/2),
+                     return_sequences=True))
+# Output layer
+model_2.add(LSTM(output_dim,
+                 return_sequences=True,
+                 activation=OUTPUT_FUNCTION))
+# Compile
+print(model_2.summary())
+model_2.compile(optimizer='rmsprop',
+                loss='binary_crossentropy',
+                metrics=['accuracy'])
+
+
 
 # Train
 # print('Training')
-# spec_model.fit(train_predictors, train_labels,
+# model_1.fit(train_predictors, train_labels,
 #           batch_size=BATCH_SZ,
 #           epochs=N_EPOCHS,
 #           validation_split=VALIDATION_SPLIT,
@@ -89,7 +120,7 @@ models = [spec_model]
 
 # # Evaluate
 # print('Evaluating')
-# loss, acc = spec_model.evaluate(test_predictors, test_labels,
+# loss, acc = model_1.evaluate(test_predictors, test_labels,
 #                      batch_size=test_predictors.shape[0],
 #                      verbose=1)  # Accuracy is at index 1, loss at index 0
 # # Can also use batch_size=test_predictors.shape[0]
@@ -145,6 +176,11 @@ models = [spec_model]
 #
 # print(tabulate(small_eval_results, headers='keys'))
 
+models = []
+
+models.append(model_1)
+models.append(model_2)
+
 subjects = [
     (1001, 1),
     (1005, 1),
@@ -156,7 +192,13 @@ subjects = [
     # (2024, 1)
 ]
 
-eval_results = cnv_eval.eval_models_on_subjects(models, subjects)
+behavs = {
+    'smile',
+    'talk'
+    # 'laugh'
+}
+
+eval_results = cnv_eval.eval_models_on_subjects(models, subjects, timesteps=TIMESTEPS, behaviours=behavs)
 
 print(tabulate(eval_results, headers='keys'))
 

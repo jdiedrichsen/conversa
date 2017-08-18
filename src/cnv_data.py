@@ -55,8 +55,8 @@ def load(tracking_file, label_file, behaviour_fields=None, structured=True):
     Loads data from a tracking file and a label file into structured arrays with corresponding entries 
     :param tracking_file: The address of the tracking file, see File Format Examples for an example of a tracking file
     :param label_file: The address of the label file, see File Format Examples  for an example of a label file
-    :param behaviour_fields: A list of behaviours to include from the label file, leave as None if you want all
-    behaviours included
+    :param behaviour_fields: A list of behavs to include from the label file, leave as None if you want all
+    behavs included
     :param structured: Whether the returned numpy arrays are structured numpy array with fieldnames  
     :return: A 2 element tuple containing a strucutred array of the predictors and labels, as in (predictors, labels
     '''
