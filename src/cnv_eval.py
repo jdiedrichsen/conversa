@@ -178,13 +178,13 @@ def eval_models_on_subjects(models, subjects, behaviours=None, timesteps=30):
     ])
 
     try:
-        from cnv_data import load_subject, add_dim, to_subseqs
+        from cnv_data import load_subject, add_dim, to_subseqs, destructure
     except ImportError:
         print('Unable to import cnv_data functions')
 
     for (pid, cam) in subjects:
         print('Subject: pid' + str(pid) + 'cam' + str(cam))
-        (predictors, labels) = load_subject(pid, cam)
+        (predicts, labels) = load_subject(pid, cam)
 
         # Set behavs if not provided
         if behaviours is None:
@@ -192,17 +192,26 @@ def eval_models_on_subjects(models, subjects, behaviours=None, timesteps=30):
 
         for behav_name in behaviours:
             print('Behaviour: ' + str(behav_name))
-            predict_seqs = to_subseqs(predictors, timesteps)
+
+            print('\tSum of labels: ' + str(np.sum(labels[behav_name])))
+
+            predict_seqs = to_subseqs(predicts, timesteps)
             label_seqs = to_subseqs(add_dim(labels[behav_name]), timesteps)
-            sub_eval_results = eval_models(models, predict_seqs, label_seqs, return_data_frame=False)
-            # Add results to over evaluation results
-            n_rows = len(sub_eval_results[ACC_STR])
-            eval_results[PID_STR].extend([pid]*n_rows)
-            eval_results[CAM_STR].extend([cam]*n_rows)
-            eval_results[BEHAV_STR].extend([behav_name]*n_rows)
-            eval_results[MODEL_NO_STR].extend(sub_eval_results[MODEL_NO_STR])
-            eval_results[FOLD_NO_STR].extend(sub_eval_results[FOLD_NO_STR])
-            eval_results[ACC_STR].extend(sub_eval_results[ACC_STR])
+
+            print('\tSum of label_seqs: ' + str(np.sum(label_seqs)))
+
+            # t = [i for i, val in enumerate(labels[behav_name]) if val == 1]
+            # print(t)
+
+            # sub_eval_results = eval_models(models, predict_seqs, label_seqs, return_data_frame=False)
+            # # Add results to over evaluation results
+            # n_rows = len(sub_eval_results[ACC_STR])
+            # eval_results[PID_STR].extend([pid]*n_rows)
+            # eval_results[CAM_STR].extend([cam]*n_rows)
+            # eval_results[BEHAV_STR].extend([behav_name]*n_rows)
+            # eval_results[MODEL_NO_STR].extend(sub_eval_results[MODEL_NO_STR])
+            # eval_results[FOLD_NO_STR].extend(sub_eval_results[FOLD_NO_STR])
+            # eval_results[ACC_STR].extend(sub_eval_results[ACC_STR])
 
     print('Models evaluated on subjects')
     return order(pd.DataFrame(eval_results), [PID_STR, CAM_STR, BEHAV_STR, MODEL_NO_STR, FOLD_NO_STR, ACC_STR])

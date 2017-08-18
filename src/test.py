@@ -32,20 +32,20 @@ OUTPUT_FUNCTION = 'softmax'
 
 # Load data ------------------------------------------------------------------------------------------------------------
 
-# Load files
-predictors, labels = None, None
-try:
-    (predictors, labels) = (cnv_data.load(TRACKING_FILE, LABEL_FILE, behaviour_fields={'smile'}, structured=True))
-except IOError:
-    print('Failed to open files')
-print('Loaded files')
-
-# print(predictors.shape)
-# print(labels.shape)
-
-predictors = cnv_data.to_subseqs(predictors, TIMESTEPS)
-labels = cnv_data.to_subseqs(labels, TIMESTEPS)
-# print('Split data into subsequences')
+# # Load files
+# predictors, labels = None, None
+# try:
+#     (predictors, labels) = (cnv_data.load(TRACKING_FILE, LABEL_FILE, behaviour_fields={'smile'}, structured=True))
+# except IOError:
+#     print('Failed to open files')
+# print('Loaded files')
+#
+# # print(predictors.shape)
+# # print(labels.shape)
+#
+# predictors = cnv_data.to_subseqs(predictors, TIMESTEPS)
+# labels = cnv_data.to_subseqs(labels, TIMESTEPS)
+# # print('Split data into subsequences')
 
 # print(predictors.shape)
 # print(labels.shape)
@@ -184,18 +184,18 @@ models.append(model_2)
 subjects = [
     (1001, 1),
     (1005, 1),
-    # (2001, 1),
-    # (2002, 1),
-    # (2006, 1),
-    # (2010, 1),
-    # (2017, 1),
-    # (2024, 1)
+    (2001, 1),
+    (2002, 1),
+    (2006, 1),
+    (2010, 1),
+    (2017, 1),
+    (2024, 1),
 ]
 
 behavs = {
     'smile',
-    'talk'
-    # 'laugh'
+    'talk',
+    # 'laugh',
 }
 
 eval_results = cnv_eval.eval_models_on_subjects(models, subjects, timesteps=TIMESTEPS, behaviours=behavs)

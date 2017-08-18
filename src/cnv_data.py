@@ -111,7 +111,16 @@ def load(tracking_file, label_file, behaviour_fields=None, structured=True):
             end_i = _LA_FRAME_SHIFT + index_to_frame(label_data, next_i)
             # print('Setting ' + behav_name + ' label to ' + str(curr_state) + ' from indices ' + str(start_i)
             #       + ' to ' + str(end_i))
-            behav_data[start_i:end_i][behav_i] = curr_state
+            behav_data[behav_name][start_i:end_i] = curr_state
+
+            # # For debugging
+            # print('Behaviour: ' + behav_name)
+            # print('Start: \t' + str(start_i))
+            # print('End: \t' + str(end_i))
+            # print('State: \t' + str(curr_state))
+            # print(str(behav_data[behav_name][start_i:end_i]))
+            # print('------------')
+
             # Reset states
             # print('Resetting states')
             curr_i = next_i
@@ -212,7 +221,13 @@ def load_subject(pid,
     tracking_file = '..\\data\\tracking\\' + par_cam_str + '\\' + cam_par_str + tracking_file_suffix
     label_file = '..\\data\\labels\\' + p_cam_str + label_file_suffix
 
+    print(tracking_file)
+    print(label_file)
+
     return load(tracking_file, label_file, structured=structured)
+
+
+
 
 
 print('Imported cnv_data')
