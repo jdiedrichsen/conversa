@@ -25,36 +25,28 @@ ACC_STR = 'accuracy'
 # LOSS_STR = 'loss'
 
 
-# TODO: Fix evaluation function to use model.predict and error_fun, also make it work with structured arrays
+# Only works when elements in prediction and actual are in range [0, 1]
+# TODO: Make more flexible
+def accuracy(prediction, actual):
+    return np.mean(1 - np.absolute(np.round(prediction) - actual))
 
-# # TODO
-# def diff(x, y):
-#     '''
-#     Returns the difference between two structured numpy arrays with the same fields
-#     '''
-#     pass
-#
-#
-# def pct_diff(prediction, actual):
-#     return np.mean(prediction - actual)
-#
-#
+
 # def rmse(prediction, actual):
 #     return np.sqrt(np.mean(np.square(prediction - actual)))
-#
-#
-# def evaluate(model, predictors, labels, error_func=pct_diff):
-#     # TODO: Add check if structured or not
-#     # try:
-#     #     from cnv_data import destructure
-#     # except ImportError:
-#     #     print('Unable to import cnv_data.load_subject')
-#     # print(type(predicted_labels))
-#     # print(destructure(predicted_labels).shape)
-#     # print(labels.shape)
-#     # print(destructure(labels).shape)
-#     predicted_labels = model.predict(predictors)
-#     return 1 - error_func(predicted_labels, labels)
+
+
+def evaluate(model, predictors, labels, acc_func=accuracy):
+    # TODO: Add check if structured or not
+    # try:
+    #     from cnv_data import destructure
+    # except ImportError:
+    #     print('Unable to import cnv_data.load_subject')
+    # print(type(predicted_labels))
+    # print(destructure(predicted_labels).shape)
+    # print(labels.shape)
+    # print(destructure(labels).shape)
+    predicted_labels = model.predict(predictors)
+    return acc_func(predicted_labels, labels)
 
 
 # In each epoch of training, all data is used
@@ -111,12 +103,12 @@ def eval_models(models,
             model.fit(train_predictors, train_labels, epochs=train_n_epochs, batch_size=train_batch_sz, verbose=verbose)
             # Test
             print('\t\tEvaluating')
-            (_, accuracy) = model.evaluate(test_predictors, test_labels, batch_size=test_n_batch_sz, verbose=verbose)
-            # accuracy = evaluate(model, test_predictors, test_labels)
+            # (_, acc) = model.evaluate(test_predictors, test_labels, batch_size=test_n_batch_sz, verbose=verbose)
+            acc = accuracy(model.predict(test_predictors), test_labels)
             # Set accuracy
             eval_results[MODEL_NO_STR].append(model_no+1)
             eval_results[FOLD_NO_STR].append(fold_no+1)
-            eval_results[ACC_STR].append(accuracy)
+            eval_results[ACC_STR].append(acc)
             # evaluation[LOSS_STR].append(loss)
     if return_data_frame:
         output = order(pd.DataFrame(eval_results), [MODEL_NO_STR, FOLD_NO_STR, ACC_STR])
@@ -191,14 +183,18 @@ def eval_models_on_subjects(models, subjects, behaviours=None, timesteps=30):
             behaviours = labels.dtype.names
 
         for behav_name in behaviours:
+
             print('Behaviour: ' + str(behav_name))
+
             predict_seqs = to_subseqs(predicts, timesteps)
             label_seqs = to_subseqs(add_dim(labels[behav_name]), timesteps)
+
             # # Old implementation kept using same models for all subjects and behaviours
             # sub_eval_results = eval_models(models, predict_seqs, label_seqs, return_data_frame=False)
             # Evaluate copy of models on the subject and behaviour - different instance of model used for each subject
             # and behaviour
             sub_eval_results = eval_models(copy(models), predict_seqs, label_seqs, return_data_frame=False)
+
             # Add results to over evaluation results
             n_rows = len(sub_eval_results[ACC_STR])
             eval_results[PID_STR].extend([pid]*n_rows)

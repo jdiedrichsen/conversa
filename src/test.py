@@ -22,7 +22,7 @@ TIMESTEPS = 30  # Keep in mind that n_seqs = int(seq_len / TIMESTEPS)
 # VALIDATION_SPLIT = 0.2
 
 # Layer params
-DEFAULT_LAYER_WIDTH = 35
+DEFAULT_LAYER_WIDTH = 4
 N_HIDDEN_LAYERS = 1
 # Functions
 # INPUT_FUNCTION = 'relu'
@@ -201,6 +201,24 @@ behavs = {
 eval_results = cnv_eval.eval_models_on_subjects(models, subjects, timesteps=TIMESTEPS, behaviours=behavs)
 
 print(tabulate(eval_results, headers='keys'))
+
+# # Quick test of accuracy
+# cnv_eval.accuracy(
+#     np.array([
+#         np.array([0, 0]),
+#         np.array([0, 0]),
+#         np.array([0, 0]),
+#         np.array([0, 0]),
+#         np.array([0, 0]),
+#     ]),
+#     np.array([
+#         np.array([0, 0]),
+#         np.array([0, 0]),
+#         np.array([0, 0]),
+#         np.array([0, 0]),
+#         np.array([0, 0]),
+#     ])
+# )
 
 
 # End ------------------------------------------------------------------------------------------------------------------
