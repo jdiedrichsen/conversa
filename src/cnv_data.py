@@ -115,10 +115,10 @@ def load(tracking_file, label_file, behaviour_fields=None, structured=True):
 
             # # For debugging
             # print('Behaviour: ' + behav_name)
-            # print('Start: \t' + str(start_i))
-            # print('End: \t' + str(end_i))
+            # print('Start index: \t' + str(start_i))
+            # print('End index: \t' + str(end_i))
             # print('State: \t' + str(curr_state))
-            # print(str(behav_data[behav_name][start_i:end_i]))
+            # # print(str(behav_data[behav_name][start_i:end_i]))
             # print('------------')
 
             # Reset states
@@ -225,9 +225,6 @@ def load_subject(pid,
     print(label_file)
 
     return load(tracking_file, label_file, structured=structured)
-
-
-
 
 
 print('Imported cnv_data')
