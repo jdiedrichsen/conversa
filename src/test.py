@@ -22,11 +22,11 @@ TIMESTEPS = 30  # Keep in mind that n_seqs = int(seq_len / TIMESTEPS)
 # VALIDATION_SPLIT = 0.2
 
 # Layer params
-DEFAULT_LAYER_WIDTH = 4
-N_HIDDEN_LAYERS = 1
+DEFAULT_LAYER_WIDTH = 32
+DEFAULT_N_HIDDEN_LAYERS = 4
 # Functions
 # INPUT_FUNCTION = 'relu'
-# HIDDEN_ACT_FUNC = 'relu'
+HIDDEN_ACT_FUNC = 'relu'
 OUTPUT_FUNCTION = 'softmax'
 
 
@@ -69,43 +69,105 @@ input_shape = (TIMESTEPS, input_dim)
 # print(type(TIMESTEPS))
 # print(type(input_dim))
 
-model_1 = Sequential()
-# Input layer
-model_1.add(LSTM(DEFAULT_LAYER_WIDTH,
-                 return_sequences=True,
-                 input_shape=input_shape))
-# Hidden layer(s)
-for i in range(0, N_HIDDEN_LAYERS):
-    model_1.add(LSTM(DEFAULT_LAYER_WIDTH,
-                     return_sequences=True))
-# Output layer
-model_1.add(LSTM(output_dim,
-                 return_sequences=True,
-                 activation=OUTPUT_FUNCTION))
-# Compile
-print(model_1.summary())
-model_1.compile(optimizer='rmsprop',
-                loss='binary_crossentropy',
-                metrics=['accuracy'])
+# Model 1 --------------------------------------------------------------------------------------------------------------
 
-model_2 = Sequential()
-# Input layer
-model_2.add(LSTM(int(DEFAULT_LAYER_WIDTH/2),
+
+# Temp for convenience
+# Can also set recurrent activation and dropout
+def mk_LSTM_model(input_shape, layer_width, n_hidden_layers, hidden_activation, output_dim, output_func):
+    mdl = Sequential()
+    # Input
+    mdl.add(LSTM(layer_width,
                  return_sequences=True,
                  input_shape=input_shape))
-# Hidden layer(s)
-for i in range(0, N_HIDDEN_LAYERS*2):
-    model_2.add(LSTM(int(DEFAULT_LAYER_WIDTH/2),
+    # Hidden
+    for layer_no in range(0, n_hidden_layers):
+        mdl.add(LSTM(layer_width,
+                     activation=hidden_activation,
                      return_sequences=True))
-# Output layer
-model_2.add(LSTM(output_dim,
-                 return_sequences=True,
-                 activation=OUTPUT_FUNCTION))
-# Compile
-print(model_2.summary())
-model_2.compile(optimizer='rmsprop',
-                loss='binary_crossentropy',
-                metrics=['accuracy'])
+    # Output
+
+        mdl.add(LSTM(output_dim,
+                     return_sequences=True,
+                     activation=output_func))
+    # Compile
+        mdl.compile(optimizer='rmsprop',
+                    loss='binary_crossentropy',
+                    metrics=['accuracy'])
+    return mdl
+
+models = []
+
+models.append(
+    mk_LSTM_model(
+        input_shape=input_shape,
+        layer_width=int(DEFAULT_LAYER_WIDTH/2),
+        n_hidden_layers=int(DEFAULT_N_HIDDEN_LAYERS/2),
+        hidden_activation=HIDDEN_ACT_FUNC,
+        output_dim=output_dim,
+        output_func=OUTPUT_FUNCTION
+    )
+)
+
+models.append(
+    mk_LSTM_model(
+        input_shape=input_shape,
+        layer_width=DEFAULT_LAYER_WIDTH,
+        n_hidden_layers=DEFAULT_N_HIDDEN_LAYERS,
+        hidden_activation=HIDDEN_ACT_FUNC,
+        output_dim=output_dim,
+        output_func=OUTPUT_FUNCTION
+    )
+)
+
+models.append(
+    mk_LSTM_model(
+        input_shape=input_shape,
+        layer_width=int(DEFAULT_LAYER_WIDTH*2),
+        n_hidden_layers=int(DEFAULT_N_HIDDEN_LAYERS*2),
+        hidden_activation=HIDDEN_ACT_FUNC,
+        output_dim=output_dim,
+        output_func=OUTPUT_FUNCTION
+    )
+)
+
+# model_1 = Sequential()
+# # Input layer
+# model_1.add(LSTM(DEFAULT_LAYER_WIDTH,
+#                  return_sequences=True,
+#                  input_shape=input_shape))
+# # Hidden layer(s)
+# for i in range(0, DEFAULT_N_HIDDEN_LAYERS):
+#     model_1.add(LSTM(DEFAULT_LAYER_WIDTH,
+#                      return_sequences=True))
+# # Output layer
+# model_1.add(LSTM(output_dim,
+#                  return_sequences=True,
+#                  activation=OUTPUT_FUNCTION))
+# # Compile
+# print(model_1.summary())
+# model_1.compile(optimizer='rmsprop',
+#                 loss='binary_crossentropy',
+#                 metrics=['accuracy'])
+
+# model_2 = Sequential()
+# # Input layer
+# model_2.add(LSTM(int(DEFAULT_LAYER_WIDTH / 2),
+#                  return_sequences=True,
+#                  input_shape=input_shape))
+# # Hidden layer(s)
+# for i in range(0, DEFAULT_N_HIDDEN_LAYERS*2):
+#     model_2.add(LSTM(int(DEFAULT_LAYER_WIDTH / 2),
+#                      return_sequences=True))
+# # Output layer
+# model_2.add(LSTM(output_dim,
+#                  return_sequences=True,
+#                  activation=OUTPUT_FUNCTION))
+# # Compile
+# print(model_2.summary())
+# model_2.compile(optimizer='rmsprop',
+#                 loss='binary_crossentropy',
+#                 metrics=['accuracy'])
 
 
 
@@ -176,10 +238,8 @@ model_2.compile(optimizer='rmsprop',
 #
 # print(tabulate(small_eval_results, headers='keys'))
 
-models = []
-
-models.append(model_1)
-models.append(model_2)
+for mdl in models:
+    print(mdl.summary())
 
 subjects = [
     (1001, 1),
@@ -223,4 +283,4 @@ print(tabulate(eval_results, headers='keys'))
 
 # End ------------------------------------------------------------------------------------------------------------------
 #
-# print('cnv_test_lstm.py: Completed execution')
+# print('cnv_test_LSTM.py: Completed execution')

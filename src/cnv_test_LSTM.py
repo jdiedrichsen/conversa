@@ -198,5 +198,5 @@ for i in range(0, len(test_models)):
 
 # End ------------------------------------------------------------------------------------------------------------------
 
-print('cnv_test_lstm.py: Completed execution')
+print('cnv_test_LSTM.py: Completed execution')
 

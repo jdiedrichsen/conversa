@@ -26,7 +26,7 @@ ACC_STR = 'accuracy'
 
 
 # Only works when elements in prediction and actual are in range [0, 1]
-# TODO: Make more flexible
+# TODO: Documentation
 def accuracy(prediction, actual):
     return np.mean(1 - np.absolute(np.round(prediction) - actual))
 
@@ -35,8 +35,8 @@ def accuracy(prediction, actual):
 #     return np.sqrt(np.mean(np.square(prediction - actual)))
 
 
+# TODO: Documentation
 def evaluate(model, predictors, labels, acc_func=accuracy):
-    # TODO: Add check if structured or not
     # try:
     #     from cnv_data import destructure
     # except ImportError:
@@ -61,7 +61,6 @@ def eval_models(models,
                 n_folds=5,
                 train_n_epochs=10,
                 train_batch_sz=10,
-                test_n_batch_sz=1,
                 return_data_frame=True,
                 verbose=0):
     '''
@@ -72,7 +71,6 @@ def eval_models(models,
     :param n_folds: The number of folds to test the data on, defaults to 5
     :param train_n_epochs: The number of passes each models gets on the data, defaults to 10
     :param train_batch_sz: The number of data points to train each model on at once, defaults to 10
-    :param test_n_batch_sz: The number of data points to test each model on at once, defaults to 1
     :param verbose: The verbosity level of model training and testing - note that model console output often conflicts
     with outputs from cnv_eval - defaults to 0 (not verbose)
     :return: A pandas DataFrame with columns fold_no, model_no, and accuracy
@@ -88,9 +86,9 @@ def eval_models(models,
         # (LOSS_STR, [])
     ])
     for model_no in range(0, len(models)):
-        print('Moving to model: ' + str(model_no+1) + '/' + str(len(models)))
+        print('Model: ' + str(model_no+1) + '/' + str(len(models)))
         for fold_no in range(0, len(folds)):
-            print('\tMoving to fold: ' + str(fold_no+1) + '/' + str(len(folds)))
+            print('\tFold: ' + str(fold_no+1) + '/' + str(len(folds)))
             # model = copy(models[model_no])  # Model resets every fold - TODO: Ask what behaviour should be
             model = models[model_no]
             fold = folds[fold_no]
@@ -104,21 +102,21 @@ def eval_models(models,
             # Test
             print('\t\tEvaluating')
             # (_, acc) = model.evaluate(test_predictors, test_labels, batch_size=test_n_batch_sz, verbose=verbose)
-            acc = accuracy(model.predict(test_predictors), test_labels)
+            acc = accuracy(prediction=model.predict(test_predictors), actual=test_labels)
             # Set accuracy
             eval_results[MODEL_NO_STR].append(model_no+1)
             eval_results[FOLD_NO_STR].append(fold_no+1)
             eval_results[ACC_STR].append(acc)
             # evaluation[LOSS_STR].append(loss)
     if return_data_frame:
-        output = order(pd.DataFrame(eval_results), [MODEL_NO_STR, FOLD_NO_STR, ACC_STR])
+        output = order_by_fields(pd.DataFrame(eval_results), [MODEL_NO_STR, FOLD_NO_STR, ACC_STR])
     else:
         output = eval_results
     print('Evaluation complete')
     return output
 
-
-def order(data, field_names):
+# TODO: Documentation
+def order_by_fields(data, field_names):
     '''
     Re-orders the columns of data according to field_names
     Refactored from https://stackoverflow.com/a/25023460/7195043
@@ -158,6 +156,7 @@ def k_fold(predictors, labels, n_folds):
 
 # Subjects are tuples of (pid, cam), where pid and cam are numbers, like (2024, 2)
 # Set behavs to None for all behavs being trained on, otherwise provide iterable of strings
+# TODO: Documentation
 def eval_models_on_subjects(models, subjects, behaviours=None, timesteps=30):
 
     eval_results = dict([
@@ -205,7 +204,36 @@ def eval_models_on_subjects(models, subjects, behaviours=None, timesteps=30):
             eval_results[ACC_STR].extend(sub_eval_results[ACC_STR])
 
     print('Models evaluated on subjects')
-    return order(pd.DataFrame(eval_results), [PID_STR, CAM_STR, BEHAV_STR, MODEL_NO_STR, FOLD_NO_STR, ACC_STR])
+    return order_by_fields(pd.DataFrame(eval_results), [PID_STR, CAM_STR, BEHAV_STR, MODEL_NO_STR, FOLD_NO_STR, ACC_STR])
+
+
+# TODO: Documentation
+def summary(eval_results):
+    '''
+    Returns a summarized version of model evaluations
+    :param eval_results: 
+    :return: 
+    '''
+
+    summary_dict = dict([
+
+    ])
+
+    pd.DataFrame(summary_dict)
+
+    eval_results = pd.DataFrame()
+
+    min_model_no = eval_results[MODEL_NO_STR].min()
+    max_model_no = eval_results[MODEL_NO_STR].max()
+    for i in range(min_model_no, max_model_no):
+        eval_results.loc[
+            eval_results[MODEL_NO_STR] == i
+        ].mean()
+
+    pass
+
+
+# TODO: Update doc.md
 
 
 print('Imported cnv_eval')

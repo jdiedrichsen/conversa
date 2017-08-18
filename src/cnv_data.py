@@ -12,7 +12,7 @@ __status__ = 'Development'
 # __version__ = ''
 
 # TODO: File documentation tags
-# TODO: Add functionalities in cnv_test_lstm.py
+# TODO: Add functionalities in cnv_test_LSTM.py
 
 
 # Constants

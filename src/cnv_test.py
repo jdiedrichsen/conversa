@@ -124,7 +124,7 @@ train_end = train_n_samples
 test_start = train_end  # Last index in range of numpy array is exclusive
 test_end = test_start+test_n_samples
 
-assert test_end == n_samples, 'cnv_test_lstm.py: test_data set does not end at end of data set'
+assert test_end == n_samples, 'cnv_test_LSTM.py: test_data set does not end at end of data set'
 
 # Set test_data and train_data predictors and labels
 x_train = predictors[:][train_start:train_end]
