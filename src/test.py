@@ -23,11 +23,9 @@ TIMESTEPS = 30  # Keep in mind that n_seqs = int(seq_len / TIMESTEPS)
 
 # Layer params
 UNITS_N_MIN = 2
-UNITS_N_MAX = 4
-# UNITS_N_MAX = 128
+UNITS_N_MAX = 128
 H_LAYERS_N_MIN = 1
-H_LAYERS_N_MAX = 2
-# H_LAYERS_N_MAX = 32
+H_LAYERS_N_MAX = 32
 # Functions
 # INPUT_FUNCTION = 'relu'
 HIDDEN_ACT_FUNC = 'relu'
@@ -94,9 +92,6 @@ def mk_LSTM_model(input_shape, layer_width, n_hidden_layers, hidden_activation, 
 models = []
 
 from math import log
-
-print((H_LAYERS_N_MIN, int(log(H_LAYERS_N_MAX, 2)) + 1))
-print((UNITS_N_MIN, int(log(UNITS_N_MAX, 2))+1))
 
 for n_hidden_layers in range(H_LAYERS_N_MIN, int(log(H_LAYERS_N_MAX, 2)) + 1):
     for n_units in range(UNITS_N_MIN, int(log(UNITS_N_MAX, 2))+1):

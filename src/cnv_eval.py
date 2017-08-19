@@ -105,6 +105,7 @@ def eval_models(models,
             print('\t\tEvaluating')
             # (_, acc) = model.evaluate(test_predictors, test_labels, batch_size=test_n_batch_sz, verbose=verbose)
             acc = accuracy(prediction=model.predict(test_predictors), actual=test_labels)
+            print('\t\t\tAccuracy: ' + str(acc))
             # Set accuracy
             eval_results[MODEL_NO_STR].append(model_no+1)
             eval_results[FOLD_NO_STR].append(fold_no+1)
@@ -116,6 +117,7 @@ def eval_models(models,
         output = eval_results
     print('Evaluation complete')
     return output
+
 
 # TODO: Documentation
 def order_by_fields(data, field_names):
@@ -171,7 +173,7 @@ def eval_models_on_subjects(models, subjects, behaviours=None, timesteps=30):
     ])
 
     try:
-        from cnv_data import load_subject, add_dim, to_subseqs, destructure
+        from cnv_data import load_subject, add_dim, to_subseqs
     except ImportError:
         print('Unable to import cnv_data functions')
 
@@ -205,12 +207,14 @@ def eval_models_on_subjects(models, subjects, behaviours=None, timesteps=30):
             eval_results[FOLD_NO_STR].extend(sub_eval_results[FOLD_NO_STR])
             eval_results[ACC_STR].extend(sub_eval_results[ACC_STR])
 
+
     print('Models evaluated on subjects')
     eval_df = order_by_fields(pd.DataFrame(eval_results), [PID_STR, CAM_STR, BEHAV_STR, MODEL_NO_STR, FOLD_NO_STR, ACC_STR])
     eval_df.sort_values([MODEL_NO_STR, BEHAV_STR])
     return eval_df
 
-# TODO: Documentation
+
+# TODO: Implementation and documentation
 def summary(eval_results):
     '''
     Returns a summarized version of model evaluations
