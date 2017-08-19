@@ -77,23 +77,14 @@ input_shape = (TIMESTEPS, input_dim)
 def mk_LSTM_model(input_shape, layer_width, n_hidden_layers, hidden_activation, output_dim, output_func):
     mdl = Sequential()
     # Input
-    mdl.add(LSTM(layer_width,
-                 return_sequences=True,
-                 input_shape=input_shape))
+    mdl.add(LSTM(layer_width, return_sequences=True, input_shape=input_shape))
     # Hidden
     for layer_no in range(0, n_hidden_layers):
-        mdl.add(LSTM(layer_width,
-                     activation=hidden_activation,
-                     return_sequences=True))
+        mdl.add(LSTM(layer_width, return_sequences=True, activation=hidden_activation))
     # Output
-
-        mdl.add(LSTM(output_dim,
-                     return_sequences=True,
-                     activation=output_func))
+    mdl.add(LSTM(output_dim, return_sequences=True, activation=output_func))
     # Compile
-        mdl.compile(optimizer='rmsprop',
-                    loss='binary_crossentropy',
-                    metrics=['accuracy'])
+    mdl.compile(optimizer='rmsprop', loss='binary_crossentropy', metrics=['accuracy'])
     return mdl
 
 models = []

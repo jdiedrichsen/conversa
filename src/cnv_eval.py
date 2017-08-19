@@ -28,6 +28,8 @@ ACC_STR = 'accuracy'
 # Only works when elements in prediction and actual are in range [0, 1]
 # TODO: Documentation
 def accuracy(prediction, actual):
+    if not prediction.shape == actual.shape:
+        raise RuntimeError('Comparing prediction and actual value of different shape')
     return np.mean(1 - np.absolute(np.round(prediction) - actual))
 
 
