@@ -149,8 +149,8 @@ def k_fold(predictors, labels, n_folds):
         train_data = (
             np.array([pred for (j, pred) in enumerate(predictors) if (j-i) % n_folds != 0]),
             np.array([labl for (j, labl) in enumerate(labels) if (j-i) % n_folds != 0])
-            # predictors[np.mod([i for i in range(0, len(labels))], n_folds) != 0],
-            # labels[np.mod([i for i in range(0, len(labels))], n_folds) != 0]
+            # predictors[np.mod([n_units for n_units in range(0, len(labels))], n_folds) != 0],
+            # labels[np.mod([n_units for n_units in range(0, len(labels))], n_folds) != 0]
         )
         folds.append((train_data, test_data))
     return folds
@@ -206,8 +206,9 @@ def eval_models_on_subjects(models, subjects, behaviours=None, timesteps=30):
             eval_results[ACC_STR].extend(sub_eval_results[ACC_STR])
 
     print('Models evaluated on subjects')
-    return order_by_fields(pd.DataFrame(eval_results), [PID_STR, CAM_STR, BEHAV_STR, MODEL_NO_STR, FOLD_NO_STR, ACC_STR])
-
+    eval_df = order_by_fields(pd.DataFrame(eval_results), [PID_STR, CAM_STR, BEHAV_STR, MODEL_NO_STR, FOLD_NO_STR, ACC_STR])
+    eval_df.sort_values([MODEL_NO_STR, BEHAV_STR])
+    return eval_df
 
 # TODO: Documentation
 def summary(eval_results):

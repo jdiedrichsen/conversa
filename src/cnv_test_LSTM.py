@@ -141,9 +141,9 @@ scores = cnv_eval.eval_models(test_models, predictors, labels,
                               test_n_batch_sz=1)
 
 # print(scores)
-# for i in range(0, len(test_models)):
+# for n_units in range(0, len(test_models)):
 #     for j in range(0, n_spl):
-#         print('Accuracy of model ' + str(i+1) + ' in fold ' + str(j+1) + ':\t' + str(scores[i][:][1]))
+#         print('Accuracy of model ' + str(n_units+1) + ' in fold ' + str(j+1) + ':\t' + str(scores[n_units][:][1]))
 
 
 # for score in scores:
@@ -160,14 +160,14 @@ avg_accs = set_avg(avg_accs)
 # Header
 print('\nModel\t\tAverage accuracy')
 # # Entries
-# for i in range(0, len(avg_accs)):
-#     print('LSTM_model_' + str(i) + '\t' + str(avg_accs[i]))
+# for n_units in range(0, len(avg_accs)):
+#     print('LSTM_model_' + str(n_units) + '\t' + str(avg_accs[n_units]))
 
 
 # Entries
 for i in range(0, len(test_models)):
     print('LSTM_model_' + str(i) + '\t' + str(scores[(i+1)*n_spl-1][1] - 0.5*scores[(i+1)*n_spl-1][0]))
-    # print('LSTM_model_' + str(i) + '\t' + str(scores[(i+1)*n_spl-1]))
+    # print('LSTM_model_' + str(n_units) + '\t' + str(scores[(n_units+1)*n_spl-1]))
 
 
 # print('Accuracy: '.join(str(scores[:][0])))

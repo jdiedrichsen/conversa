@@ -69,7 +69,7 @@ model.add(LSTM(DEFAULT_LAYER_WIDTH,
 # Hidden layer(s)
 for i in range(0, 1):
     model.add(LSTM(DEFAULT_LAYER_WIDTH, return_sequences=True))
-    # model_1.add(LSTM(DEFAULT_LAYER_WIDTH,
+    # model_1.add(LSTM(UNITS_N_MIN,
     #                return_sequences=True,
     #                activation=HIDDEN_ACT_FUNC,
     #                recurrent_activation=HIDDEN_ACT_FUNC))

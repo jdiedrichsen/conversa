@@ -22,8 +22,12 @@ TIMESTEPS = 30  # Keep in mind that n_seqs = int(seq_len / TIMESTEPS)
 # VALIDATION_SPLIT = 0.2
 
 # Layer params
-DEFAULT_LAYER_WIDTH = 32
-DEFAULT_N_HIDDEN_LAYERS = 4
+UNITS_N_MIN = 2
+UNITS_N_MAX = 4
+# UNITS_N_MAX = 128
+H_LAYERS_N_MIN = 1
+H_LAYERS_N_MAX = 2
+# H_LAYERS_N_MAX = 32
 # Functions
 # INPUT_FUNCTION = 'relu'
 HIDDEN_ACT_FUNC = 'relu'
@@ -89,47 +93,32 @@ def mk_LSTM_model(input_shape, layer_width, n_hidden_layers, hidden_activation, 
 
 models = []
 
-models.append(
-    mk_LSTM_model(
-        input_shape=input_shape,
-        layer_width=int(DEFAULT_LAYER_WIDTH/2),
-        n_hidden_layers=int(DEFAULT_N_HIDDEN_LAYERS/2),
-        hidden_activation=HIDDEN_ACT_FUNC,
-        output_dim=output_dim,
-        output_func=OUTPUT_FUNCTION
-    )
-)
+from math import log
 
-models.append(
-    mk_LSTM_model(
-        input_shape=input_shape,
-        layer_width=DEFAULT_LAYER_WIDTH,
-        n_hidden_layers=DEFAULT_N_HIDDEN_LAYERS,
-        hidden_activation=HIDDEN_ACT_FUNC,
-        output_dim=output_dim,
-        output_func=OUTPUT_FUNCTION
-    )
-)
+print((H_LAYERS_N_MIN, int(log(H_LAYERS_N_MAX, 2)) + 1))
+print((UNITS_N_MIN, int(log(UNITS_N_MAX, 2))+1))
 
-models.append(
-    mk_LSTM_model(
-        input_shape=input_shape,
-        layer_width=int(DEFAULT_LAYER_WIDTH*2),
-        n_hidden_layers=int(DEFAULT_N_HIDDEN_LAYERS*2),
-        hidden_activation=HIDDEN_ACT_FUNC,
-        output_dim=output_dim,
-        output_func=OUTPUT_FUNCTION
-    )
-)
+for n_hidden_layers in range(H_LAYERS_N_MIN, int(log(H_LAYERS_N_MAX, 2)) + 1):
+    for n_units in range(UNITS_N_MIN, int(log(UNITS_N_MAX, 2))+1):
+        models.append(mk_LSTM_model(
+            input_shape=input_shape,
+            layer_width=n_units,
+            n_hidden_layers=n_hidden_layers,
+            hidden_activation=HIDDEN_ACT_FUNC,
+            output_dim=output_dim,
+            output_func=OUTPUT_FUNCTION
+        ))
+    # units
+# hidden layers
 
 # model_1 = Sequential()
 # # Input layer
-# model_1.add(LSTM(DEFAULT_LAYER_WIDTH,
+# model_1.add(LSTM(UNITS_N_MIN,
 #                  return_sequences=True,
 #                  input_shape=input_shape))
 # # Hidden layer(s)
-# for i in range(0, DEFAULT_N_HIDDEN_LAYERS):
-#     model_1.add(LSTM(DEFAULT_LAYER_WIDTH,
+# for n_units in range(0, H_LAYERS_N_MIN):
+#     model_1.add(LSTM(UNITS_N_MIN,
 #                      return_sequences=True))
 # # Output layer
 # model_1.add(LSTM(output_dim,
@@ -143,12 +132,12 @@ models.append(
 
 # model_2 = Sequential()
 # # Input layer
-# model_2.add(LSTM(int(DEFAULT_LAYER_WIDTH / 2),
+# model_2.add(LSTM(int(UNITS_N_MIN / 2),
 #                  return_sequences=True,
 #                  input_shape=input_shape))
 # # Hidden layer(s)
-# for i in range(0, DEFAULT_N_HIDDEN_LAYERS*2):
-#     model_2.add(LSTM(int(DEFAULT_LAYER_WIDTH / 2),
+# for n_units in range(0, H_LAYERS_N_MIN*2):
+#     model_2.add(LSTM(int(UNITS_N_MIN / 2),
 #                      return_sequences=True))
 # # Output layer
 # model_2.add(LSTM(output_dim,
@@ -206,10 +195,10 @@ models.append(
 #     train_data, test_data = fold
 #     (train_predictors, train_labels) = train_data
 #     (test_predictors, test_labels) = test_data
-#     for i in range(0, 5):
-#         print('Test data:\t' + str((test_predictors['timestamp'][i]*30)))
+#     for n_units in range(0, 5):
+#         print('Test data:\t' + str((test_predictors['timestamp'][n_units]*30)))
 #         for j in range(0, n_folds-1):
-#             print('Train data:\t' + str((train_predictors['timestamp'][i*(n_folds-1)+j]*30)))
+#             print('Train data:\t' + str((train_predictors['timestamp'][n_units*(n_folds-1)+j]*30)))
 #
 # # Outputs via index
 # n_folds = 5
@@ -217,10 +206,10 @@ models.append(
 # for (train_data, test_data) in folds:
 #     (train_predictors, train_labels) = train_data
 #     (test_predictors, test_labels) = test_data
-#     for i in range(0, 3):
-#         print('Test data:\n' + str(test_predictors[i]))
+#     for n_units in range(0, 3):
+#         print('Test data:\n' + str(test_predictors[n_units]))
 #         for j in range(0, n_folds - 1):
-#             print('Train data:\n' + str((train_predictors[i * (n_folds - 1) + j])))
+#             print('Train data:\n' + str((train_predictors[n_units * (n_folds - 1) + j])))
 #
 #
 # Testing model evalution ----------------------------------------------------------------------------------------------
@@ -234,7 +223,7 @@ for mdl in models:
 
 subjects = [
     (1001, 1),
-    (1005, 1),
+    # (1005, 1),
     # (2001, 1),
     # (2002, 1),
     # (2006, 1),
@@ -245,7 +234,7 @@ subjects = [
 
 behavs = {
     'smile',
-    'talk',
+    # 'talk',
     # 'laugh',
 }
 
