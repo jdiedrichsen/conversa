@@ -1,7 +1,7 @@
 ''' cnv_eval - Model evaluation tools for Conversa '''
 import numpy as np
 import pandas as pd
-from copy import deepcopy
+from copy import copy, deepcopy
 
 __author__ = 'Shayaan Syed Ali'
 # __copyright__ = ''
@@ -32,7 +32,8 @@ ACC_H_STR = 'accuracy'
 def accuracy(prediction, actual):
     if not prediction.shape == actual.shape:
         raise RuntimeError('Comparing prediction and actual value of different shape')
-    return np.mean(1 - np.absolute(np.round(prediction) - actual))
+    abs_err = np.absolute(np.round(prediction) - actual)
+    return np.mean(np.ones(abs_err.shape) - abs_err)
 
 
 # def rmse(prediction, actual):
@@ -95,15 +96,15 @@ def eval_models(models,
     for model_no in range(0, len(models)):
 
         # Select model
-        print('Model: ' + str(model_no+1) + '/' + str(len(models)))
-        # model = deepcopy(models[model_no])  # Model resets every fold - TODO: Ask what behaviour should be
         model = models[model_no]
+        print('Model: ' + str(model_no+1) + '/' + str(len(models)) + ', raw: ' + str(model))
+        # model = deepcopy(models[model_no])  # Model resets every fold - TODO: Ask what behaviour should be
 
         for fold_no in range(0, len(folds)):
 
             # Select fold
-            print('\tFold: ' + str(fold_no+1) + '/' + str(len(folds)))
             fold = folds[fold_no]
+            print('\tFold: ' + str(fold_no+1) + '/' + str(len(folds)))
 
             # Unpack data from fold
             (train_data, test_data) = fold
@@ -131,7 +132,7 @@ def eval_models(models,
     else:
         output = eval_results
     print('Evaluation complete')
-    # print(eval_results)  # For debugging
+    print(eval_results)  # For debugging
     return output
 
 
@@ -213,8 +214,8 @@ def eval_models_on_subjects(models, subjects, behaviours=None, timesteps=30, n_f
             # Evaluate copy of models on the subject and behaviour - different instance of model used for each subject
             # and behaviour
             # TODO: Determine best behaviour and ask about preferred implementation
-            # specialist_models = deepcopy(models)  # These models specialize for each subject and behaviour
-            sub_eval_results = eval_models(models, predict_seqs, label_seqs,
+            models_copy = copy(models)  # These models specialize for each subject and behaviour
+            sub_eval_results = eval_models(models_copy, predict_seqs, label_seqs,
                                            return_data_frame=False,
                                            n_folds=n_folds,
                                            verbose=verbose)

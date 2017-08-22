@@ -23,9 +23,9 @@ TIMESTEPS = 30  # Keep in mind that n_seqs = int(seq_len / TIMESTEPS)
 
 # Layer params
 UNITS_N_MIN = 2
-UNITS_N_MAX = 8
+UNITS_N_MAX = 4
 H_LAYERS_N_MIN = 1
-H_LAYERS_N_MAX = 2
+H_LAYERS_N_MAX = 4
 # Functions
 # INPUT_FUNCTION = 'relu'
 HIDDEN_ACT_FUNC = 'relu'
@@ -236,8 +236,8 @@ behavs = {
 eval_results = cnv_eval.eval_models_on_subjects(models, subjects,
                                                 timesteps=TIMESTEPS,
                                                 behaviours=behavs,
-                                                n_folds=3,
-                                                verbose=0)
+                                                n_folds=2,
+                                                verbose=1)
 
 print(tabulate(eval_results, headers='keys'))
 
