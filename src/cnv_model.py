@@ -4,8 +4,15 @@
 class Model:
     '''
     Abstract class for all models to implement
+    Expected methods to implement:
+        learn(x, y)
+        predict(x)
     '''
-    pass
+    def learn(self, x, y):
+        raise('learn method not implemented!')
+
+    def predict(self, x):
+        raise('learn method not implemented!')
 
 
 class NullModel:

@@ -23,9 +23,9 @@ TIMESTEPS = 30  # Keep in mind that n_seqs = int(seq_len / TIMESTEPS)
 
 # Layer params
 UNITS_N_MIN = 2
-UNITS_N_MAX = 128
+UNITS_N_MAX = 8
 H_LAYERS_N_MIN = 1
-H_LAYERS_N_MAX = 32
+H_LAYERS_N_MAX = 2
 # Functions
 # INPUT_FUNCTION = 'relu'
 HIDDEN_ACT_FUNC = 'relu'
@@ -218,7 +218,7 @@ for mdl in models:
 
 subjects = [
     (1001, 1),
-    # (1005, 1),
+    (1005, 1),
     # (2001, 1),
     # (2002, 1),
     # (2006, 1),
@@ -229,11 +229,15 @@ subjects = [
 
 behavs = {
     'smile',
-    # 'talk',
+    'talk',
     # 'laugh',
 }
 
-eval_results = cnv_eval.eval_models_on_subjects(models, subjects, timesteps=TIMESTEPS, behaviours=behavs)
+eval_results = cnv_eval.eval_models_on_subjects(models, subjects,
+                                                timesteps=TIMESTEPS,
+                                                behaviours=behavs,
+                                                n_folds=3,
+                                                verbose=0)
 
 print(tabulate(eval_results, headers='keys'))
 

@@ -1,7 +1,7 @@
 ''' cnv_eval - Model evaluation tools for Conversa '''
 import numpy as np
 import pandas as pd
-from copy import copy
+from copy import deepcopy
 
 __author__ = 'Shayaan Syed Ali'
 # __copyright__ = ''
@@ -16,12 +16,14 @@ __status__ = 'Development'
 # TODO: In doc add function guide/map
 
 # Constants
-PID_STR = 'pid'
-CAM_STR = 'cam'
-BEHAV_STR = 'behaviour'
-MODEL_NO_STR = 'model_no'
-FOLD_NO_STR = 'fold_no'
-ACC_STR = 'accuracy'
+
+# Header strings
+PID_H_STR = 'pid'
+CAM_H_STR = 'cam'
+BHV_H_STR = 'behaviour'
+MDL_H_STR = 'model'
+FLD_H_STR = 'fold_no'
+ACC_H_STR = 'accuracy'
 # LOSS_STR = 'loss'
 
 
@@ -38,7 +40,7 @@ def accuracy(prediction, actual):
 
 
 # TODO: Documentation
-def evaluate(model, predictors, labels, acc_func=accuracy):
+def evaluate(model, predictors, labels, eval_func=accuracy):
     # try:
     #     from cnv_data import destructure
     # except ImportError:
@@ -48,7 +50,7 @@ def evaluate(model, predictors, labels, acc_func=accuracy):
     # print(labels.shape)
     # print(destructure(labels).shape)
     predicted_labels = model.predict(predictors)
-    return acc_func(predicted_labels, labels)
+    return eval_func(predicted_labels, labels)
 
 
 # In each epoch of training, all data is used
@@ -61,12 +63,15 @@ def eval_models(models,
                 predictors,
                 labels,
                 n_folds=5,
-                train_n_epochs=10,
-                train_batch_sz=10,
-                return_data_frame=True,
+                # train_n_epochs=10,  # Original setting
+                # train_batch_sz=10,
+                train_n_epochs=1,
+                train_batch_sz=1,
+                return_data_frame=True,  # TODO: Add to doc
                 verbose=0):
     '''
     Evaluates models given predictor and label data to train and test the models on
+    :param return_data_frame: 
     :param models: The models to evaluate
     :param predictors: Predictors to test the models on
     :param labels: Labels to test the models on
@@ -82,40 +87,51 @@ def eval_models(models,
 
     folds = k_fold(predictors, labels, n_folds)
     eval_results = dict([
-        (FOLD_NO_STR, []),
-        (MODEL_NO_STR, []),
-        (ACC_STR, [])
+        (FLD_H_STR, []),
+        (MDL_H_STR, []),
+        (ACC_H_STR, [])
         # (LOSS_STR, [])
     ])
     for model_no in range(0, len(models)):
+
+        # Select model
         print('Model: ' + str(model_no+1) + '/' + str(len(models)))
+        # model = deepcopy(models[model_no])  # Model resets every fold - TODO: Ask what behaviour should be
+        model = models[model_no]
+
         for fold_no in range(0, len(folds)):
+
+            # Select fold
             print('\tFold: ' + str(fold_no+1) + '/' + str(len(folds)))
-            # model = copy(models[model_no])  # Model resets every fold - TODO: Ask what behaviour should be
-            model = models[model_no]
             fold = folds[fold_no]
+
             # Unpack data from fold
             (train_data, test_data) = fold
             (train_predictors, train_labels) = train_data
             (test_predictors, test_labels) = test_data
+
             # Train
             print('\t\tTraining')
             model.fit(train_predictors, train_labels, epochs=train_n_epochs, batch_size=train_batch_sz, verbose=verbose)
+
             # Test
             print('\t\tEvaluating')
             # (_, acc) = model.evaluate(test_predictors, test_labels, batch_size=test_n_batch_sz, verbose=verbose)
             acc = accuracy(prediction=model.predict(test_predictors), actual=test_labels)
             print('\t\t\tAccuracy: ' + str(acc))
+
             # Set accuracy
-            eval_results[MODEL_NO_STR].append(model_no+1)
-            eval_results[FOLD_NO_STR].append(fold_no+1)
-            eval_results[ACC_STR].append(acc)
+            eval_results[MDL_H_STR].append(model_no + 1)
+            eval_results[FLD_H_STR].append(fold_no + 1)
+            eval_results[ACC_H_STR].append(acc)
             # evaluation[LOSS_STR].append(loss)
+
     if return_data_frame:
-        output = order_by_fields(pd.DataFrame(eval_results), [MODEL_NO_STR, FOLD_NO_STR, ACC_STR])
+        output = order_by_fields(pd.DataFrame(eval_results), [MDL_H_STR])
     else:
         output = eval_results
     print('Evaluation complete')
+    # print(eval_results)  # For debugging
     return output
 
 
@@ -125,7 +141,7 @@ def order_by_fields(data, field_names):
     Re-orders the columns of data according to field_names
     Refactored from https://stackoverflow.com/a/25023460/7195043
     '''
-    back_fields =[col for col in data.columns if col not in field_names]
+    back_fields = [col for col in data.columns if col not in field_names]
     data = data[field_names + back_fields]
     return data
 
@@ -161,15 +177,15 @@ def k_fold(predictors, labels, n_folds):
 # Subjects are tuples of (pid, cam), where pid and cam are numbers, like (2024, 2)
 # Set behavs to None for all behavs being trained on, otherwise provide iterable of strings
 # TODO: Documentation
-def eval_models_on_subjects(models, subjects, behaviours=None, timesteps=30):
+def eval_models_on_subjects(models, subjects, behaviours=None, timesteps=30, n_folds=5, verbose=0):
 
     eval_results = dict([
-        (PID_STR, []),
-        (CAM_STR, []),
-        (BEHAV_STR, []),
-        (MODEL_NO_STR, []),
-        (FOLD_NO_STR, []),
-        (ACC_STR, []),
+        (PID_H_STR, []),
+        (CAM_H_STR, []),
+        (BHV_H_STR, []),
+        (MDL_H_STR, []),
+        (FLD_H_STR, []),
+        (ACC_H_STR, []),
     ])
 
     try:
@@ -196,21 +212,26 @@ def eval_models_on_subjects(models, subjects, behaviours=None, timesteps=30):
             # sub_eval_results = eval_models(models, predict_seqs, label_seqs, return_data_frame=False)
             # Evaluate copy of models on the subject and behaviour - different instance of model used for each subject
             # and behaviour
-            sub_eval_results = eval_models(copy(models), predict_seqs, label_seqs, return_data_frame=False)
+            # TODO: Determine best behaviour and ask about preferred implementation
+            # specialist_models = deepcopy(models)  # These models specialize for each subject and behaviour
+            sub_eval_results = eval_models(models, predict_seqs, label_seqs,
+                                           return_data_frame=False,
+                                           n_folds=n_folds,
+                                           verbose=verbose)
 
             # Add results to over evaluation results
-            n_rows = len(sub_eval_results[ACC_STR])
-            eval_results[PID_STR].extend([pid]*n_rows)
-            eval_results[CAM_STR].extend([cam]*n_rows)
-            eval_results[BEHAV_STR].extend([behav_name]*n_rows)
-            eval_results[MODEL_NO_STR].extend(sub_eval_results[MODEL_NO_STR])
-            eval_results[FOLD_NO_STR].extend(sub_eval_results[FOLD_NO_STR])
-            eval_results[ACC_STR].extend(sub_eval_results[ACC_STR])
+            n_rows = len(sub_eval_results[ACC_H_STR])
+            eval_results[PID_H_STR].extend([pid] * n_rows)
+            eval_results[CAM_H_STR].extend([cam] * n_rows)
+            eval_results[BHV_H_STR].extend([behav_name] * n_rows)
+            eval_results[MDL_H_STR].extend(sub_eval_results[MDL_H_STR])
+            eval_results[FLD_H_STR].extend(sub_eval_results[FLD_H_STR])
+            eval_results[ACC_H_STR].extend(sub_eval_results[ACC_H_STR])
 
+    eval_df = order_by_fields(pd.DataFrame(eval_results), [PID_H_STR, CAM_H_STR, BHV_H_STR, MDL_H_STR, FLD_H_STR, ACC_H_STR])
+    eval_df.sort_values([BHV_H_STR, MDL_H_STR])
 
     print('Models evaluated on subjects')
-    eval_df = order_by_fields(pd.DataFrame(eval_results), [PID_STR, CAM_STR, BEHAV_STR, MODEL_NO_STR, FOLD_NO_STR, ACC_STR])
-    eval_df.sort_values([MODEL_NO_STR, BEHAV_STR])
     return eval_df
 
 
@@ -218,12 +239,13 @@ def eval_models_on_subjects(models, subjects, behaviours=None, timesteps=30):
 # E.g.
 # df = [('a', [1, 1, 2, 2]), ('b', [7, 1 , 0, 10])], average_fields = ['b']
 # returns [('a', [1, 2]), ('b', [4, 5])]
+# TODO
 def average_on(df, average_fields):
     pass
 
 
 # TODO: Implementation and documentation
-def summary(eval_results):
+def summary(eval_results, average_on=[FLD_H_STR]):
     '''
     Returns a summarized version of model evaluations
     :param eval_results: 
@@ -238,12 +260,12 @@ def summary(eval_results):
 
     eval_results = pd.DataFrame()
 
-    min_model_no = eval_results[MODEL_NO_STR].min()
-    max_model_no = eval_results[MODEL_NO_STR].max()
+    min_model_no = eval_results[MDL_H_STR].min()
+    max_model_no = eval_results[MDL_H_STR].max()
     for i in range(min_model_no, max_model_no):
         eval_results.loc[
-            eval_results[MODEL_NO_STR] == i
-        ].mean()
+            eval_results[MDL_H_STR] == i
+            ].mean()
 
     pass
 
