@@ -229,6 +229,8 @@ def eval_models_on_subjects(models, subjects, behaviours=None, timesteps=30, n_f
             eval_results[FLD_H_STR].extend(sub_eval_results[FLD_H_STR])
             eval_results[ACC_H_STR].extend(sub_eval_results[ACC_H_STR])
 
+    print(eval_results)
+
     eval_df = order_by_fields(pd.DataFrame(eval_results), [PID_H_STR, CAM_H_STR, BHV_H_STR, MDL_H_STR, FLD_H_STR, ACC_H_STR])
     eval_df.sort_values([BHV_H_STR, MDL_H_STR])
 

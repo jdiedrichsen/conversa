@@ -127,7 +127,7 @@ def load(tracking_file, label_file, behaviour_fields=None, structured=True):
             curr_state = behav_column[curr_i]
 
         # For debugging
-        print('Mean label in ' + behav_name + ': ' + str(max(np.mean(behav_column), 1 - np.mean(behav_column))))
+        print('Null model accuracy in ' + behav_name + ': ' + str(max(np.mean(behav_column), 1 - np.mean(behav_column))))
 
     # Add dimension to get 2D (required for Keras)
     tracking_data = add_dim(tracking_data)

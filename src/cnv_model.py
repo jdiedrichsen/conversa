@@ -1,18 +1,37 @@
 ''' cnv_model - Manages Conversa models '''
 
+from abc import ABCMeta, abstractmethod  # Abstract base class import
 
-class Model:
+
+class Model(metaclass=ABCMeta):
     '''
     Abstract class for all models to implement
     Expected methods to implement:
         learn(x, y)
         predict(x)
     '''
-    def learn(self, x, y):
-        raise('learn method not implemented!')
+    @abstractmethod
+    def __init__(self):
+        '''
+        
+        '''
 
+    @abstractmethod
+    def learn(self, x, y):
+        '''
+        
+        :param x: 
+        :param y: 
+        :return: 
+        '''
+
+    @abstractmethod
     def predict(self, x):
-        raise('learn method not implemented!')
+        '''
+        
+        :param x: 
+        :return: 
+        '''
 
 
 class NullModel:
