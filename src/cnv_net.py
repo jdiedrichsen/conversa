@@ -124,13 +124,13 @@ model_1.add(LSTM(
     recurrent_dropout=0))
     
     
-print('LSTM({n_units}, return_sequences={return_sequences}, input_shape=({timesteps}, {in_dim})'.format(
-    n_units=4, return_sequences=True, timesteps=16, in_dim=1)))
+print('LSTM({units_exp}, return_sequences={return_sequences}, input_shape=({timesteps}, {in_dim})'.format(
+    units_exp=4, return_sequences=True, timesteps=16, in_dim=1)))
 
 
 ret_seq = True
-gen_model(['LSTM({n_units}, return_sequences={return_sequences}, input_shape=({timesteps}, {in_dim})'.format(
-    n_units=4, return_sequences=True, timesteps=16, in_dim=1),
+gen_model(['LSTM({units_exp}, return_sequences={return_sequences}, input_shape=({timesteps}, {in_dim})'.format(
+    units_exp=4, return_sequences=True, timesteps=16, in_dim=1),
            'LSTM(4, return_sequences=True, activation=\'softmax\''],
           'optimizer=\'rmsprop\', loss=\'binary_crossentropy\', metrics=[\'accuracy\']')
     

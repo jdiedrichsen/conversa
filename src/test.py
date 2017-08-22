@@ -93,12 +93,12 @@ models = []
 
 from math import log
 
-for n_hidden_layers in range(H_LAYERS_N_MIN, int(log(H_LAYERS_N_MAX, 2)) + 1):
-    for n_units in range(UNITS_N_MIN, int(log(UNITS_N_MAX, 2))+1):
+for hidden_layers_exp in range(H_LAYERS_N_MIN, int(log(H_LAYERS_N_MAX, 2)) + 1):
+    for units_exp in range(UNITS_N_MIN, int(log(UNITS_N_MAX, 2))+1):
         models.append(mk_LSTM_model(
             input_shape=input_shape,
-            layer_width=n_units,
-            n_hidden_layers=n_hidden_layers,
+            layer_width=2**units_exp,
+            n_hidden_layers=2**hidden_layers_exp,
             hidden_activation=HIDDEN_ACT_FUNC,
             output_dim=output_dim,
             output_func=OUTPUT_FUNCTION
@@ -112,7 +112,7 @@ for n_hidden_layers in range(H_LAYERS_N_MIN, int(log(H_LAYERS_N_MAX, 2)) + 1):
 #                  return_sequences=True,
 #                  input_shape=input_shape))
 # # Hidden layer(s)
-# for n_units in range(0, H_LAYERS_N_MIN):
+# for units_exp in range(0, H_LAYERS_N_MIN):
 #     model_1.add(LSTM(UNITS_N_MIN,
 #                      return_sequences=True))
 # # Output layer
@@ -131,7 +131,7 @@ for n_hidden_layers in range(H_LAYERS_N_MIN, int(log(H_LAYERS_N_MAX, 2)) + 1):
 #                  return_sequences=True,
 #                  input_shape=input_shape))
 # # Hidden layer(s)
-# for n_units in range(0, H_LAYERS_N_MIN*2):
+# for units_exp in range(0, H_LAYERS_N_MIN*2):
 #     model_2.add(LSTM(int(UNITS_N_MIN / 2),
 #                      return_sequences=True))
 # # Output layer
@@ -190,10 +190,10 @@ for n_hidden_layers in range(H_LAYERS_N_MIN, int(log(H_LAYERS_N_MAX, 2)) + 1):
 #     train_data, test_data = fold
 #     (train_predictors, train_labels) = train_data
 #     (test_predictors, test_labels) = test_data
-#     for n_units in range(0, 5):
-#         print('Test data:\t' + str((test_predictors['timestamp'][n_units]*30)))
+#     for units_exp in range(0, 5):
+#         print('Test data:\t' + str((test_predictors['timestamp'][units_exp]*30)))
 #         for j in range(0, n_folds-1):
-#             print('Train data:\t' + str((train_predictors['timestamp'][n_units*(n_folds-1)+j]*30)))
+#             print('Train data:\t' + str((train_predictors['timestamp'][units_exp*(n_folds-1)+j]*30)))
 #
 # # Outputs via index
 # n_folds = 5
@@ -201,10 +201,10 @@ for n_hidden_layers in range(H_LAYERS_N_MIN, int(log(H_LAYERS_N_MAX, 2)) + 1):
 # for (train_data, test_data) in folds:
 #     (train_predictors, train_labels) = train_data
 #     (test_predictors, test_labels) = test_data
-#     for n_units in range(0, 3):
-#         print('Test data:\n' + str(test_predictors[n_units]))
+#     for units_exp in range(0, 3):
+#         print('Test data:\n' + str(test_predictors[units_exp]))
 #         for j in range(0, n_folds - 1):
-#             print('Train data:\n' + str((train_predictors[n_units * (n_folds - 1) + j])))
+#             print('Train data:\n' + str((train_predictors[units_exp * (n_folds - 1) + j])))
 #
 #
 # Testing model evalution ----------------------------------------------------------------------------------------------
