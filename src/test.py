@@ -2,9 +2,9 @@ print('Beginning test script')
 
 # Imports --------------------------------------------------------------------------------------------------------------
 
-import numpy as np
-from keras.models import Sequential
-from keras.layers import LSTM
+# import numpy as np
+# from keras.models import Sequential
+# from keras.layers import LSTM
 try:
     import cnv_data, cnv_eval
 except ImportError:
@@ -16,7 +16,7 @@ from tabulate import tabulate
 TRACKING_FILE = '..\\data\\tracking\\par2024Cam1\\cam1par2024.txt'
 LABEL_FILE = '..\\data\\labels\\p2024cam1.dat'
 
-TIMESTEPS = 30  # Keep in mind that n_seqs = int(seq_len / TIMESTEPS)
+TIMESTEPS = 1  # Keep in mind that n_seqs = int(seq_len / TIMESTEPS)
 # BATCH_SZ = 10  # Optionally can set batch_size in fitting/evaluation to number of sequences (n_seqs for all sequences)
 # N_EPOCHS = 10
 # VALIDATION_SPLIT = 0.2
@@ -53,7 +53,7 @@ OUTPUT_FUNCTION = 'softmax'
 # print(labels.shape)
 
 
-# Set up models --------------------------------------------------------------------------------------------------------
+# Set up nn_models --------------------------------------------------------------------------------------------------------
 
 # First index of shape is the number of subsequences, second is length of subsequences, third is dimensions of data
 
@@ -74,37 +74,37 @@ input_shape = (TIMESTEPS, input_dim)
 # Model 1 --------------------------------------------------------------------------------------------------------------
 
 
-# Temp for convenience
-# Can also set recurrent activation and dropout
-def mk_LSTM_model(input_shape, layer_width, n_hidden_layers, hidden_activation, output_dim, output_func):
-    mdl = Sequential()
-    # Input
-    mdl.add(LSTM(layer_width, return_sequences=True, input_shape=input_shape))
-    # Hidden
-    for layer_no in range(0, n_hidden_layers):
-        mdl.add(LSTM(layer_width, return_sequences=True, activation=hidden_activation))
-    # Output
-    mdl.add(LSTM(output_dim, return_sequences=True, activation=output_func))
-    # Compile
-    mdl.compile(optimizer='rmsprop', loss='binary_crossentropy', metrics=['accuracy'])
-    return mdl
-
-models = []
-
-from math import log
-
-for hidden_layers_exp in range(H_LAYERS_N_MIN, int(log(H_LAYERS_N_MAX, 2)) + 1):
-    for units_exp in range(UNITS_N_MIN, int(log(UNITS_N_MAX, 2))+1):
-        models.append(mk_LSTM_model(
-            input_shape=input_shape,
-            layer_width=2**units_exp,
-            n_hidden_layers=2**hidden_layers_exp,
-            hidden_activation=HIDDEN_ACT_FUNC,
-            output_dim=output_dim,
-            output_func=OUTPUT_FUNCTION
-        ))
-    # units
-# hidden layers
+# # Temp for convenience
+# # Can also set recurrent activation and dropout
+# def mk_LSTM_model(input_shape, layer_width, n_hidden_layers, hidden_activation, output_dim, output_func):
+#     mdl = Sequential()
+#     # Input
+#     mdl.add(LSTM(layer_width, return_sequences=True, input_shape=input_shape))
+#     # Hidden
+#     for layer_no in range(0, n_hidden_layers):
+#         mdl.add(LSTM(layer_width, return_sequences=True, activation=hidden_activation))
+#     # Output
+#     mdl.add(LSTM(output_dim, return_sequences=True, activation=output_func))
+#     # Compile
+#     mdl.compile(optimizer='rmsprop', loss='binary_crossentropy', metrics=['accuracy'])
+#     return mdl
+#
+# nn_models = []
+#
+# from math import log
+#
+# for hidden_layers_exp in range(H_LAYERS_N_MIN, int(log(H_LAYERS_N_MAX, 2)) + 1):
+#     for units_exp in range(UNITS_N_MIN, int(log(UNITS_N_MAX, 2))+1):
+#         nn_models.append(mk_LSTM_model(
+#             input_shape=input_shape,
+#             layer_width=2**units_exp,
+#             n_hidden_layers=2**hidden_layers_exp,
+#             hidden_activation=HIDDEN_ACT_FUNC,
+#             output_dim=output_dim,
+#             output_func=OUTPUT_FUNCTION
+#         ))
+#     # units
+# # hidden layers
 
 # model_1 = Sequential()
 # # Input layer
@@ -209,28 +209,39 @@ for hidden_layers_exp in range(H_LAYERS_N_MIN, int(log(H_LAYERS_N_MAX, 2)) + 1):
 #
 # Testing model evalution ----------------------------------------------------------------------------------------------
 
-# small_eval_results = cnv_eval.eval_models(models, predictors, labels, verbose=0)
+# small_eval_results = cnv_eval.eval_models(nn_models, predictors, labels, verbose=0)
 #
 # print(tabulate(small_eval_results, headers='keys'))
 
-for mdl in models:
-    print(mdl.summary())
+# for mdl in nn_models:
+#     print(mdl.summary())
+
+try:
+    import cnv_model as M
+except ImportError:
+    print('Unable to import cnv_data')
+
+models = [
+    M.NullModel(),
+    # M.MeanModel(),
+    M.SVMModel(),
+]
 
 subjects = [
     (1001, 1),
     (1005, 1),
-    # (2001, 1),
-    # (2002, 1),
-    # (2006, 1),
-    # (2010, 1),
-    # (2017, 1),
-    # (2024, 1),
+    (2001, 1),  # Check
+    (2002, 1),  # Check
+    (2006, 1),  # Check
+    (2010, 1),
+    (2017, 1),
+    (2024, 1),
 ]
 
 behavs = {
     'smile',
     'talk',
-    # 'laugh',
+    'laugh',
 }
 
 eval_results = cnv_eval.eval_models_on_subjects(models, subjects,

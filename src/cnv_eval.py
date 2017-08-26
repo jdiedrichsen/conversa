@@ -31,7 +31,8 @@ ACC_H_STR = 'accuracy'
 # TODO: Documentation
 def accuracy(prediction, actual):
     if not prediction.shape == actual.shape:
-        raise RuntimeError('Comparing prediction and actual value of different shape')
+        # TODO: Fix - error is raised when it should not be
+        raise RuntimeError('Comparing prediction and actual value of different shapes: ' + str(prediction.shape) + ' and ' + str(actual.shape))
     abs_err = np.absolute(np.round(prediction) - actual)
     return np.mean(np.ones(abs_err.shape) - abs_err)
 
@@ -66,18 +67,18 @@ def eval_models(models,
                 n_folds=5,
                 # train_n_epochs=10,  # Original setting
                 # train_batch_sz=10,
-                train_n_epochs=1,
-                train_batch_sz=1,
+                # train_n_epochs=1,
+                # train_batch_sz=1,
                 return_data_frame=True,  # TODO: Add to doc
                 verbose=0):
     '''
-    Evaluates models given predictor and label data to train and test the models on
+    Evaluates nn_models given predictor and label data to train and test the nn_models on
     :param return_data_frame: 
-    :param models: The models to evaluate
-    :param predictors: Predictors to test the models on
-    :param labels: Labels to test the models on
+    :param models: The nn_models to evaluate
+    :param predictors: Predictors to test the nn_models on
+    :param labels: Labels to test the nn_models on
     :param n_folds: The number of folds to test the data on, defaults to 5
-    :param train_n_epochs: The number of passes each models gets on the data, defaults to 10
+    :param train_n_epochs: The number of passes each nn_models gets on the data, defaults to 10
     :param train_batch_sz: The number of data points to train each model on at once, defaults to 10
     :param verbose: The verbosity level of model training and testing - note that model console output often conflicts
     with outputs from cnv_eval - defaults to 0 (not verbose)
@@ -98,7 +99,7 @@ def eval_models(models,
         # Select model
         model = models[model_no]
         print('Model: ' + str(model_no+1) + '/' + str(len(models)) + ', raw: ' + str(model))
-        # model = deepcopy(models[model_no])  # Model resets every fold - TODO: Ask what behaviour should be
+        # model = deepcopy(nn_models[model_no])  # Model resets every fold - TODO: Ask what behaviour should be
 
         for fold_no in range(0, len(folds)):
 
@@ -113,7 +114,8 @@ def eval_models(models,
 
             # Train
             print('\t\tTraining')
-            model.fit(train_predictors, train_labels, epochs=train_n_epochs, batch_size=train_batch_sz, verbose=verbose)
+            # model.learn(train_predictors, train_labels, epochs=train_n_epochs, batch_size=train_batch_sz, verbose=verbose)
+            model.learn(train_predictors, train_labels)
 
             # Test
             print('\t\tEvaluating')
@@ -132,7 +134,7 @@ def eval_models(models,
     else:
         output = eval_results
     print('Evaluation complete')
-    print(eval_results)  # For debugging
+    # print(eval_results)  # For debugging
     return output
 
 
@@ -209,13 +211,19 @@ def eval_models_on_subjects(models, subjects, behaviours=None, timesteps=30, n_f
             predict_seqs = to_subseqs(predicts, timesteps)
             label_seqs = to_subseqs(add_dim(labels[behav_name]), timesteps)
 
-            # # Old implementation kept using same models for all subjects and behaviours
-            # sub_eval_results = eval_models(models, predict_seqs, label_seqs, return_data_frame=False)
-            # Evaluate copy of models on the subject and behaviour - different instance of model used for each subject
+            # # Old implementation kept using same nn_models for all subjects and behaviours
+            # sub_eval_results = eval_models(nn_models, predict_seqs, label_seqs, return_data_frame=False)
+            # Evaluate copy of nn_models on the subject and behaviour - different instance of model used for each subject
             # and behaviour
             # TODO: Determine best behaviour and ask about preferred implementation
-            models_copy = copy(models)  # These models specialize for each subject and behaviour
-            sub_eval_results = eval_models(models_copy, predict_seqs, label_seqs,
+            # models_copy = copy(models)  # These nn_models specialize for each subject and behaviour
+            # sub_eval_results = eval_models(models_copy, predict_seqs, label_seqs,
+            #                                return_data_frame=False,
+            #                                n_folds=n_folds,
+            #                                verbose=verbose)
+
+            # With dividing into subseqs
+            sub_eval_results = eval_models(models, predicts, add_dim(labels[behav_name]),
                                            return_data_frame=False,
                                            n_folds=n_folds,
                                            verbose=verbose)
@@ -229,10 +237,10 @@ def eval_models_on_subjects(models, subjects, behaviours=None, timesteps=30, n_f
             eval_results[FLD_H_STR].extend(sub_eval_results[FLD_H_STR])
             eval_results[ACC_H_STR].extend(sub_eval_results[ACC_H_STR])
 
-    print(eval_results)
+    # print(eval_results)
 
     eval_df = order_by_fields(pd.DataFrame(eval_results), [PID_H_STR, CAM_H_STR, BHV_H_STR, MDL_H_STR, FLD_H_STR, ACC_H_STR])
-    eval_df.sort_values([BHV_H_STR, MDL_H_STR])
+    eval_df.sort_values([MDL_H_STR])
 
     print('Models evaluated on subjects')
     return eval_df
