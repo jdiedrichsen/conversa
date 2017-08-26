@@ -1,4 +1,5 @@
 ''' cnv_eval - Model evaluation tools for Conversa '''
+
 import numpy as np
 import pandas as pd
 from copy import copy, deepcopy
@@ -12,7 +13,6 @@ __status__ = 'Development'
 # __license__ = ''
 # __version__ = ''
 
-# TODO: Mean prediction and LDA (and Naive Bayes?)
 # TODO: In doc add function guide/map
 
 # Constants
@@ -28,13 +28,19 @@ ACC_H_STR = 'accuracy'
 
 
 # Only works when elements in prediction and actual are in range [0, 1]
-# TODO: Documentation
-def accuracy(prediction, actual):
-    if not prediction.shape == actual.shape:
-        # TODO: Fix - error is raised when it should not be
-        raise RuntimeError('Comparing prediction and actual value of different shapes: ' + str(prediction.shape) + ' and ' + str(actual.shape))
-    abs_err = np.absolute(np.round(prediction) - actual)
-    return np.mean(np.ones(abs_err.shape) - abs_err)
+def accuracy(predicted, true):
+    '''
+    Determines the accuracy of a predicted value against an actual value
+    Requires that the predicted and true values are numpy arrays (or of classes that work with numpy functions) and that
+    they are of the same shape
+    :param predicted: The predicted value(s) as a numpy array, same shape as true
+    :param true: The actual value(s) as a numpy array, same shape as predicted
+    :return: The accuracy of the prediction against the true value, specifically the 
+    '''
+    if not predicted.shape == true.shape:
+        raise RuntimeError('Comparing predicted and true value of different shapes: ' + str(predicted.shape) + ' and ' + str(true.shape))
+    abs_err = np.absolute(np.round(predicted) - true)
+    return 1 - np.mean(abs_err)
 
 
 # def rmse(prediction, actual):
@@ -120,7 +126,7 @@ def eval_models(models,
             # Test
             print('\t\tEvaluating')
             # (_, acc) = model.evaluate(test_predictors, test_labels, batch_size=test_n_batch_sz, verbose=verbose)
-            acc = accuracy(prediction=model.predict(test_predictors), actual=test_labels)
+            acc = accuracy(predicted=model.predict(test_predictors), true=test_labels)
             print('\t\t\tAccuracy: ' + str(acc))
 
             # Set accuracy

@@ -3,6 +3,7 @@
 from abc import ABCMeta, abstractmethod  # Abstract base class import
 import numpy as np
 
+# TODO: Naive Bayes classifier, LDA
 
 class Model(metaclass=ABCMeta):
     '''

@@ -219,6 +219,9 @@ def load_subject(pid,
     cam_par_str = ''.join(['cam', str(cam), 'par', str(pid)])
     p_cam_str = ''.join(['p', str(pid), 'cam', str(cam)])
 
+    # Note that the hierarchy of files is different between tracking and label files, this is hardcoded below
+    # FUTURE_TODO: Find way to deal with different file hierarchy and implement
+
     tracking_file = ''.join([tracking_dir, par_cam_str, '\\', cam_par_str, tracking_file_suffix])
     label_file = ''.join([label_dir, p_cam_str, label_file_suffix])
 

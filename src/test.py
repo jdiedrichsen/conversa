@@ -230,18 +230,18 @@ models = [
 subjects = [
     (1001, 1),
     (1005, 1),
-    # (2001, 1),  # Check
-    # (2002, 1),  # Check
-    # (2006, 1),  # Check
-    # (2010, 1),
-    # (2017, 1),
-    # (2024, 1),
+    (2001, 1),  # Check
+    (2002, 1),  # Check
+    (2006, 1),  # Check
+    (2010, 1),
+    (2017, 1),
+    (2024, 1),
 ]
 
 behavs = {
     'smile',
     'talk',
-    # 'laugh',
+    'laugh',
 }
 
 eval_results = cnv_eval.eval_models_on_subjects(models, subjects,
