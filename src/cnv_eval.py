@@ -277,6 +277,12 @@ def summary(eval_results):
 
     # eval_results = pd.DataFrame()  # TODO - Rmv this line after implemented
 
+    # # Future TODO - Add compatibility with eval_models dfs instead of just eval_models_on_subjects
+    # # Will require special handling of pid and cam
+    # if PID_H_STR in eval_results and CAM_H_STR in eval_results:
+    #     summary_dict[PID_H_STR] = []
+    #     summary_dict[CAM_H_STR] = []
+
     # Get unique values in relevant columns
     # Can also exclude ravel(), this method should be faster as it accesses the underlying ndarray
     pids = pd.unique(eval_results[PID_H_STR].values.ravel())
@@ -284,10 +290,19 @@ def summary(eval_results):
     bhvs = pd.unique(eval_results[BHV_H_STR].values.ravel())  # Behaviours
     mdls = pd.unique(eval_results[MDL_H_STR].values.ravel())  # Models
 
-    print(pids)
-    print(cams)
-    print(bhvs)
-    print(mdls)
+    # print(pids)
+    # print(cams)
+    # print(bhvs)
+    # print(mdl)
+
+    t = (eval_results.groupby([PID_H_STR, CAM_H_STR, BHV_H_STR, MDL_H_STR]).mean())
+    t = t.drop(FLD_H_STR, 1)  # Drop fold string
+
+    print(t)
+
+    for models in mdls:
+        for behaviours in bhvs:
+            pass
 
     # for model_no in model_nos
 

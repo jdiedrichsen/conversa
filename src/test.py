@@ -240,8 +240,8 @@ subjects = [
 
 behavs = {
     'smile',
-    'talk',
-    'laugh',
+    # 'talk',
+    # 'laugh',
 }
 
 eval_results = cnv_eval.eval_models_on_subjects(models, subjects,
@@ -250,7 +250,7 @@ eval_results = cnv_eval.eval_models_on_subjects(models, subjects,
                                                 n_folds=2,
                                                 verbose=1)
 
-print(tabulate(eval_results, headers='keys'))
+print(eval_results)
 
 cnv_eval.summary(eval_results)
 
