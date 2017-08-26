@@ -11,9 +11,7 @@ __status__ = 'Development'
 # __license__ = ''
 # __version__ = ''
 
-# TODO: File documentation tags
-# TODO: Add functionalities in cnv_test_LSTM.py
-
+# TODO: Add vprint and verbose flags
 
 # Constants
 

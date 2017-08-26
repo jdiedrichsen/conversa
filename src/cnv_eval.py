@@ -14,6 +14,7 @@ __status__ = 'Development'
 # __version__ = ''
 
 # TODO: In doc add function guide/map
+# TODO: Add vprint and verbose flags
 
 # Constants
 
@@ -40,23 +41,15 @@ def accuracy(predicted, true):
     if not predicted.shape == true.shape:
         raise RuntimeError('Comparing predicted and true value of different shapes: ' + str(predicted.shape) + ' and ' + str(true.shape))
     abs_err = np.absolute(np.round(predicted) - true)
-    return 1 - np.mean(abs_err) #
+    return 1 - np.mean(abs_err)
 
 
 # def rmse(prediction, actual):
 #     return np.sqrt(np.mean(np.square(prediction - actual)))
 
 
-# TODO: Documentation
+# TODO: Doc and implement in eval_models
 def evaluate(model, predictors, labels, eval_func=accuracy):
-    # try:
-    #     from cnv_data import destructure
-    # except ImportError:
-    #     print('Unable to import cnv_data.load_subject')
-    # print(type(predicted_labels))
-    # print(destructure(predicted_labels).shape)
-    # print(labels.shape)
-    # print(destructure(labels).shape)
     predicted_labels = model.predict(predictors)
     return eval_func(predicted_labels, labels)
 
@@ -71,10 +64,6 @@ def eval_models(models,
                 predictors,
                 labels,
                 n_folds=5,
-                # train_n_epochs=10,  # Original setting
-                # train_batch_sz=10,
-                # train_n_epochs=1,
-                # train_batch_sz=1,
                 return_data_frame=True,  # TODO: Add to doc
                 verbose=0):
     '''
@@ -120,7 +109,6 @@ def eval_models(models,
 
             # Train
             print('\t\tTraining')
-            # model.learn(train_predictors, train_labels, epochs=train_n_epochs, batch_size=train_batch_sz, verbose=verbose)
             model.learn(train_predictors, train_labels)
 
             # Test
