@@ -40,7 +40,7 @@ def accuracy(predicted, true):
     if not predicted.shape == true.shape:
         raise RuntimeError('Comparing predicted and true value of different shapes: ' + str(predicted.shape) + ' and ' + str(true.shape))
     abs_err = np.absolute(np.round(predicted) - true)
-    return 1 - np.mean(abs_err)
+    return 1 - np.mean(abs_err) #
 
 
 # def rmse(prediction, actual):
