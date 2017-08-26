@@ -36,6 +36,8 @@ class Model(metaclass=ABCMeta):
 
 class NullModel:
 
+    # TODO: Fix bug with occasional off-by-one prediction
+
     def __init__(self):
         Model.__init__(self)
         self._y_shape = tuple()

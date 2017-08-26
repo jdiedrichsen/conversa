@@ -240,7 +240,7 @@ def eval_models_on_subjects(models, subjects, behaviours=None, timesteps=30, n_f
     # print(eval_results)
 
     eval_df = order_by_fields(pd.DataFrame(eval_results), [PID_H_STR, CAM_H_STR, BHV_H_STR, MDL_H_STR, FLD_H_STR, ACC_H_STR])
-    eval_df.sort_values([MDL_H_STR])
+    eval_df.sort_values([MDL_H_STR, BHV_H_STR])
 
     print('Models evaluated on subjects')
     return eval_df
@@ -256,29 +256,42 @@ def average_on(df, average_fields):
 
 
 # TODO: Implementation and documentation
-def summary(eval_results, average_on=[FLD_H_STR]):
+def summary(eval_results):
     '''
     Returns a summarized version of model evaluations
     :param eval_results: 
     :return: 
     '''
+    # TODO: Include and implement optional param for field to average over
+    # def summary(eval_results, average_on=[FLD_H_STR]):
+
+    # Incoming eval_resutls has column fold_no, we want to average accuracies across folds
 
     summary_dict = dict([
-
+        (PID_H_STR, []),
+        (CAM_H_STR, []),
+        (BHV_H_STR, []),
+        (MDL_H_STR, []),
+        (ACC_H_STR, []),
     ])
 
-    pd.DataFrame(summary_dict)
+    # eval_results = pd.DataFrame()  # TODO - Rmv this line after implemented
 
-    eval_results = pd.DataFrame()
+    # Get unique values in relevant columns
+    # Can also exclude ravel(), this method should be faster as it accesses the underlying ndarray
+    pids = pd.unique(eval_results[PID_H_STR].values.ravel())
+    cams = pd.unique(eval_results[PID_H_STR].values.ravel())
+    bhvs = pd.unique(eval_results[BHV_H_STR].values.ravel())  # Behaviours
+    mdls = pd.unique(eval_results[MDL_H_STR].values.ravel())  # Models
 
-    min_model_no = eval_results[MDL_H_STR].min()
-    max_model_no = eval_results[MDL_H_STR].max()
-    for i in range(min_model_no, max_model_no):
-        eval_results.loc[
-            eval_results[MDL_H_STR] == i
-            ].mean()
+    print(pids)
+    print(cams)
+    print(bhvs)
+    print(mdls)
 
-    pass
+    # for model_no in model_nos
+
+    return pd.DataFrame(summary_dict)
 
 
 # TODO: Update doc.md
