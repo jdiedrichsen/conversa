@@ -13,6 +13,7 @@ __status__ = 'Development'
 # __license__ = ''
 # __version__ = ''
 
+# TODO: Add functions to write to file
 # TODO: In doc add function guide/map
 # TODO: Add vprint and verbose flags
 
@@ -39,7 +40,7 @@ def accuracy(predicted, true):
     :return: The accuracy of the prediction against the true value, specifically the 
     '''
     if not predicted.shape == true.shape:
-        raise RuntimeError('Comparing predicted and true value of different shapes: ' + str(predicted.shape) + ' and ' + str(true.shape))
+        raise RuntimeError('Prediction shape: ' + str(predicted.shape) + ' while true has shape: ' + str(true.shape))
     abs_err = np.absolute(np.round(predicted) - true)
     return 1 - np.mean(abs_err)
 
@@ -64,37 +65,37 @@ def eval_models(models,
                 predictors,
                 labels,
                 n_folds=5,
-                return_data_frame=True,  # TODO: Add to doc
-                verbose=0):
+                return_data_frame=True,
+                verbose=0):  # TODO: Implement
     '''
     Evaluates nn_models given predictor and label data to train and test the nn_models on
-    :param return_data_frame: 
     :param models: The nn_models to evaluate
     :param predictors: Predictors to test the nn_models on
     :param labels: Labels to test the nn_models on
     :param n_folds: The number of folds to test the data on, defaults to 5
-    :param train_n_epochs: The number of passes each nn_models gets on the data, defaults to 10
-    :param train_batch_sz: The number of data points to train each model on at once, defaults to 10
+    :param return_data_frame: Whether to return the evaluation data in a pandas DataFrame or a Python dict
     :param verbose: The verbosity level of model training and testing - note that model console output often conflicts
     with outputs from cnv_eval - defaults to 0 (not verbose)
-    :return: A pandas DataFrame with columns fold_no, model_no, and accuracy
+    :return: A pandas DataFrame with columns fold_no, model_no, and accuracy or a dict if return_data_frame=False
     '''
-    # TODO: Update doc
-    # TODO: Add verbose flags, vprint function, replace prints with vprint
 
     folds = k_fold(predictors, labels, n_folds)
+
+    # Set up eval_results as dict and convert to pd dataframe if return_data_frame is True
     eval_results = dict([
         (FLD_H_STR, []),
         (MDL_H_STR, []),
         (ACC_H_STR, [])
         # (LOSS_STR, [])
     ])
+
     for model_no in range(0, len(models)):
 
         # Select model
         model = models[model_no]
-        print('Model: ' + str(model_no+1) + '/' + str(len(models)) + ', raw: ' + str(model))
-        # model = deepcopy(nn_models[model_no])  # Model resets every fold - TODO: Ask what behaviour should be
+        print('Model: ' + str(model_no+1) + '/' + str(len(models)) + ', : ' + str(model))
+        # model = deepcopy(nn_models[model_no])  # Resets model on each fold
+        # TODO: Determine applicable behaviour or parameterize
 
         for fold_no in range(0, len(folds)):
 
@@ -113,7 +114,6 @@ def eval_models(models,
 
             # Test
             print('\t\tEvaluating')
-            # (_, acc) = model.evaluate(test_predictors, test_labels, batch_size=test_n_batch_sz, verbose=verbose)
             acc = accuracy(predicted=model.predict(test_predictors), true=test_labels)
             print('\t\t\tAccuracy: ' + str(acc))
 
@@ -121,26 +121,25 @@ def eval_models(models,
             eval_results[MDL_H_STR].append(model_no + 1)
             eval_results[FLD_H_STR].append(fold_no + 1)
             eval_results[ACC_H_STR].append(acc)
-            # evaluation[LOSS_STR].append(loss)
 
-    if return_data_frame:
-        output = order_by_fields(pd.DataFrame(eval_results), [MDL_H_STR])
-    else:
-        output = eval_results
-    print('Evaluation complete')
-    # print(eval_results)  # For debugging
-    return output
+    # Return applicable DataFrame or dict
+    # TODO: Test
+    return eval_results if return_data_frame else order_fields(pd.DataFrame(eval_results).sort_values(MDL_H_STR), [MDL_H_STR])
 
 
-# TODO: Documentation
-def order_by_fields(data, field_names):
+# TODO: Test
+def order_fields(df, priority_fields):
     '''
-    Re-orders the columns of data according to field_names
+    Re-orders the columns of a pandas DataFrame according to column_names
     Refactored from https://stackoverflow.com/a/25023460/7195043
+    :param df: The DataFrame whose columns are to be reordered
+    :param priority_fields: The fields to bring to the left in order, does not need to include all columns - others will
+    be added at the back
+    :return: The DataFrame with reordered columns
     '''
-    back_fields = [col for col in data.columns if col not in field_names]
-    data = data[field_names + back_fields]
-    return data
+    remaining_fields = [col for col in df.columns if col not in priority_fields]
+    df = df[[priority_fields + remaining_fields]]
+    return df
 
 
 def k_fold(predictors, labels, n_folds):
@@ -202,19 +201,8 @@ def eval_models_on_subjects(models, subjects, behaviours=None, timesteps=30, n_f
 
             print('Behaviour: ' + str(behav_name))
 
-            predict_seqs = to_subseqs(predicts, timesteps)
-            label_seqs = to_subseqs(add_dim(labels[behav_name]), timesteps)
-
-            # # Old implementation kept using same nn_models for all subjects and behaviours
-            # sub_eval_results = eval_models(nn_models, predict_seqs, label_seqs, return_data_frame=False)
-            # Evaluate copy of nn_models on the subject and behaviour - different instance of model used for each subject
-            # and behaviour
             # TODO: Determine best behaviour and ask about preferred implementation
             # models_copy = copy(models)  # These nn_models specialize for each subject and behaviour
-            # sub_eval_results = eval_models(models_copy, predict_seqs, label_seqs,
-            #                                return_data_frame=False,
-            #                                n_folds=n_folds,
-            #                                verbose=verbose)
 
             # With dividing into subseqs
             sub_eval_results = eval_models(models, predicts, add_dim(labels[behav_name]),
@@ -233,37 +221,24 @@ def eval_models_on_subjects(models, subjects, behaviours=None, timesteps=30, n_f
 
     # print(eval_results)
 
-    eval_df = order_by_fields(pd.DataFrame(eval_results), [PID_H_STR, CAM_H_STR, BHV_H_STR, MDL_H_STR, FLD_H_STR, ACC_H_STR])
+    eval_df = order_fields(pd.DataFrame(eval_results), [PID_H_STR, CAM_H_STR, BHV_H_STR, MDL_H_STR, FLD_H_STR, ACC_H_STR])
     eval_df.sort_values([MDL_H_STR, BHV_H_STR])
 
     print('Models evaluated on subjects')
     return eval_df
 
 
-# Takes the average on some fields in a dataframe and returns a different dataframe
-# E.g.
-# df = [('a', [1, 1, 2, 2]), ('b', [7, 1 , 0, 10])], average_fields = ['b']
-# returns [('a', [1, 2]), ('b', [4, 5])]
-# TODO
-def average_on(df, average_fields):
-    pass
-
-
-# TODO: Implementation and documentation
 def summary(eval_results):
     '''
-    Returns a summarized version of model evaluations
-    :param eval_results: 
-    :return: 
+    Returns a summarized version of model evaluations which averages the accuracy of models across folds
+    :param eval_results: The DataFrame to summarize
+    :return: A summary DataFrame
     '''
     # Future TODO: Include and implement optional param for field to average over
     # Future TODO - Add compatibility with eval_models dfs where pid and cam columns do not exist
     summary_df = eval_results.drop(FLD_H_STR, 1)  # Drop fold string
     summary_df = (summary_df.groupby([PID_H_STR, CAM_H_STR, BHV_H_STR, MDL_H_STR]).mean())
     return summary_df
-
-
-# TODO: Update doc.md
 
 
 print('Imported cnv_eval')

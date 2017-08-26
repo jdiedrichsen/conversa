@@ -3,7 +3,11 @@
 from abc import ABCMeta, abstractmethod  # Abstract base class import
 import numpy as np
 
+# TODO: Add functions to write to file
 # TODO: Naive Bayes classifier, LDA
+
+# Models must implement subsequence division on their own, use cnv_data.to_seqs if required
+
 
 class Model(metaclass=ABCMeta):
     '''
@@ -35,9 +39,11 @@ class Model(metaclass=ABCMeta):
         '''
 
 
-class NullModel:
-
-    # TODO: Fix bug with occasional off-by-one prediction
+# TODO: Fix bug with occasional off-by-one prediction
+class ZeroModel:
+    '''
+    Always predicts zero
+    '''
 
     def __init__(self):
         Model.__init__(self)
@@ -51,8 +57,11 @@ class NullModel:
         return np.zeros(self._y_shape)
 
 
-# TODO - dbug
+# TODO - Debug
 class MeanModel(Model):
+    '''
+    Always predicts the mean of values it's been trained on
+    '''
 
     def __init__(self):
         Model.__init__(self)
@@ -86,12 +95,12 @@ class SVMModel:
             print('Unable to import cnv_data')
         p_2 = destructure(predictors)
         p_2_s = p_2.shape
-        p_2 = np.reshape(p_2, (p_2_s[0], p_2_s[2]))
+        p_2 = np.reshape(p_2, (p_2_s[0], p_2_s[-1]))
         # print(predictors.shape)
         # print(p_2.shape)
         l_2 = labels
         l_2_s = l_2.shape
-        l_2 = np.reshape(l_2, (l_2_s[0], l_2_s[2]))
+        l_2 = np.reshape(l_2, (l_2_s[0], l_2_s[-1]))
         # print(labels.shape)
         # print(l_2.shape)
         self.mdl.fit(p_2, l_2)
@@ -103,7 +112,7 @@ class SVMModel:
             print('Unable to import cnv_data')
         p_2 = destructure(predictors)
         p_2_s = p_2.shape
-        p_2 = np.reshape(p_2, (p_2_s[0], p_2_s[2]))
+        p_2 = np.reshape(p_2, (p_2_s[0], p_2_s[-1]))
         return np.reshape(self.mdl.predict(p_2), (len(self.mdl.predict(p_2)), 1, 1))  # TODO - Make flexible
 
 

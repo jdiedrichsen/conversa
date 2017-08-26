@@ -11,6 +11,7 @@ __status__ = 'Development'
 # __license__ = ''
 # __version__ = ''
 
+# TODO: Add functions to write to file
 # TODO: Add vprint and verbose flags
 
 # Constants
@@ -92,48 +93,41 @@ def load(tracking_file, label_file, behaviour_fields=None, structured=True):
     label_length = label_data.shape[0]
     for behav_i in range(0, n_behavs):
         behav_name = behav_names[behav_i]
-        # print('Applying behaviour label: ' + behav_name)
         behav_column = label_data[behav_name]
         curr_i = 0
         next_i = curr_i + 1
         curr_state = behav_column[curr_i]
         next_state = behav_column[next_i]
         while next_i + 1 < label_length:
+
             # Go to point of change and fill data from current point to point of change
             while (next_state == curr_state) and (next_i + 1 < label_length):
                 next_i = next_i + 1
                 next_state = behav_column[next_i]
+
             # Set data from beginning to point of change
             start_i = _LA_FRAME_SHIFT + index_to_frame(label_data, curr_i)
             end_i = _LA_FRAME_SHIFT + index_to_frame(label_data, next_i)
-            # print('Setting ' + behav_name + ' label to ' + str(curr_state) + ' from indices ' + str(start_i)
-            #       + ' to ' + str(end_i))
             behav_data[behav_name][start_i:end_i] = curr_state
 
-            # # For debugging
-            # print('Behaviour: ' + behav_name)
-            # print('Start index: \t' + str(start_i))
-            # print('End index: \t' + str(end_i))
-            # print('State: \t' + str(curr_state))
-            # # print(str(behav_data[behav_name][start_i:end_i]))
-            # print('------------')
-
             # Reset states
-            # print('Resetting states')
             curr_i = next_i
             curr_state = behav_column[curr_i]
 
-        # For debugging
-        print('Null model accuracy in ' + behav_name + ': ' + str(max(np.mean(behav_column), 1 - np.mean(behav_column))))
+        # # For debugging - TODO: Use in cnv_eval
+        # print('Null model accuracy in ' + behav_name + ': ' + str(max(np.mean(behav_column), 1 - np.mean(behav_column))))
 
-    # Add dimension to get 2D (required for Keras)
-    tracking_data = add_dim(tracking_data)
-    behav_data = add_dim(behav_data)
+    # # Add dimension to get 2D (required for Keras)
+    # tracking_data = add_dim(tracking_data)
+    # behav_data = add_dim(behav_data)
 
     # Destructure if needed
     if not structured:
         tracking_data = destructure(tracking_data)
         behav_data = destructure(behav_data)
+
+    print(tracking_data.shape)
+    print(behav_data.shape)
 
     # Return data
     return tracking_data, behav_data

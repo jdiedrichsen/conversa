@@ -249,9 +249,9 @@ eval_results = cnv_eval.eval_models_on_subjects(models, subjects,
                                                 behaviours=behavs,
                                                 n_folds=5,
                                                 verbose=0)
-print(eval_results)
+# print(eval_results)
 summary = cnv_eval.summary(eval_results)
-print(summary)
+print(tabulate(summary, headers='keys'))
 
 # # Quick test of accuracy
 # cnv_eval.accuracy(
