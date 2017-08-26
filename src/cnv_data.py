@@ -50,7 +50,6 @@ def load_tracking(tracking_file):
 
 
 def load(tracking_file, label_file, behaviour_fields=None, structured=True):
-    # TODO
     '''
     Loads data from a tracking file and a label file into structured arrays with corresponding entries 
     :param tracking_file: The address of the tracking file, see File Format Examples for an example of a tracking file
@@ -187,7 +186,7 @@ def to_subseqs(data, subseq_len):
     data_dim = data.shape[-1]
     # Trim before reshaping into sequences
     new_len = n_seqs * subseq_len
-    data = data[:new_len]  # TODO: Add partial sequence at end instead of cutting
+    data = data[:new_len] # TODO: Add partial sequence at end instead of cutting, also add param partial_seqs=True for this behaviour
     # Reshape into sequences and return
     return np.reshape(data, (n_seqs, subseq_len, data_dim))
 
@@ -208,25 +207,20 @@ def rm_field(data, field_name):
 
 # TRACKING_FILE = '..\\data\\tracking\\par2024Cam1\\cam1par2024.txt'
 # LABEL_FILE = '..\\data\\labels\\p2024cam1.dat'
-# TODO: Make modular and paramaterize more or use constants for dir structure
 def load_subject(pid,
                  cam,
+                 tracking_dir='..\\data\\tracking\\',
                  tracking_file_suffix='.txt',
+                 label_dir='..\\data\\labels\\',
                  label_file_suffix='.dat',
                  structured=True):
 
-    # This is a temp solution
-    # TODO: More flexible, modular approach
     par_cam_str = ''.join(['par', str(pid), 'cam', str(cam)])
     cam_par_str = ''.join(['cam', str(cam), 'par', str(pid)])
     p_cam_str = ''.join(['p', str(pid), 'cam', str(cam)])
 
-    tracking_file = '..\\data\\tracking\\' + par_cam_str + '\\' + cam_par_str + tracking_file_suffix
-    label_file = '..\\data\\labels\\' + p_cam_str + label_file_suffix
-
-    # # For debugging
-    # print(tracking_file)
-    # print(label_file)
+    tracking_file = ''.join([tracking_dir, par_cam_str, '\\', cam_par_str, tracking_file_suffix])
+    label_file = ''.join([label_dir, p_cam_str, label_file_suffix])
 
     return load(tracking_file, label_file, structured=structured)
 

@@ -217,19 +217,19 @@ input_shape = (TIMESTEPS, input_dim)
 #     print(mdl.summary())
 
 try:
-    import cnv_model as M
+    import cnv_model as Mdl
 except ImportError:
     print('Unable to import cnv_data')
 
 models = [
-    # M.NullModel(),
-    # M.MeanModel(),
-    M.SVMModel(),
+    # Mdl.NullModel(),  # Debug for bad behaviour with subjects marked with 'Check' below(and possibly others)
+    # Mdl.MeanModel(),
+    Mdl.SVMModel(),
 ]
 
 subjects = [
     (1001, 1),
-    # (1005, 1),
+    (1005, 1),
     # (2001, 1),  # Check
     # (2002, 1),  # Check
     # (2006, 1),  # Check
@@ -240,19 +240,18 @@ subjects = [
 
 behavs = {
     'smile',
-    # 'talk',
+    'talk',
     # 'laugh',
 }
 
 eval_results = cnv_eval.eval_models_on_subjects(models, subjects,
                                                 timesteps=TIMESTEPS,
                                                 behaviours=behavs,
-                                                n_folds=2,
-                                                verbose=1)
-
+                                                n_folds=5,
+                                                verbose=0)
 print(eval_results)
-
-cnv_eval.summary(eval_results)
+summary = cnv_eval.summary(eval_results)
+print(summary)
 
 # # Quick test of accuracy
 # cnv_eval.accuracy(
