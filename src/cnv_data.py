@@ -27,21 +27,20 @@ _LA_NON_BEHAV_FIELDS = {'pid', 'cam', _LA_FIELD_NAME_MIN, _LA_FIELD_NAME_SEC, _L
 _LA_FRAME_SHIFT = 0  # Describes the amount to label frames forward by - compensates for misalignments
 
 
-def load_tracking(tracking_file):
-    '''
-    Loads tracking file data into a structured array
-    :param tracking_file: The address of the tracking file
-    :return: A structured array containing the information in the tracking file with field names
-    '''
-    try:
-        return np.genfromtxt(tracking_file, dtype=float, skip_header=12, names=True)
-    except IOError:
-        print('Failed to open tracking file at ' + tracking_file)
+# def load_tracking(tracking_file):
+#     '''
+#     Loads tracking file data into a structured array
+#     :param tracking_file: The address of the tracking file
+#     :return: A structured array containing the information in the tracking file with field names
+#     '''
+#     try:
+#         return np.genfromtxt(tracking_file, dtype=float, skip_header=12, names=True)
+#     except IOError:
+#         print('Failed to open tracking file at ' + tracking_file)
 
 
 # def load_labels(LABEL_FILE):
 #     '''
-#     TODO: Implement
 #     :param LABEL_FILE:
 #     :return:
 #     '''
@@ -125,9 +124,6 @@ def load(tracking_file, label_file, behaviour_fields=None, structured=True):
     if not structured:
         tracking_data = destructure(tracking_data)
         behav_data = destructure(behav_data)
-
-    print(tracking_data.shape)
-    print(behav_data.shape)
 
     # Return data
     return tracking_data, behav_data

@@ -94,16 +94,20 @@ class SVMModel:
         except ImportError:
             print('Unable to import cnv_data')
         p_2 = destructure(predictors)
-        p_2_s = p_2.shape
-        p_2 = np.reshape(p_2, (p_2_s[0], p_2_s[-1]))
-        # print(predictors.shape)
+        # p_2 = predictors
+        # p_2_s = p_2.shape
+        # p_2 = np.reshape(p_2, (p_2_s[0], p_2_s[-1]))
+        print(predictors.shape)
+        print(predictors.reshape(predictors.shape[0], 1).shape)
         # print(p_2.shape)
-        l_2 = labels
-        l_2_s = l_2.shape
-        l_2 = np.reshape(l_2, (l_2_s[0], l_2_s[-1]))
-        # print(labels.shape)
-        # print(l_2.shape)
-        self.mdl.fit(p_2, l_2)
+        # l_2 = labels
+        # l_2_s = l_2.shape
+        # l_2 = np.reshape(l_2, (l_2_s[0], l_2_s[-1]))
+        print(labels.shape)
+        print(labels.reshape(labels.shape[0], 1).shape)
+        p_o = predictors.reshape(predictors.shape[0], 1)
+        l_o = labels.reshape(labels.shape[0], 1)
+        self.mdl.fit(p_o, l_o)
 
     def predict(self, predictors):
         try:

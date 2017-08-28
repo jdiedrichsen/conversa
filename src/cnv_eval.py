@@ -40,7 +40,7 @@ def accuracy(predicted, true):
     :return: The accuracy of the prediction against the true value, specifically the 
     '''
     if not predicted.shape == true.shape:
-        raise RuntimeError('Prediction shape: ' + str(predicted.shape) + ' while true has shape: ' + str(true.shape))
+        raise RuntimeError('Prediction shape is ' + str(predicted.shape) + ' while true has shape ' + str(true.shape))
     abs_err = np.absolute(np.round(predicted) - true)
     return 1 - np.mean(abs_err)
 
@@ -205,7 +205,7 @@ def eval_models_on_subjects(models, subjects, behaviours=None, timesteps=30, n_f
             # models_copy = copy(models)  # These nn_models specialize for each subject and behaviour
 
             # With dividing into subseqs
-            sub_eval_results = eval_models(models, predicts, add_dim(labels[behav_name]),
+            sub_eval_results = eval_models(models, predicts, labels[behav_name],
                                            return_data_frame=False,
                                            n_folds=n_folds,
                                            verbose=verbose)
