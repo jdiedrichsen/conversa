@@ -48,16 +48,18 @@ _LA_FRAME_SHIFT = 0  # Describes the amount to label frames forward by - compens
 #     return
 
 
-def load(tracking_file, label_file, behaviour_fields=None, structured=True):
+def load(tracking_file, label_file, behaviour_fields=None, return_data_frames=True, structured=True):
     '''
-    Loads data from a tracking file and a label file into structured arrays with corresponding entries 
+    Loads data from a tracking file and a label file into either a pandas DataFrame or numpy structured array
     :param tracking_file: The address of the tracking file, see File Format Examples for an example of a tracking file
     :param label_file: The address of the label file, see File Format Examples  for an example of a label file
     :param behaviour_fields: A list of behavs to include from the label file, leave as None if you want all
     behavs included
-    :param structured: Whether the returned numpy arrays are structured numpy array with fieldnames  
-    :return: A 2 element tuple containing a strucutred array of the predictors and labels, as in (predictors, labels
+    :param return_data_frames: Whether to return a pandas DataFrame or numpy array
+    :param structured: Whether the returned numpy array is a structured array, must have return_data_frames=False
+    :return: A 2 element tuple containing a structured array of the predictors and labels, as in (predictors, labels
     '''
+    # TODO: Update doc for DataFrame changes
 
     tracking_data, label_data = None, None  # Initialize before loading files
 
@@ -121,10 +123,13 @@ def load(tracking_file, label_file, behaviour_fields=None, structured=True):
     # tracking_data = add_dim(tracking_data)
     # behav_data = add_dim(behav_data)
 
-    # Destructure if needed
-    if not structured:
-        tracking_data = destructure(tracking_data)
-        behav_data = destructure(behav_data)
+    if return_data_frames:  # Convert to dataframe if needed
+        tracking_data = pd.DataFrame(tracking_data)
+        behav_data = pd.DataFrame(behav_data)
+    else:
+        if not structured:  # Destructure if needed
+            tracking_data = destructure(tracking_data)
+            behav_data = destructure(behav_data)
 
     # Return data
     return tracking_data, behav_data

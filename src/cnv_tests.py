@@ -1,5 +1,6 @@
-import unittest
+''' cnv_tests - Testing for various modules of Conversa '''
 
+import unittest
 
 class DataTest(unittest.TestCase):
 
