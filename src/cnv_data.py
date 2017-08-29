@@ -1,6 +1,7 @@
 ''' cnv_data - Deals with data loading for Conversa '''
 
 import numpy as np
+import pandas as pd
 
 __author__ = 'Shayaan Syed Ali'
 # __copyright__ = ''
