@@ -56,16 +56,19 @@ except IOError:
     print('Failed to open tracking and label files')
 ```
 
-Loading data into ```predictors``` and *some* labels into ```labels```:  
+Loading data into ```predictors``` and *some* labels into ```labels```, then removing a label:  
 ``` python
 behaviours = ['smile', 'talk']  # We'll only load the smile and talk behaviours
 try:
-    (predictors, labels) = (cnv_data.load(
+    (predictors, labels) = cnv_data.load(
         tracking_file,  # A string containing the location of the kinematic tracking data
         label_file,  # A string containing the location of the label data
-        behaviours))
+        behaviours)
 except IOError:
     print('Failed to open files')
+
+# Remove the smile label
+labels = cnv_data.rm_field(labels, 'smile')
 ```
 
 For examples of what tracking and label data should look like, see the File Format Examples section.
@@ -143,28 +146,21 @@ try:
 except IOError:
     print('Failed to open files')
 
-# predictors and labels now contain our data
+# Run an SVM on predictors and labels, printing some of the data:
 
-```
-
-Run an SVM on data in ```predictors``` and ```labels``` printing some of the data:
-
-``` python
-
-# Load the SVM model and evaluation function
+# Load the SVM model
 try:
     from cnv_model import SVMModel
-    from cnv_eval import eval_models
 except ImportError:
-    print('Unable to import from cnv_model or cnv_eval')
+    print('Unable to import from cnv_model')
 
-results = eval_models([SVMModel()], predictors, labels)
+results = cnv_eval.eval_models([SVMModel()], predictors, labels, 
+                               verbose=1)  # If we want to suppress output we can set this to 0
+
+# Now our SVM will train on the data
 
 # We have the evaluation results in the results DataFrame, we can print these out in a table
-
-from tabulate import tabulate
-
-print(tabulate(results, headers='keys'))
+print(cnv_eval.summary())
 
 ```
 
