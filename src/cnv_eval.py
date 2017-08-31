@@ -59,12 +59,6 @@ def accuracy(predicted, true, rounding=True):
     return 1 - np.mean(abs_err)
 
 
-# In each epoch of training, all data is used
-# The batch size specifies how many data points are given to the model at once
-# E.g. with 135 data points, n_epochs = 10, and batch_sz = 20, you get 7 batches per epoch where 6 of the batches are of
-# size 20 and one is of size 15 (so every data point is used once). The model trains on this data 10 times (10 epochs)
-# and each time it divides the data into 7 batches
-
 def eval_models(models, predictors, labels, n_folds=5, return_data_frame=True, verbose=0):  # TODO: Implement verbose
     '''
     Evaluates nn_models given predictor and label data to train and test the nn_models on
@@ -77,8 +71,6 @@ def eval_models(models, predictors, labels, n_folds=5, return_data_frame=True, v
     with outputs from cnv_eval - defaults to 0 (not verbose)
     :return: A pandas DataFrame with columns fold_no, model_no, and accuracy or a dict if return_data_frame=False
     '''
-
-    # folds = k_folds(predictors, labels, n_folds)
 
     # Set up eval_results as dict and convert to pandas DataFrame if return_data_frame is True
     # It is significantly faster to work this way
@@ -110,9 +102,6 @@ def eval_models(models, predictors, labels, n_folds=5, return_data_frame=True, v
 
             # Select fold
             print('\tFold: ' + str(fold_no+1) + '/' + str(n_folds), end='', flush=True)
-
-            # print('Train index: ' + str(train_index))
-            # print('Test index: ' + str(test_index))
 
             # Unpack data from fold
             train_predictors = predictors.iloc[train_index]
