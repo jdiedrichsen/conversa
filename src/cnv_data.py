@@ -96,8 +96,8 @@ def load(tracking_file, label_file, behaviour_fields=None, return_data_frames=Tr
             curr_i = next_i
             curr_state = behav_column[curr_i]
 
-        # # For debugging - TODO: Use in cnv_eval
-        # print('Null model accuracy in ' + behav_name + ': ' + str(max(np.mean(behav_column), 1 - np.mean(behav_column))))
+        # For debugging - TODO: Remove
+        print('Null model accuracy in ' + behav_name + ': ' + str(max(np.mean(behav_column), 1 - np.mean(behav_column))))
 
     if return_data_frames:  # Convert to dataframe if needed
         tracking_data = pd.DataFrame(tracking_data)

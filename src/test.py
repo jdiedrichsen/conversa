@@ -222,17 +222,16 @@ except ImportError:
     print('Unable to import cnv_data')
 
 models = [
-    # Mdl.NullModel(),  # Debug for bad behaviour with subjects marked with 'Check' below(and possibly others)
-    # Mdl.MeanModel(),
+    Mdl.MeanModel(),
     Mdl.SVMModel(),
 ]
 
 subjects = [
     (1001, 1),
     (1005, 1),
-    (2001, 1),  # Check
-    (2002, 1),  # Check
-    (2006, 1),  # Check
+    (2001, 1),
+    (2002, 1),
+    (2006, 1),
     (2010, 1),
     (2017, 1),
     (2024, 1),
@@ -246,7 +245,7 @@ behavs = {
 
 eval_results = cnv_eval.eval_models_on_subjects(models, subjects)
 summary = cnv_eval.summary(eval_results)
-print(tabulate(summary, headers='keys'))
+print(summary)
 
 # # Quick test of accuracy
 # cnv_eval.accuracy(

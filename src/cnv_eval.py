@@ -40,25 +40,25 @@ HEADER_STRINGS = [  # TODO: Convert to dict and use as such in code
 
 # Only works when elements in prediction and actual are in range [0, 1]
 # TODO: Make more general - parameterize range?
-def accuracy(predicted, true):
+def accuracy(predicted, true, rounding=True):
     '''
     Determines the accuracy of a predicted value against an actual value
     Requires that the predicted and true values are numpy arrays (or of classes that work with numpy functions) and that
     they are of the same shape
     :param predicted: The predicted value(s) as a numpy array, same shape as true
     :param true: The actual value(s) as a numpy array, same shape as predicted
+    :param rounding: Whether to round predicted values or not, defaults to True
     :return: The accuracy of the prediction against the true value, specifically the 
     '''
     if not predicted.shape == true.shape:
         raise RuntimeError('Prediction shape is ' + str(predicted.shape) + ' while true has shape ' + str(true.shape))
-    abs_err = np.absolute(np.round(predicted.values) - true.values)
+
+    if rounding:
+        abs_err = np.absolute(np.round(predicted.values) - true.values)
+    else:
+        abs_err = np.absolute(predicted.values - true.values)
+
     return 1 - np.mean(abs_err)
-
-
-# TODO: Doc and implement in eval_models
-def evaluate(model, predictors, labels, eval_func=accuracy):
-    predicted_labels = model.predict(predictors)
-    return eval_func(predicted_labels, labels)
 
 
 # In each epoch of training, all data is used
@@ -111,10 +111,10 @@ def eval_models(models, predictors, labels, n_folds=5, return_data_frame=True, v
                 ))):
 
             # Select fold
-            print('\tFold: ' + str(fold_no+1) + '/' + str(n_folds))
+            print('\tFold: ' + str(fold_no+1) + '/' + str(n_folds), end='', flush=True)
 
-            print('Train index: ' + str(train_index))
-            print('Test index: ' + str(test_index))
+            # print('Train index: ' + str(train_index))
+            # print('Test index: ' + str(test_index))
 
             # Unpack data from fold
             train_predictors = predictors.iloc[train_index]
@@ -123,14 +123,14 @@ def eval_models(models, predictors, labels, n_folds=5, return_data_frame=True, v
             test_labels = labels.iloc[test_index]
 
             # Train
-            print('\t\tTraining')
+            print(', training', end='', flush=True)
             # print(train_predictors)
             model.learn(train_predictors, train_labels)
 
             # Test
-            print('\t\tEvaluating')
+            print(', evaluating', end='', flush=True)
             acc = accuracy(predicted=model.predict(test_predictors), true=test_labels)
-            print('\t\t\tAccuracy: ' + str(acc))
+            print(', accuracy: ' + str(acc), flush=True)
 
             # Set accuracy
             eval_results[_MODEL_H_STR].append(model_no + 1)
@@ -245,15 +245,14 @@ def eval_models_on_subjects(models, subjects, behaviours=None, timesteps=30, n_f
     return eval_df
 
 
-def summary(eval_results, drop_fields=_FOLD_H_STR):
+def summary(eval_results, drop_fields=[_FOLD_H_STR]):
     '''
     Returns a summarized version of model evaluations which averages the accuracy of models across folds
     :param eval_results: The DataFrame to summarize
     :return: A summary DataFrame
     '''
-    # Future TODO: Include and implement optional param for field to average over
-    # Future TODO - Add compatibility with eval_models dfs where pid and cam columns do not exist
-    summary_df = eval_results.drop(_FOLD_H_STR, 1)  # Drop fold string
+    for drop_field in drop_fields:
+        summary_df = eval_results.drop(drop_field, 1)
     summary_df = (summary_df.groupby([_PID_H_STR, _CAM_H_STR, _BEHAV_H_STR, _MODEL_H_STR]).mean())
     return summary_df
 
