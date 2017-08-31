@@ -14,7 +14,6 @@ __status__ = 'Development'
 # __license__ = ''
 # __version__ = ''
 
-# TODO: Add functions to write to file
 # TODO: In doc add function guide/map
 # TODO: Add vprint and verbose flags
 
@@ -38,11 +37,10 @@ HEADER_STRINGS = [  # TODO: Convert to dict and use as such in code
 ]
 
 
-# Only works when elements in prediction and actual are in range [0, 1]
-# TODO: Make more general - parameterize range?
+# TODO: Make capable of dealing with larger range of value (more than [0, 1]
 def accuracy(predicted, true, rounding=True):
     '''
-    Determines the accuracy of a predicted value against an actual value
+    Determines the accuracy of a predicted value against an actual value for values in the range [0, 1]
     Requires that the predicted and true values are numpy arrays (or of classes that work with numpy functions) and that
     they are of the same shape
     :param predicted: The predicted value(s) as a numpy array, same shape as true
@@ -82,8 +80,8 @@ def eval_models(models, predictors, labels, n_folds=5, return_data_frame=True, v
 
     # folds = k_folds(predictors, labels, n_folds)
 
-    # Set up eval_results as dict and convert to pd dataframe if return_data_frame is True
-    # It is significantly faster (and more straightforward) to work this way
+    # Set up eval_results as dict and convert to pandas DataFrame if return_data_frame is True
+    # It is significantly faster to work this way
     eval_results = dict([
         (_FOLD_H_STR, []),
         (_MODEL_H_STR, []),
@@ -140,12 +138,9 @@ def eval_models(models, predictors, labels, n_folds=5, return_data_frame=True, v
             fold_no = fold_no + 1
 
     # Return applicable DataFrame or dict
-    # TODO: Test
-    # return eval_results if return_data_frame else pd.DataFrame(eval_results).sort_values(_MODEL_H_STR)
     return eval_results if return_data_frame else order_fields(pd.DataFrame(eval_results).sort_values(_MODEL_H_STR), [_MODEL_H_STR])
 
 
-# TODO: Test
 def order_fields(df, priority_fields):
     '''
     Re-orders the columns of a pandas DataFrame according to column_names
@@ -159,7 +154,7 @@ def order_fields(df, priority_fields):
     df = df[priority_fields + remaining_fields]
     return df
 
-# # TODO: Implement
+# # DEPRECATED - Removed in favour of sklearn's StratifiedKFold
 # def k_folds(predictors, labels, n_folds):
 #     '''
 #     Splits predictors and labels into a number of testing groups
@@ -190,10 +185,18 @@ def order_fields(df, priority_fields):
 #     return folds
 
 
-# Subjects are tuples of (pid, cam), where pid and cam are numbers, like (2024, 2)
-# Set behavs to None for all behavs being trained on, otherwise provide iterable of strings
-# TODO: Documentation
-def eval_models_on_subjects(models, subjects, behaviours=None, timesteps=30, n_folds=5, verbose=0):
+def eval_models_on_subjects(models, subjects, behaviours=None, n_folds=5, verbose=0):
+    '''
+    Runs evaluation for a list of models on a list of subjects
+    :param models: Model objects, should implement Model abstract base class from cnv_model
+    :param subjects: A tuple of the form (pid, cam), where pid and cam denote the pid number and cameras number
+    respectively, like (2024, 2)
+    :param behaviours: Behaviours to train on, leave as None for training on all behaviour separately
+    :param n_folds: The number of folds for the k-folds cross validation algorithm
+    :param verbose: How much debugging information is given, higher numbers giv more info, zero is the minimum and gives
+    only errors
+    :return: A pandas DataFrame summarizing all the results
+    '''
 
     eval_results = dict([
         (_PID_H_STR, []),
@@ -221,9 +224,6 @@ def eval_models_on_subjects(models, subjects, behaviours=None, timesteps=30, n_f
 
             print('Behaviour: ' + str(behav_name))
 
-            # TODO: Determine best behaviour and ask about preferred implementation
-            # models_copy = copy(models)  # These nn_models specialize for each subject and behaviour
-
             behav_labels = pd.DataFrame(labels[behav_name], columns=[behav_name])  # DataFrame of single behaviour
             sub_eval_results = eval_models(models, predicts, behav_labels, return_data_frame=False, n_folds=n_folds, verbose=verbose)
 
@@ -235,8 +235,6 @@ def eval_models_on_subjects(models, subjects, behaviours=None, timesteps=30, n_f
             eval_results[_MODEL_H_STR].extend(sub_eval_results[_MODEL_H_STR])
             eval_results[_FOLD_H_STR].extend(sub_eval_results[_FOLD_H_STR])
             eval_results[_ACCURACY_H_STR].extend(sub_eval_results[_ACCURACY_H_STR])
-
-    # print(eval_results)
 
     eval_df = order_fields(pd.DataFrame(eval_results), [_PID_H_STR, _CAM_H_STR, _BEHAV_H_STR, _MODEL_H_STR, _FOLD_H_STR, _ACCURACY_H_STR])
     eval_df.sort_values([_MODEL_H_STR, _BEHAV_H_STR])

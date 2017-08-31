@@ -12,7 +12,7 @@ import pandas as pd
 
 class Model(metaclass=ABCMeta):
     '''
-    Abstract class for all nn_models to implement
+    Abstract class for all Models to implement
     Expected methods to implement:
         learn(x, y)
         predict(x)
@@ -40,12 +40,13 @@ class Model(metaclass=ABCMeta):
         :return: Estimated labels (y values) in a pandas DataFrame
         '''
 
-    @abstractmethod
     def summary(self):
         '''
         A summary of the model
+        Does not need to be implemented
         :return: A string which summarizes the model and parameters
         '''
+        return 'Model\n\tAbstract superclass for all Models to implement'
 
     def name(self):
         '''
@@ -55,7 +56,31 @@ class Model(metaclass=ABCMeta):
         return self.__class__.__name__
 
 
-# TODO - Reimplement for DataFrames
+class RandomModel(Model):
+    '''
+    Always predicts randomly from the range of labels
+    '''
+
+    def __init__(self):
+        Model.__init__(self)
+        self._min = None
+        self._max = None
+        self._label_columns = None
+
+    def learn(self, predictors, labels):
+        from numpy import mean
+
+        self._label_columns = labels.columns.tolist()
+
+    def predict(self, predictors):
+        return pd.DataFrame(
+            (self._max - self._min) * np.random.random((predictors.shape[0], len(self._label_columns))) + self._min,
+            columns=self._label_columns)
+
+    def summary(self):
+        return 'MeanModel\n\tmean=' + str(self._mean)
+
+
 class MeanModel(Model):
     '''
     Always predicts the mean of values it's been trained on
@@ -72,13 +97,14 @@ class MeanModel(Model):
         self._label_columns = labels.columns.tolist()
 
     def predict(self, predictors):
-        return pd.DataFrame(np.full((predictors.shape[0], len(self._label_columns)), self._mean), columns=self._label_columns)
+        return pd.DataFrame(np.full((predictors.shape[0], len(self._label_columns)), self._mean),
+                            columns=self._label_columns)
 
     def summary(self):
         return 'MeanModel\n\tmean=' + str(self._mean)
 
 
-class SVMModel:
+class SVMModel(Model):
 
     def __init__(self):
         Model.__init__(self)
@@ -91,17 +117,23 @@ class SVMModel:
         # The SVC (and other models in sklearn) require that all data used with the fit function have multiple class
         # labels, so we must ensure this is the case if we pass the data to the fit function, otherwise we will just
         # predict the only label present, __single_label
-        self.__single_label = None if labels.nunique()[0] > 1 else labels[labels.columns.tolist()[0]].iloc[0]
-        if self.__single_label is None:  # Fit only if there are multiple labels in the data
+        if labels.nunique()[0] > 1:  # Fit only if there are multiple labels in the data
+            self.__single_label = None
             self._mdl.fit(predictors.values, np.ravel(labels.values))
+        else:
+            self.__single_label = labels[labels.columns.tolist()[0]].iloc[0]
         self._label_columns = labels.columns.tolist()
 
     def predict(self, predictors):
         if self.__single_label is None:
             return pd.DataFrame(self._mdl.predict(predictors.values), columns=self._label_columns)
         else:  # Predict the single label from training data
-            return pd.DataFrame(np.full((predictors.shape[0], len(self._label_columns)), self.__single_label), columns=self._label_columns)
+            return pd.DataFrame(np.full((predictors.shape[0], len(self._label_columns)), self.__single_label),
+                                columns=self._label_columns)
 
-class NeuralNetworkModel:
-    pass
+    def summary(self):
+        return 'SMVModel\n\tSupport vectors: {support_vectors}'.format(
+            support_vectors='none' if not hasattr(self._mdl, 'support_vectors_') else self._mdl.support_vectors_)
 
+# class NeuralNetworkModel(Model):
+#     pass

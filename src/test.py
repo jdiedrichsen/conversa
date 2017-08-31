@@ -238,8 +238,8 @@ subjects = [
 ]
 
 behavs = {
-    'smile',
-    'talk',
+    # 'smile',
+    # 'talk',
     'laugh',
 }
 
