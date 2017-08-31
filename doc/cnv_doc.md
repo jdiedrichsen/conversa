@@ -4,20 +4,24 @@
 
 ### Functions
 
-**```load(tracking_file, label_file, behaviour_fields=None, structured=True)```**  
+**```load(tracking_file, label_file, behaviour_fields=None)```**  
     Loads data from a tracking file and a label file into structured arrays with corresponding entries  
     Parameters:  
         ```tracking_file```: The address of the tracking file, see File Format Examples for an example of a tracking file  
         ```label_file```: The address of the label file, see File Format Examples  for an example of a label file  
         ```behaviour_fields```: A list of behaviours to include from the label file, leave as None if you want all behaviours included  
-        ```structured```: Whether the returned numpy arrays are structured numpy array with fieldnames, see cnv_data.destructure for converting a structured array to a standard ndarray  
     Returns a 2 element tuple containing numpy arrays of the predictors and labels, as in ```(predictors, labels) = cnv_data.load(...)```  
-
-**```load_tracking(tracking_file)```**  
-    Loads tracking file data into a structured array  
-    Parameters:  
-        ```tracking_file```: The address of the tracking file  
-    Returns structured array containing the information in the tracking file with field names  
+    
+Example:  
+``` python
+TRACKING_FILE = '..\\data\\tracking\\par2024Cam1\\cam1par2024.txt'
+LABEL_FILE = '..\\data\\labels\\p2024cam1.dat'
+try:
+    cnv_data.load(TRACKING_FILE, LABEL_FILE,
+        behaviour_fields=['smile'])  # Only load the smiling behaviour
+except IOError:
+    print('Failed to open tracking and label files')
+```
     
 **```destructure(data)```**  
     Converts a structured array to a standard numpy array  
@@ -26,8 +30,9 @@
     Returns a view of the ndarray with no fieldnames  
     
 **```add_dim(data, n_dims=1)```**
-    Adds a given number of dimensions to an ndarray, useful when a neural network layer requires higher dimensional input  
+    Adds a given number of dimensions to an ndarray, useful when a model requires higher dimensional input  
     Dimensions are added such that an ndarray of shape (10, 3) would be returned with shape (10, 3, 1) if ```n_dims=1```  
+    Also see [```numpy.reshape```](https://docs.scipy.org/doc/numpy/reference/generated/numpy.reshape.html)
     Parameters:  
         ```data```: The ndarray  
         ```n_dims```: The number of dimensions to add  
@@ -77,14 +82,7 @@ For examples of what tracking and label data should look like, see the File Form
         ```n_folds```: The number of folds to split the data into  
     Returns an array of fold where each fold is a nested tuple, of ```(train_data, test_data)``` where ```train_data = (train_predictors, train_labels) and test_data = (test_predictors, test_labels)```  
     
-**```eval_models(models,
-                predictors,
-                labels,
-                n_folds=5,
-                train_n_epochs=10,
-                train_batch_sz=10,
-                test_n_batch_sz=1,
-                verbose=0)```**  
+**```eval_models(models, predictors, labels, verbose=0)```**  
     Evaluates models given predictor and label data to train and test the models on  
     Parameters:  
         ```models```: The models to evaluate  
@@ -111,8 +109,10 @@ When using ```k_fold```, keep in mind that each elements in each fold may not ke
 
 ## Example Programs
 
-Load some data into numpy arrays:
+Load some data into pandas DataFrames:
+
 ``` python
+
 # Load data and evaluation modules
 try:
     import cnv_data, cnv_eval
@@ -125,24 +125,35 @@ tracking_file = '..\\data\\tracking\\par2024Cam1\\cam1par2024.txt'
 label_file = '..\\data\\labels\\p2024cam1.dat'
 
 predictors, labels = None, None
-behaviours = {'smile'}  # We'll only be looking at the smile behaviour
+behaviours = ['talk']  # We'll only be looking at the talk behaviour
 try:
     (predictors, labels) = (cnv_data.load(tracking_file, label_file, behaviours))
 except IOError:
     print('Failed to open files')
+
+# predictors and labels now contain our data
+
 ```
 
-Partition existing data in numpy arrays ```predictors``` and ```labels``` using ```k_fold``` and printing some of the data:
+Run an SVM on data in ```predictors``` and ```labels``` printing some of the data:
+
 ``` python
-n_folds = 5
-folds = cnv_eval.k_fold(predictors, labels, n_folds=5)
-for (train_data, test_data) in folds:
-    (train_predictors, train_labels) = train_data
-    (test_predictors, test_labels) = test_data
-    for i in range(0, 3):
-        print('Test data:\n' + str(test_predictors[i]))
-        for j in range(0, n_folds - 1):
-            print('Train data:\n' + str((train_predictors[i * (n_folds - 1) + j])))
+
+# Load the SVM model and evaluation function
+try:
+    from cnv_model import SVMModel
+    from cnv_eval import eval_models
+except ImportError:
+    print('Unable to import from cnv_model or cnv_eval')
+
+results = eval_models([SVMModel()], predictors, labels)
+
+# We have the evaluation results in the results DataFrame, we can print these out in a table
+
+from tabulate import tabulate
+
+print(tabulate(results, headers='keys'))
+
 ```
 
 ## File Format Examples
