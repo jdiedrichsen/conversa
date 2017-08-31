@@ -117,9 +117,12 @@ class SVMModel(Model):
         # The SVC (and other models in sklearn) require that all data used with the fit function have multiple class
         # labels, so we must ensure this is the case if we pass the data to the fit function, otherwise we will just
         # predict the only label present, __single_label
+        self._mdl.fit(predictors.values, np.ravel(labels.values))
+        # try:
+        #
+        # except :
         if labels.nunique()[0] > 1:  # Fit only if there are multiple labels in the data
             self.__single_label = None
-            self._mdl.fit(predictors.values, np.ravel(labels.values))
         else:
             self.__single_label = labels[labels.columns.tolist()[0]].iloc[0]
         self._label_columns = labels.columns.tolist()

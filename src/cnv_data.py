@@ -40,7 +40,7 @@ def load(tracking_file, label_file, behaviour_fields=None):
     :return: A 2 element tuple containing a pandas DataFrame structured array of the predictors and labels, as in (predictors, labels
     '''
 
-    tracking_data, label_data = None, None  # Initialize before loading file
+    tracking_data, label_data = None, None  # Initialize before loading files
 
     # Load tracking data
     try:
@@ -95,9 +95,10 @@ def load(tracking_file, label_file, behaviour_fields=None):
             curr_i = next_i
             curr_state = behav_column[curr_i]
 
-        # # For debugging
-        # print('Null model accuracy in ' + behav_name + ': ' + str(max(np.mean(behav_column), 1 - np.mean(behav_column))))
+    tracking_data = pd.DataFrame(tracking_data)
+    behav_data = pd.DataFrame(behav_data)
 
+    # Return data
     return tracking_data, behav_data
 
 
@@ -165,12 +166,12 @@ def rm_field(data, field_name):
     return data[names]
 
 
+# TODO: Documentation
 def load_subject(pid, cam,
                  tracking_dir='..\\data\\tracking\\',
                  tracking_file_suffix='.txt',
                  label_dir='..\\data\\labels\\',
-                 label_file_suffix='.dat',
-                 structured=True):
+                 label_file_suffix='.dat'):
 
     par_cam_str = ''.join(['par', str(pid), 'cam', str(cam)])
     cam_par_str = ''.join(['cam', str(cam), 'par', str(pid)])
@@ -182,7 +183,7 @@ def load_subject(pid, cam,
     tracking_file = ''.join([tracking_dir, par_cam_str, '\\', cam_par_str, tracking_file_suffix])
     label_file = ''.join([label_dir, p_cam_str, label_file_suffix])
 
-    return load(tracking_file, label_file, structured=structured)
+    return load(tracking_file, label_file)
 
 
 print('Imported cnv_data')
