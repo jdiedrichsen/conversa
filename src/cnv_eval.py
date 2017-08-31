@@ -196,8 +196,9 @@ def eval_models_on_subjects(models, subjects, behaviours=None, n_folds=5, verbos
         (_ACCURACY_H_STR, []),
     ])
 
+    load_subject = None
     try:
-        from cnv_data import load_subject, add_dim, to_subseqs
+        from cnv_data import load_subject
     except ImportError:
         print('Unable to import cnv_data functions')
 

@@ -219,7 +219,7 @@ from tabulate import tabulate
 try:
     import cnv_model as Mdl
 except ImportError:
-    print('Unable to import cnv_data')
+    print('Unable to import cnv_model')
 
 models = [
     Mdl.MeanModel(),
@@ -227,8 +227,8 @@ models = [
 ]
 
 subjects = [
-    (1001, 1),
-    (1005, 1),
+    # (1001, 1),
+    # (1005, 1),
     (2001, 1),
     (2002, 1),
     (2006, 1),

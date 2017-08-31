@@ -56,31 +56,6 @@ class Model(metaclass=ABCMeta):
         return self.__class__.__name__
 
 
-class RandomModel(Model):
-    '''
-    Always predicts randomly from the range of labels
-    '''
-
-    def __init__(self):
-        Model.__init__(self)
-        self._min = None
-        self._max = None
-        self._label_columns = None
-
-    def learn(self, predictors, labels):
-        from numpy import mean
-
-        self._label_columns = labels.columns.tolist()
-
-    def predict(self, predictors):
-        return pd.DataFrame(
-            (self._max - self._min) * np.random.random((predictors.shape[0], len(self._label_columns))) + self._min,
-            columns=self._label_columns)
-
-    def summary(self):
-        return 'MeanModel\n\tmean=' + str(self._mean)
-
-
 class MeanModel(Model):
     '''
     Always predicts the mean of values it's been trained on
@@ -114,18 +89,24 @@ class SVMModel(Model):
         self._label_columns = None
 
     def learn(self, predictors, labels):
+        self._label_columns = labels.columns.tolist()
+
         # The SVC (and other models in sklearn) require that all data used with the fit function have multiple class
         # labels, so we must ensure this is the case if we pass the data to the fit function, otherwise we will just
         # predict the only label present, __single_label
-        self._mdl.fit(predictors.values, np.ravel(labels.values))
-        # try:
-        #
-        # except :
+
         if labels.nunique()[0] > 1:  # Fit only if there are multiple labels in the data
             self.__single_label = None
+            self._mdl.fit(predictors.values, np.ravel(labels.values))
         else:
             self.__single_label = labels[labels.columns.tolist()[0]].iloc[0]
-        self._label_columns = labels.columns.tolist()
+
+        # Alt implementation of above with try/except
+        # self.__single_label = None
+        # try:
+        #     self._mdl.fit(predictors.values, np.ravel(labels.values))
+        # except ValueError:
+        #     self.__single_label = labels[labels.columns.tolist()[0]].iloc[0]
 
     def predict(self, predictors):
         if self.__single_label is None:
@@ -138,5 +119,7 @@ class SVMModel(Model):
         return 'SMVModel\n\tSupport vectors: {support_vectors}'.format(
             support_vectors='none' if not hasattr(self._mdl, 'support_vectors_') else self._mdl.support_vectors_)
 
+
 # class NeuralNetworkModel(Model):
 #     pass
+
