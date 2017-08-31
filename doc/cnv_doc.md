@@ -12,17 +12,6 @@
         ```behaviour_fields```: A list of behaviours to include from the label file, leave as None if you want all behaviours included  
     Returns a 2 element tuple containing numpy arrays of the predictors and labels, as in ```(predictors, labels) = cnv_data.load(...)```  
     
-Example:  
-``` python
-TRACKING_FILE = '..\\data\\tracking\\par2024Cam1\\cam1par2024.txt'
-LABEL_FILE = '..\\data\\labels\\p2024cam1.dat'
-try:
-    cnv_data.load(TRACKING_FILE, LABEL_FILE,
-        behaviour_fields=['smile'])  # Only load the smiling behaviour
-except IOError:
-    print('Failed to open tracking and label files')
-```
-    
 **```destructure(data)```**  
     Converts a structured array to a standard numpy array  
     Parameters:  
@@ -57,8 +46,19 @@ except IOError:
 
 ### Usage
 
-Loading data into ```predictors``` and ```labels```:  
+Loading all predictor and label behaviours into DataFrames:  
 ``` python
+tracking_file = '..\\data\\tracking\\par2024Cam1\\cam1par2024.txt'
+label_file = '..\\data\\labels\\p2024cam1.dat'
+try:
+    cnv_data.load(tracking_file, label_file)
+except IOError:
+    print('Failed to open tracking and label files')
+```
+
+Loading data into ```predictors``` and *some* labels into ```labels```:  
+``` python
+behaviours = ['smile', 'talk']  # We'll only load the smile and talk behaviours
 try:
     (predictors, labels) = (cnv_data.load(
         tracking_file,  # A string containing the location of the kinematic tracking data
@@ -72,26 +72,14 @@ For examples of what tracking and label data should look like, see the File Form
 
 ## Evaluation - cnv_eval
 
-### Functions
-
-**```k_fold(predictors, labels, n_folds)```**  
-    Splits predictors and labels into a number of testing groups  
-    Parameters:
-        ```predictors```: All of the predictors data to be split  
-        ```labels```: All of the label data to be split  
-        ```n_folds```: The number of folds to split the data into  
-    Returns an array of fold where each fold is a nested tuple, of ```(train_data, test_data)``` where ```train_data = (train_predictors, train_labels) and test_data = (test_predictors, test_labels)```  
+### Functions  
     
 **```eval_models(models, predictors, labels, verbose=0)```**  
     Evaluates models given predictor and label data to train and test the models on  
     Parameters:  
         ```models```: The models to evaluate  
         ```predictors```: Predictors to test the models on  
-        ```labels```: Labels to test the models on  
-        ```n_folds```: The number of folds to test the data on, defaults to 5  
-        ```train_n_epochs```: The number of passes each models gets on the data, defaults to 10  
-        ```train_batch_sz```: The number of data points to train each model on at once, defaults to 10  
-        ```test_n_batch_sz```: The number of data points to test each model on at once, defaults to 1  
+        ```labels```: Labels to test the models on   
         ```verbose```: The verbosity level of model training and testing - note that model console output often conflicts with outputs from cnv_eval - defaults to 0 (not verbose)  
     Returns a pandas DataFrame with columns fold_no, model_no, and accuracy  
     
