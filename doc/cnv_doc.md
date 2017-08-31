@@ -12,17 +12,6 @@
         ```behaviour_fields```: A list of behaviours to include from the label file, leave as None if you want all behaviours included  
     Returns a 2 element tuple containing numpy arrays of the predictors and labels, as in ```(predictors, labels) = cnv_data.load(...)```  
     
-Example:  
-``` python
-TRACKING_FILE = '..\\data\\tracking\\par2024Cam1\\cam1par2024.txt'
-LABEL_FILE = '..\\data\\labels\\p2024cam1.dat'
-try:
-    cnv_data.load(TRACKING_FILE, LABEL_FILE,
-        behaviour_fields=['smile'])  # Only load the smiling behaviour
-except IOError:
-    print('Failed to open tracking and label files')
-```
-    
 **```destructure(data)```**  
     Converts a structured array to a standard numpy array  
     Parameters:  
@@ -32,15 +21,15 @@ except IOError:
 **```add_dim(data, n_dims=1)```**
     Adds a given number of dimensions to an ndarray, useful when a model requires higher dimensional input  
     Dimensions are added such that an ndarray of shape (10, 3) would be returned with shape (10, 3, 1) if ```n_dims=1```  
-    Also see [```numpy.reshape```](https://docs.scipy.org/doc/numpy/reference/generated/numpy.reshape.html)
+    Also see [```numpy.reshape```](https://docs.scipy.org/doc/numpy/reference/generated/numpy.reshape.html)  
     Parameters:  
         ```data```: The ndarray  
         ```n_dims```: The number of dimensions to add  
     Returns the ndarray with added dimensions  
     
 **```to_subseqs(data, seq_len, n_dims)```**  
-    Divides a numpy array into a series of subsequences
-    Data in the last few rows may be cut off if it does not fill an entire subsequence
+    Divides a numpy array into a series of subsequences  
+    Data in the last few rows may be cut off if it does not fill an entire subsequence  
     Parameters:  
         ```data```: The numpy array to be divided into subsequences  
         ```seq_len```: The length of sequences to produce  
@@ -57,55 +46,88 @@ except IOError:
 
 ### Usage
 
-Loading data into ```predictors``` and ```labels```:  
+Loading all predictor and label behaviours into DataFrames:  
 ``` python
+# For Windows:
+tracking_file = '..\\data\\tracking\\par2024Cam1\\cam1par2024.txt'
+label_file = '..\\data\\labels\\p2024cam1.dat'
+# For Mac:
+tracking_file = '../data/tracking/par2024Cam1/cam1par2024.txt'
+label_file = '../data/labels/p2024cam1.dat'
 try:
-    (predictors, labels) = (cnv_data.load(
+    cnv_data.load(tracking_file, label_file)
+except IOError:
+    print('Failed to open tracking and label files')
+```
+
+Loading data into ```predictors``` and *some* labels into ```labels```, then removing a label:  
+``` python
+behaviours = ['smile', 'talk']  # We'll only load the smile and talk behaviours
+try:
+    (predictors, labels) = cnv_data.load(
         tracking_file,  # A string containing the location of the kinematic tracking data
         label_file,  # A string containing the location of the label data
-        behaviours))
+        behaviours)
 except IOError:
     print('Failed to open files')
+
+# Remove the smile label
+labels = cnv_data.rm_field(labels, 'smile')
 ```
 
 For examples of what tracking and label data should look like, see the File Format Examples section.
 
 ## Evaluation - cnv_eval
 
-### Functions
+### Functions  
 
-**```k_fold(predictors, labels, n_folds)```**  
-    Splits predictors and labels into a number of testing groups  
-    Parameters:
-        ```predictors```: All of the predictors data to be split  
-        ```labels```: All of the label data to be split  
-        ```n_folds```: The number of folds to split the data into  
-    Returns an array of fold where each fold is a nested tuple, of ```(train_data, test_data)``` where ```train_data = (train_predictors, train_labels) and test_data = (test_predictors, test_labels)```  
+**```accuracy(predicted, true, rounding=True)```**  
+    Determines the accuracy of a predicted value against an actual value for values in the range \[0, 1]  
+    Requires that the predicted and true values are numpy arrays (or of classes that work with numpy functions) and that they are of the same shape  
+    Parameters:  
+        ```predicted```: The predicted value(s) as a numpy array, same shape as true  
+        ```true```: The actual value(s) as a numpy array, same shape as predicted  
+        ```rounding```: Whether to round predicted values or not, defaults to True  
+        Returns the accuracy of the prediction against the true value  
     
 **```eval_models(models, predictors, labels, verbose=0)```**  
     Evaluates models given predictor and label data to train and test the models on  
     Parameters:  
         ```models```: The models to evaluate  
         ```predictors```: Predictors to test the models on  
-        ```labels```: Labels to test the models on  
-        ```n_folds```: The number of folds to test the data on, defaults to 5  
-        ```train_n_epochs```: The number of passes each models gets on the data, defaults to 10  
-        ```train_batch_sz```: The number of data points to train each model on at once, defaults to 10  
-        ```test_n_batch_sz```: The number of data points to test each model on at once, defaults to 1  
+        ```labels```: Labels to test the models on   
         ```verbose```: The verbosity level of model training and testing - note that model console output often conflicts with outputs from cnv_eval - defaults to 0 (not verbose)  
     Returns a pandas DataFrame with columns fold_no, model_no, and accuracy  
     
+**```order_fields(df, priority_fields)```**  
+    Re-orders the columns of a pandas DataFrame according to column_names  
+    Parameters:  
+        ```df```: The DataFrame whose columns are to be reordered  
+        ```priority_fields```: The fields to bring to the left in order, does not need to include all columns - others will be added at the back  
+    Returns the DataFrame with reordered columns  
+    
+**```eval_models_on_subjects(models, subjects, behaviours=None, n_folds=5, verbose=1)```**  
+    Runs evaluation for a list of models on a list of subjects  
+    Parameters:  
+        ```models```: Model objects, should implement Model abstract base class from cnv_model  
+        ```subjects```: A tuple of the form (pid, cam), where pid and cam denote the pid number and cameras number respectively, like (2024, 2)  
+        ```behaviours```: Behaviours to train on, leave as None for training on all behaviour separately  
+        ```n_folds```: The number of folds for the k-folds cross validation algorithm  
+        ```verbose```: How much debugging information is given, higher numbers giv more info, zero is the minimum and gives only errors
+    Returns a pandas DataFrame summarizing all the results  
+    
+**```summary(eval_results):```**  
+    Returns a summarized version of model evaluations which averages the accuracy of models across folds  
+    Parameters:  
+        ```eval_results```: The DataFrame to summarize  
+    Returns a summary DataFrame  
 
 ### Usage
 
-Using k_fold to partition the data into exclusive folds:
+Print results from testing on multiple subjects results using summary:
 ``` python
-folds = cnv_eval.k_fold(predictors, labels, n_folds=5)  # This splits the data into 5 folds
-for fold in folds:
-    (train_data, test_data) = fold
-    # Do something with the training and testing data
+print(cnv_eval.summary(results_df))
 ```
-When using ```k_fold```, keep in mind that each elements in each fold may not keep their ordering. In order to use this function for sequence data, be sure to set each element of the predictor and label data to a sequence using ```cnv_data.to_seqs``` or ```numpy.reshape```.
 
 ## Example Programs
 
@@ -131,28 +153,20 @@ try:
 except IOError:
     print('Failed to open files')
 
-# predictors and labels now contain our data
+# Run an SVM on predictors and labels, printing some of the data:
 
-```
-
-Run an SVM on data in ```predictors``` and ```labels``` printing some of the data:
-
-``` python
-
-# Load the SVM model and evaluation function
+# Load the SVM model
 try:
     from cnv_model import SVMModel
-    from cnv_eval import eval_models
 except ImportError:
-    print('Unable to import from cnv_model or cnv_eval')
+    print('Unable to import from cnv_model')
 
-results = eval_models([SVMModel()], predictors, labels)
+results = cnv_eval.eval_models([SVMModel()], predictors, labels)
 
-# We have the evaluation results in the results DataFrame, we can print these out in a table
+# Now our SVM will train on the data
 
-from tabulate import tabulate
-
-print(tabulate(results, headers='keys'))
+# We have the evaluation results in the results DataFrame, we can print these out
+print(results)
 
 ```
 
