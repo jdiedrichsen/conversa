@@ -2,14 +2,11 @@
 #
 # # Imports --------------------------------------------------------------------------------------------------------------
 #
-# # import numpy as np
-# # from keras.models import Sequential
-# # from keras.layers import LSTM
-# try:
-#     import cnv_data, cnv_eval
-# except ImportError:
-#     print('Unable to import cnv_data')
-# from tabulate import tabulate
+try:
+    import cnv_data, cnv_eval
+except ImportError:
+    print('Unable to import cnv_data')
+
 #
 # # Parameters -----------------------------------------------------------------------------------------------------------
 #
@@ -73,7 +70,6 @@
 # # print(type(input_dim))
 #
 # # Model 1 --------------------------------------------------------------------------------------------------------------
-#
 #
 # # # Temp for convenience
 # # # Can also set recurrent activation and dropout
@@ -208,47 +204,47 @@
 # #             print('Train data:\n' + str((train_predictors[units_exp * (n_folds - 1) + j])))
 # #
 # #
-# # Testing model evalution ----------------------------------------------------------------------------------------------
+# # Testing model evaluation ---------------------------------------------------------------------------------------------
+
+# small_eval_results = cnv_eval.eval_models(nn_models, predictors, labels, verbose=0)
 #
-# # small_eval_results = cnv_eval.eval_models(nn_models, predictors, labels, verbose=0)
-# #
-# # print(tabulate(small_eval_results, headers='keys'))
-#
-# # for mdl in nn_models:
-# #     print(mdl.summary())
-#
-# try:
-#     import cnv_model as Mdl
-# except ImportError:
-#     print('Unable to import cnv_model')
-#
-# models = [
-#     Mdl.MeanModel(),
-#     Mdl.SVMModel(),
-# ]
-#
-# subjects = [
-#     (1001, 1),
-#     (1005, 1),
-#     (2001, 1),
-#     (2002, 1),
-#     (2006, 1),
-#     (2010, 1),
-#     (2017, 1),
-#     (2024, 1),
-# ]
-#
-# behavs = {
-#     'smile',
-#     'talk',
-#     'laugh',
-# }
-#
-# eval_results = cnv_eval.eval_models_on_subjects(models, subjects)
-# summary = cnv_eval.summary(eval_results)
-# print(summary)
-#
-#
+# print(tabulate(small_eval_results, headers='keys'))
+
+# for mdl in nn_models:
+#     print(mdl.summary())
+
+try:
+    import cnv_model as Mdl
+except ImportError:
+    print('Unable to import cnv_model')
+
+models = [
+    Mdl.MeanModel(),
+    Mdl.SVMModel(),
+]
+
+subjects = [
+    (1001, 1),
+    (1005, 1),
+    (2001, 1),
+    (2002, 1),
+    (2006, 1),
+    (2010, 1),
+    (2017, 1),
+    (2024, 1),
+]
+
+behavs = {
+    'smile',
+    'talk',
+    'laugh',
+}
+
+eval_results = cnv_eval.eval_models_on_subjects(models, subjects, behaviours=behavs)
+summary = cnv_eval.summary(eval_results)
+print(summary)
+
+
 # # End ------------------------------------------------------------------------------------------------------------------
 
 print('cnv_tests.py: Completed execution')
@@ -258,6 +254,7 @@ try:
     import cnv_data, cnv_eval
 except ImportError:
     print('Unable to import cnv_data, cnv_eval')
+from tabulate import tabulate
 
 # Load predictor and label data
 # Predictors are kinematic data, labels are behaviour data

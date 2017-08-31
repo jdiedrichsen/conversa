@@ -119,10 +119,12 @@ def eval_models(models, predictors, labels, n_folds=5, return_data_frame=True, v
             eval_results[_ACCURACY_H_STR].append(acc)
 
             fold_no = fold_no + 1
-
+    
     # Return applicable DataFrame or dict
-    return eval_results if not return_data_frame else order_fields(pd.DataFrame(eval_results).sort_values(_MODEL_H_STR), [_MODEL_H_STR])
-
+    out = eval_results
+    if return_data_frame:
+        out = order_fields(pd.DataFrame(eval_results).sort_values(_MODEL_H_STR), [_MODEL_H_STR])
+    return out
 
 def order_fields(df, priority_fields):
     '''
