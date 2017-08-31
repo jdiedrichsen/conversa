@@ -102,9 +102,9 @@ def load(tracking_file, label_file, behaviour_fields=None):
 
 # TODO: Documentation
 def load_subject(pid, cam,
-                 tracking_dir='..\\data\\tracking\\',
+                 tracking_dir='../data/tracking/',
                  tracking_file_suffix='.txt',
-                 label_dir='..\\data\\labels\\',
+                 label_dir='../data/labels/',
                  label_file_suffix='.dat'):
 
     par_cam_str = ''.join(['par', str(pid), 'cam', str(cam)])
@@ -114,7 +114,7 @@ def load_subject(pid, cam,
     # Note that the hierarchy of files is different between tracking and label files, this is hardcoded below
     # FUTURE_TODO: Find way to deal with different file hierarchy and implement
 
-    tracking_file = ''.join([tracking_dir, par_cam_str, '\\', cam_par_str, tracking_file_suffix])
+    tracking_file = ''.join([tracking_dir, par_cam_str, '/', cam_par_str, tracking_file_suffix])
     label_file = ''.join([label_dir, p_cam_str, label_file_suffix])
 
     return load(tracking_file, label_file)
