@@ -120,7 +120,10 @@ For examples of what tracking and label data should look like, see the File Form
 
 ### Usage
 
-
+Print results from testing on multiple subjects results using summary:
+``` python
+print(cnv_eval.summary(results_df))
+```
 
 ## Example Programs
 
@@ -154,13 +157,12 @@ try:
 except ImportError:
     print('Unable to import from cnv_model')
 
-results = cnv_eval.eval_models([SVMModel()], predictors, labels, 
-                               verbose=1)  # If we want to suppress output we can set this to 0
+results = cnv_eval.eval_models([SVMModel()], predictors, labels)
 
 # Now our SVM will train on the data
 
-# We have the evaluation results in the results DataFrame, we can print these out in a table
-print(cnv_eval.summary())
+# We have the evaluation results in the results DataFrame, we can print these out
+print(results)
 
 ```
 
