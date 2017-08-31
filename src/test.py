@@ -13,23 +13,23 @@ from tabulate import tabulate
 
 # Parameters -----------------------------------------------------------------------------------------------------------
 
-TRACKING_FILE = '..\\data\\tracking\\par2024Cam1\\cam1par2024.txt'
-LABEL_FILE = '..\\data\\labels\\p2024cam1.dat'
+# TRACKING_FILE = '..\\data\\tracking\\par2024Cam1\\cam1par2024.txt'
+# LABEL_FILE = '..\\data\\labels\\p2024cam1.dat'
 
-TIMESTEPS = 1  # Keep in mind that n_seqs = int(seq_len / TIMESTEPS)
+# TIMESTEPS = 1  # Keep in mind that n_seqs = int(seq_len / TIMESTEPS)
 # BATCH_SZ = 10  # Optionally can set batch_size in fitting/evaluation to number of sequences (n_seqs for all sequences)
 # N_EPOCHS = 10
 # VALIDATION_SPLIT = 0.2
 
-# Layer params
-UNITS_N_MIN = 2
-UNITS_N_MAX = 4
-H_LAYERS_N_MIN = 1
-H_LAYERS_N_MAX = 4
-# Functions
-# INPUT_FUNCTION = 'relu'
-HIDDEN_ACT_FUNC = 'relu'
-OUTPUT_FUNCTION = 'softmax'
+# # Layer params
+# UNITS_N_MIN = 2
+# UNITS_N_MAX = 4
+# H_LAYERS_N_MIN = 1
+# H_LAYERS_N_MAX = 4
+# # Functions
+# # INPUT_FUNCTION = 'relu'
+# HIDDEN_ACT_FUNC = 'relu'
+# OUTPUT_FUNCTION = 'softmax'
 
 
 # Load data ------------------------------------------------------------------------------------------------------------
@@ -62,10 +62,10 @@ OUTPUT_FUNCTION = 'softmax'
 # print(input_dim)
 # print(output_dim)
 
-input_dim = 1
-output_dim = 1
+# input_dim = 1
+# output_dim = 1
 
-input_shape = (TIMESTEPS, input_dim)
+# input_shape = (TIMESTEPS, input_dim)
 
 # # There is a keras bug where the shape elements are converted to float, caused a tensorflow error
 # print(type(TIMESTEPS))
@@ -244,12 +244,7 @@ behavs = {
     'laugh',
 }
 
-eval_results = cnv_eval.eval_models_on_subjects(models, subjects,
-                                                timesteps=TIMESTEPS,
-                                                behaviours=behavs,
-                                                n_folds=5,
-                                                verbose=0)
-# print(eval_results)
+eval_results = cnv_eval.eval_models_on_subjects(models, subjects)
 summary = cnv_eval.summary(eval_results)
 print(tabulate(summary, headers='keys'))
 

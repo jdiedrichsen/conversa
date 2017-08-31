@@ -28,26 +28,6 @@ _LA_NON_BEHAV_FIELDS = {'pid', 'cam', _LA_FIELD_NAME_MIN, _LA_FIELD_NAME_SEC, _L
 _LA_FRAME_SHIFT = 0  # Describes the amount to label frames forward by - compensates for misalignments
 
 
-# def load_tracking(tracking_file):
-#     '''
-#     Loads tracking file data into a structured array
-#     :param tracking_file: The address of the tracking file
-#     :return: A structured array containing the information in the tracking file with field names
-#     '''
-#     try:
-#         return np.genfromtxt(tracking_file, dtype=float, skip_header=12, names=True)
-#     except IOError:
-#         print('Failed to open tracking file at ' + tracking_file)
-
-
-# def load_labels(LABEL_FILE):
-#     '''
-#     :param LABEL_FILE:
-#     :return:
-#     '''
-#     return
-
-
 def load(tracking_file, label_file, behaviour_fields=None, return_data_frames=True, structured=True):
     '''
     Loads data from a tracking file and a label file into either a pandas DataFrame or numpy structured array
@@ -118,10 +98,6 @@ def load(tracking_file, label_file, behaviour_fields=None, return_data_frames=Tr
 
         # # For debugging - TODO: Use in cnv_eval
         # print('Null model accuracy in ' + behav_name + ': ' + str(max(np.mean(behav_column), 1 - np.mean(behav_column))))
-
-    # # Add dimension to get 2D (required for Keras)
-    # tracking_data = add_dim(tracking_data)
-    # behav_data = add_dim(behav_data)
 
     if return_data_frames:  # Convert to dataframe if needed
         tracking_data = pd.DataFrame(tracking_data)
@@ -199,10 +175,7 @@ def rm_field(data, field_name):
     return data[names]
 
 
-# TRACKING_FILE = '..\\data\\tracking\\par2024Cam1\\cam1par2024.txt'
-# LABEL_FILE = '..\\data\\labels\\p2024cam1.dat'
-def load_subject(pid,
-                 cam,
+def load_subject(pid, cam,
                  tracking_dir='..\\data\\tracking\\',
                  tracking_file_suffix='.txt',
                  label_dir='..\\data\\labels\\',

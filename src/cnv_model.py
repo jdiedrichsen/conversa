@@ -2,6 +2,7 @@
 
 from abc import ABCMeta, abstractmethod  # Abstract base class import
 import numpy as np
+import pandas as pd
 
 # TODO: Add functions to write to file
 # TODO: Naive Bayes classifier, LDA
@@ -19,26 +20,27 @@ class Model(metaclass=ABCMeta):
     @abstractmethod
     def __init__(self):
         '''
-        Initialize the model, abc Model requires no instantiations
+        Initialize the model
         '''
 
     @abstractmethod
     def learn(self, predictors, labels):
         '''
         Fit/train/learn the corresponding predictors and labels
-        :param predictors: Inputs to the model (x values)
-        :param labels: True outputs corresponding to the predictors (y values)
+        :param predictors: Inputs to the model (x values) in a pandas DataFrame
+        :param labels: True outputs corresponding to the predictors (y values) in a pandas DataFrame
         '''
 
     @abstractmethod
     def predict(self, predictors):
         '''
         Predict labels corresponding to the predictors
-        :param predictors: Inputs to the model (x values)
-        :return: Estimated labels (y values)
+        :param predictors: Inputs to the model (x values) in a pandas DataFrame
+        :return: Estimated labels (y values) in a pandas DataFrame
         '''
 
 
+# TODO - Reimplement for DataFrames
 # TODO: Fix bug with occasional off-by-one prediction
 class ZeroModel:
     '''
@@ -57,7 +59,7 @@ class ZeroModel:
         return np.zeros(self._y_shape)
 
 
-# TODO - Debug
+# TODO - Reimplement for DataFrames
 class MeanModel(Model):
     '''
     Always predicts the mean of values it's been trained on
@@ -86,38 +88,14 @@ class SVMModel:
         Model.__init__(self)
         from sklearn.svm import SVC
         self.mdl = SVC()
-        # setattr(self, 'mdl', SVC())
+        self.label_columns = None
 
     def learn(self, predictors, labels):
-        try:
-            from cnv_data import destructure
-        except ImportError:
-            print('Unable to import cnv_data')
-        p_2 = destructure(predictors)
-        # p_2 = predictors
-        # p_2_s = p_2.shape
-        # p_2 = np.reshape(p_2, (p_2_s[0], p_2_s[-1]))
-        print(predictors.shape)
-        print(predictors.reshape(predictors.shape[0], 1).shape)
-        # print(p_2.shape)
-        # l_2 = labels
-        # l_2_s = l_2.shape
-        # l_2 = np.reshape(l_2, (l_2_s[0], l_2_s[-1]))
-        print(labels.shape)
-        print(labels.reshape(labels.shape[0], 1).shape)
-        p_o = predictors.reshape(predictors.shape[0], 1)
-        l_o = labels.reshape(labels.shape[0], 1)
-        self.mdl.fit(p_o, l_o)
+        self.mdl.fit(predictors.values, np.ravel(labels.values))
+        self.label_columns = labels.columns.tolist()
 
     def predict(self, predictors):
-        try:
-            from cnv_data import destructure
-        except ImportError:
-            print('Unable to import cnv_data')
-        p_2 = destructure(predictors)
-        p_2_s = p_2.shape
-        p_2 = np.reshape(p_2, (p_2_s[0], p_2_s[-1]))
-        return np.reshape(self.mdl.predict(p_2), (len(self.mdl.predict(p_2)), 1, 1))  # TODO - Make flexible
+        return pd.DataFrame(self.mdl.predict(predictors.values), columns=self.label_columns)
 
 
 class NeuralNetworkModel:

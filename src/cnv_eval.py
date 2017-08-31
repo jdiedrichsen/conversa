@@ -3,6 +3,7 @@
 import numpy as np
 import pandas as pd
 from copy import copy, deepcopy
+from sklearn.model_selection import StratifiedKFold
 
 __author__ = 'Shayaan Syed Ali'
 # __copyright__ = ''
@@ -20,16 +21,25 @@ __status__ = 'Development'
 # Constants
 
 # Header strings
-PID_H_STR = 'pid'
-CAM_H_STR = 'cam'
-BHV_H_STR = 'behaviour'
-MDL_H_STR = 'model'
-FLD_H_STR = 'fold_no'
-ACC_H_STR = 'accuracy'
-# LOSS_STR = 'loss'
+_PID_H_STR = 'pid'
+_CAM_H_STR = 'cam'
+_BEHAV_H_STR = 'behaviour'
+_MODEL_H_STR = 'model'
+_FOLD_H_STR = 'fold_no'
+_ACCURACY_H_STR = 'accuracy'
+
+HEADER_STRINGS = [  # TODO: Convert to dict and use as such in code
+    _PID_H_STR,
+    _CAM_H_STR,
+    _BEHAV_H_STR,
+    _MODEL_H_STR,
+    _FOLD_H_STR,
+    _ACCURACY_H_STR,
+]
 
 
 # Only works when elements in prediction and actual are in range [0, 1]
+# TODO: Make more general - parameterize range?
 def accuracy(predicted, true):
     '''
     Determines the accuracy of a predicted value against an actual value
@@ -41,12 +51,8 @@ def accuracy(predicted, true):
     '''
     if not predicted.shape == true.shape:
         raise RuntimeError('Prediction shape is ' + str(predicted.shape) + ' while true has shape ' + str(true.shape))
-    abs_err = np.absolute(np.round(predicted) - true)
+    abs_err = np.absolute(np.round(predicted.values) - true.values)
     return 1 - np.mean(abs_err)
-
-
-# def rmse(prediction, actual):
-#     return np.sqrt(np.mean(np.square(prediction - actual)))
 
 
 # TODO: Doc and implement in eval_models
@@ -61,12 +67,7 @@ def evaluate(model, predictors, labels, eval_func=accuracy):
 # size 20 and one is of size 15 (so every data point is used once). The model trains on this data 10 times (10 epochs)
 # and each time it divides the data into 7 batches
 
-def eval_models(models,
-                predictors,
-                labels,
-                n_folds=5,
-                return_data_frame=True,
-                verbose=0):  # TODO: Implement
+def eval_models(models, predictors, labels, n_folds=5, return_data_frame=True, verbose=0):  # TODO: Implement verbose
     '''
     Evaluates nn_models given predictor and label data to train and test the nn_models on
     :param models: The nn_models to evaluate
@@ -79,37 +80,51 @@ def eval_models(models,
     :return: A pandas DataFrame with columns fold_no, model_no, and accuracy or a dict if return_data_frame=False
     '''
 
-    folds = k_fold(predictors, labels, n_folds)
+    # folds = k_folds(predictors, labels, n_folds)
 
     # Set up eval_results as dict and convert to pd dataframe if return_data_frame is True
+    # It is significantly faster (and more straightforward) to work this way
     eval_results = dict([
-        (FLD_H_STR, []),
-        (MDL_H_STR, []),
-        (ACC_H_STR, [])
-        # (LOSS_STR, [])
+        (_FOLD_H_STR, []),
+        (_MODEL_H_STR, []),
+        (_ACCURACY_H_STR, [])
     ])
 
     for model_no in range(0, len(models)):
 
         # Select model
         model = models[model_no]
-        print('Model: ' + str(model_no+1) + '/' + str(len(models)) + ', : ' + str(model))
+        print('Model: ' + str(model_no+1) + '/' + str(len(models)) + ', ' + str(model))
         # model = deepcopy(nn_models[model_no])  # Resets model on each fold
         # TODO: Determine applicable behaviour or parameterize
 
-        for fold_no in range(0, len(folds)):
+        k_fold = StratifiedKFold(n_splits=n_folds)
+
+        fold_no = 0
+
+        for train_index, test_index in k_fold.split(
+                np.ravel(np.zeros(
+                    (predictors.shape[0], 1)
+                )),
+                np.ravel(np.zeros(
+                    (labels.shape[0], 1)
+                ))):
 
             # Select fold
-            fold = folds[fold_no]
-            print('\tFold: ' + str(fold_no+1) + '/' + str(len(folds)))
+            print('\tFold: ' + str(fold_no+1) + '/' + str(n_folds))
+
+            print('Train index: ' + str(train_index))
+            print('Test index: ' + str(test_index))
 
             # Unpack data from fold
-            (train_data, test_data) = fold
-            (train_predictors, train_labels) = train_data
-            (test_predictors, test_labels) = test_data
+            train_predictors = predictors.iloc[train_index]
+            train_labels = labels.iloc[train_index]
+            test_predictors = predictors.iloc[test_index]
+            test_labels = labels.iloc[test_index]
 
             # Train
             print('\t\tTraining')
+            # print(train_predictors)
             model.learn(train_predictors, train_labels)
 
             # Test
@@ -118,13 +133,16 @@ def eval_models(models,
             print('\t\t\tAccuracy: ' + str(acc))
 
             # Set accuracy
-            eval_results[MDL_H_STR].append(model_no + 1)
-            eval_results[FLD_H_STR].append(fold_no + 1)
-            eval_results[ACC_H_STR].append(acc)
+            eval_results[_MODEL_H_STR].append(model_no + 1)
+            eval_results[_FOLD_H_STR].append(fold_no + 1)
+            eval_results[_ACCURACY_H_STR].append(acc)
+
+            fold_no = fold_no + 1
 
     # Return applicable DataFrame or dict
     # TODO: Test
-    return eval_results if return_data_frame else order_fields(pd.DataFrame(eval_results).sort_values(MDL_H_STR), [MDL_H_STR])
+    # return eval_results if return_data_frame else pd.DataFrame(eval_results).sort_values(_MODEL_H_STR)
+    return eval_results if return_data_frame else order_fields(pd.DataFrame(eval_results).sort_values(_MODEL_H_STR), [_MODEL_H_STR])
 
 
 # TODO: Test
@@ -138,36 +156,38 @@ def order_fields(df, priority_fields):
     :return: The DataFrame with reordered columns
     '''
     remaining_fields = [col for col in df.columns if col not in priority_fields]
-    df = df[[priority_fields + remaining_fields]]
+    df = df[priority_fields + remaining_fields]
     return df
 
-
-def k_fold(predictors, labels, n_folds):
-    '''
-    Splits predictors and labels into a number of testing groups
-    :param predictors: All of the predictors data to be split
-    :param labels: All of the label data to be split
-    :param n_folds: The number of folds to split the data into
-    :return: Each fold is a nested tuple, of (train_data, test_data) where
-    train_data = (train_predictors, train_labels) and test_data = (test_predictors, test_labels)
-    '''
-    # Change to pandas DataFrame?
-    folds = list()
-    for i in range(0, n_folds):
-        test_data = (
-            predictors[i::n_folds],
-            labels[i::n_folds]
-        )
-        # Here pred is short for predictor and labl is short for label
-        # Used to avoid confusion with predictors and labels
-        train_data = (
-            np.array([pred for (j, pred) in enumerate(predictors) if (j-i) % n_folds != 0]),
-            np.array([labl for (j, labl) in enumerate(labels) if (j-i) % n_folds != 0])
-            # predictors[np.mod([units_exp for units_exp in range(0, len(labels))], n_folds) != 0],
-            # labels[np.mod([units_exp for units_exp in range(0, len(labels))], n_folds) != 0]
-        )
-        folds.append((train_data, test_data))
-    return folds
+# # TODO: Implement
+# def k_folds(predictors, labels, n_folds):
+#     '''
+#     Splits predictors and labels into a number of testing groups
+#     :param predictors: All of the predictors data to be split
+#     :param labels: All of the label data to be split
+#     :param n_folds: The number of folds to split the data into
+#     :return: Each fold is a nested tuple, of (train_data, test_data) where
+#     train_data = (train_predictors, train_labels) and test_data = (test_predictors, test_labels)
+#     '''
+#
+#     pass
+#
+#     folds = list()
+#     for i in range(0, n_folds):
+#
+#         # Test data
+#         test_predictors = None
+#         test_labels = None
+#         test_data = (test_predictors, test_labels)
+#
+#         # Train data
+#         train_predictors = None
+#         train_labels = None
+#         train_data = (train_predictors, train_labels)
+#
+#         folds.append((train_data, test_data))
+#
+#     return folds
 
 
 # Subjects are tuples of (pid, cam), where pid and cam are numbers, like (2024, 2)
@@ -176,12 +196,12 @@ def k_fold(predictors, labels, n_folds):
 def eval_models_on_subjects(models, subjects, behaviours=None, timesteps=30, n_folds=5, verbose=0):
 
     eval_results = dict([
-        (PID_H_STR, []),
-        (CAM_H_STR, []),
-        (BHV_H_STR, []),
-        (MDL_H_STR, []),
-        (FLD_H_STR, []),
-        (ACC_H_STR, []),
+        (_PID_H_STR, []),
+        (_CAM_H_STR, []),
+        (_BEHAV_H_STR, []),
+        (_MODEL_H_STR, []),
+        (_FOLD_H_STR, []),
+        (_ACCURACY_H_STR, []),
     ])
 
     try:
@@ -195,7 +215,7 @@ def eval_models_on_subjects(models, subjects, behaviours=None, timesteps=30, n_f
 
         # Set behavs if not provided
         if behaviours is None:
-            behaviours = labels.dtype.names
+            behaviours = labels.columns.tolist()
 
         for behav_name in behaviours:
 
@@ -204,31 +224,28 @@ def eval_models_on_subjects(models, subjects, behaviours=None, timesteps=30, n_f
             # TODO: Determine best behaviour and ask about preferred implementation
             # models_copy = copy(models)  # These nn_models specialize for each subject and behaviour
 
-            # With dividing into subseqs
-            sub_eval_results = eval_models(models, predicts, labels[behav_name],
-                                           return_data_frame=False,
-                                           n_folds=n_folds,
-                                           verbose=verbose)
+            behav_labels = pd.DataFrame(labels[behav_name], columns=[behav_name])  # DataFrame of single behaviour
+            sub_eval_results = eval_models(models, predicts, behav_labels, return_data_frame=False, n_folds=n_folds, verbose=verbose)
 
             # Add results to over evaluation results
-            n_rows = len(sub_eval_results[ACC_H_STR])
-            eval_results[PID_H_STR].extend([pid] * n_rows)
-            eval_results[CAM_H_STR].extend([cam] * n_rows)
-            eval_results[BHV_H_STR].extend([behav_name] * n_rows)
-            eval_results[MDL_H_STR].extend(sub_eval_results[MDL_H_STR])
-            eval_results[FLD_H_STR].extend(sub_eval_results[FLD_H_STR])
-            eval_results[ACC_H_STR].extend(sub_eval_results[ACC_H_STR])
+            n_rows = len(sub_eval_results[_ACCURACY_H_STR])
+            eval_results[_PID_H_STR].extend([pid] * n_rows)
+            eval_results[_CAM_H_STR].extend([cam] * n_rows)
+            eval_results[_BEHAV_H_STR].extend([behav_name] * n_rows)
+            eval_results[_MODEL_H_STR].extend(sub_eval_results[_MODEL_H_STR])
+            eval_results[_FOLD_H_STR].extend(sub_eval_results[_FOLD_H_STR])
+            eval_results[_ACCURACY_H_STR].extend(sub_eval_results[_ACCURACY_H_STR])
 
     # print(eval_results)
 
-    eval_df = order_fields(pd.DataFrame(eval_results), [PID_H_STR, CAM_H_STR, BHV_H_STR, MDL_H_STR, FLD_H_STR, ACC_H_STR])
-    eval_df.sort_values([MDL_H_STR, BHV_H_STR])
+    eval_df = order_fields(pd.DataFrame(eval_results), [_PID_H_STR, _CAM_H_STR, _BEHAV_H_STR, _MODEL_H_STR, _FOLD_H_STR, _ACCURACY_H_STR])
+    eval_df.sort_values([_MODEL_H_STR, _BEHAV_H_STR])
 
     print('Models evaluated on subjects')
     return eval_df
 
 
-def summary(eval_results):
+def summary(eval_results, drop_fields=_FOLD_H_STR):
     '''
     Returns a summarized version of model evaluations which averages the accuracy of models across folds
     :param eval_results: The DataFrame to summarize
@@ -236,8 +253,8 @@ def summary(eval_results):
     '''
     # Future TODO: Include and implement optional param for field to average over
     # Future TODO - Add compatibility with eval_models dfs where pid and cam columns do not exist
-    summary_df = eval_results.drop(FLD_H_STR, 1)  # Drop fold string
-    summary_df = (summary_df.groupby([PID_H_STR, CAM_H_STR, BHV_H_STR, MDL_H_STR]).mean())
+    summary_df = eval_results.drop(_FOLD_H_STR, 1)  # Drop fold string
+    summary_df = (summary_df.groupby([_PID_H_STR, _CAM_H_STR, _BEHAV_H_STR, _MODEL_H_STR]).mean())
     return summary_df
 
 
