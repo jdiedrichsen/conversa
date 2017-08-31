@@ -48,8 +48,12 @@
 
 Loading all predictor and label behaviours into DataFrames:  
 ``` python
+# For Windows:
 tracking_file = '..\\data\\tracking\\par2024Cam1\\cam1par2024.txt'
 label_file = '..\\data\\labels\\p2024cam1.dat'
+# For Mac:
+tracking_file = '../data/tracking/par2024Cam1/cam1par2024.txt'
+label_file = '../data/labels/p2024cam1.dat'
 try:
     cnv_data.load(tracking_file, label_file)
 except IOError:
