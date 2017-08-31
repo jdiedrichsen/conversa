@@ -21,15 +21,15 @@
 **```add_dim(data, n_dims=1)```**
     Adds a given number of dimensions to an ndarray, useful when a model requires higher dimensional input  
     Dimensions are added such that an ndarray of shape (10, 3) would be returned with shape (10, 3, 1) if ```n_dims=1```  
-    Also see [```numpy.reshape```](https://docs.scipy.org/doc/numpy/reference/generated/numpy.reshape.html)
+    Also see [```numpy.reshape```](https://docs.scipy.org/doc/numpy/reference/generated/numpy.reshape.html)  
     Parameters:  
         ```data```: The ndarray  
         ```n_dims```: The number of dimensions to add  
     Returns the ndarray with added dimensions  
     
 **```to_subseqs(data, seq_len, n_dims)```**  
-    Divides a numpy array into a series of subsequences
-    Data in the last few rows may be cut off if it does not fill an entire subsequence
+    Divides a numpy array into a series of subsequences  
+    Data in the last few rows may be cut off if it does not fill an entire subsequence  
     Parameters:  
         ```data```: The numpy array to be divided into subsequences  
         ```seq_len```: The length of sequences to produce  
@@ -73,6 +73,15 @@ For examples of what tracking and label data should look like, see the File Form
 ## Evaluation - cnv_eval
 
 ### Functions  
+
+**```accuracy(predicted, true, rounding=True)```**  
+    Determines the accuracy of a predicted value against an actual value for values in the range \[0, 1]  
+    Requires that the predicted and true values are numpy arrays (or of classes that work with numpy functions) and that they are of the same shape  
+    Parameters:  
+        ```predicted```: The predicted value(s) as a numpy array, same shape as true  
+        ```true```: The actual value(s) as a numpy array, same shape as predicted  
+        ```rounding```: Whether to round predicted values or not, defaults to True  
+        Returns the accuracy of the prediction against the true value  
     
 **```eval_models(models, predictors, labels, verbose=0)```**  
     Evaluates models given predictor and label data to train and test the models on  
@@ -83,17 +92,16 @@ For examples of what tracking and label data should look like, see the File Form
         ```verbose```: The verbosity level of model training and testing - note that model console output often conflicts with outputs from cnv_eval - defaults to 0 (not verbose)  
     Returns a pandas DataFrame with columns fold_no, model_no, and accuracy  
     
+**```def order_fields(df, priority_fields)```**  
+    Re-orders the columns of a pandas DataFrame according to column_names  
+    Parameters:  
+        ```df```: The DataFrame whose columns are to be reordered  
+        ```priority_fields```: The fields to bring to the left in order, does not need to include all columns - others will be added at the back  
+    Returns the DataFrame with reordered columns  
 
 ### Usage
 
-Using k_fold to partition the data into exclusive folds:
-``` python
-folds = cnv_eval.k_fold(predictors, labels, n_folds=5)  # This splits the data into 5 folds
-for fold in folds:
-    (train_data, test_data) = fold
-    # Do something with the training and testing data
-```
-When using ```k_fold```, keep in mind that each elements in each fold may not keep their ordering. In order to use this function for sequence data, be sure to set each element of the predictor and label data to a sequence using ```cnv_data.to_seqs``` or ```numpy.reshape```.
+
 
 ## Example Programs
 
