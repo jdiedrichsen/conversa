@@ -92,12 +92,28 @@ For examples of what tracking and label data should look like, see the File Form
         ```verbose```: The verbosity level of model training and testing - note that model console output often conflicts with outputs from cnv_eval - defaults to 0 (not verbose)  
     Returns a pandas DataFrame with columns fold_no, model_no, and accuracy  
     
-**```def order_fields(df, priority_fields)```**  
+**```order_fields(df, priority_fields)```**  
     Re-orders the columns of a pandas DataFrame according to column_names  
     Parameters:  
         ```df```: The DataFrame whose columns are to be reordered  
         ```priority_fields```: The fields to bring to the left in order, does not need to include all columns - others will be added at the back  
     Returns the DataFrame with reordered columns  
+    
+**```eval_models_on_subjects(models, subjects, behaviours=None, n_folds=5, verbose=1)```**  
+    Runs evaluation for a list of models on a list of subjects  
+    Parameters:  
+        ```models```: Model objects, should implement Model abstract base class from cnv_model  
+        ```subjects```: A tuple of the form (pid, cam), where pid and cam denote the pid number and cameras number respectively, like (2024, 2)  
+        ```behaviours```: Behaviours to train on, leave as None for training on all behaviour separately  
+        ```n_folds```: The number of folds for the k-folds cross validation algorithm  
+        ```verbose```: How much debugging information is given, higher numbers giv more info, zero is the minimum and gives only errors
+    Returns a pandas DataFrame summarizing all the results  
+    
+**```summary(eval_results):```**  
+    Returns a summarized version of model evaluations which averages the accuracy of models across folds  
+    Parameters:  
+        ```eval_results```: The DataFrame to summarize  
+    Returns a summary DataFrame  
 
 ### Usage
 
