@@ -119,7 +119,7 @@ def eval_models(models, predictors, labels, n_folds=5, return_data_frame=True, v
             eval_results[_ACCURACY_H_STR].append(acc)
 
             fold_no = fold_no + 1
-    
+
     # Return applicable DataFrame or dict
     out = eval_results
     if return_data_frame:

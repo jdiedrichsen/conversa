@@ -2,11 +2,10 @@
 #
 # # Imports --------------------------------------------------------------------------------------------------------------
 #
-try:
-    import cnv_data, cnv_eval
-except ImportError:
-    print('Unable to import cnv_data')
-
+# try:
+#     import cnv_data, cnv_eval
+# except ImportError:
+#     print('Unable to import cnv_data')
 #
 # # Parameters -----------------------------------------------------------------------------------------------------------
 #
@@ -214,13 +213,14 @@ except ImportError:
 #     print(mdl.summary())
 
 try:
-    import cnv_model as Mdl
+    import cnv_model as M
+    import cnv_data, cnv_eval
 except ImportError:
-    print('Unable to import cnv_model')
+    print('Unable to import from Conversa')
 
 models = [
-    Mdl.MeanModel(),
-    Mdl.SVMModel(),
+    M.MeanModel(),
+    M.SVMModel(),
 ]
 
 subjects = [
@@ -245,41 +245,41 @@ summary = cnv_eval.summary(eval_results)
 print(summary)
 
 
-# # End ------------------------------------------------------------------------------------------------------------------
-
-print('cnv_tests.py: Completed execution')
-
-# Load data and evaluation modules
-try:
-    import cnv_data, cnv_eval
-except ImportError:
-    print('Unable to import cnv_data, cnv_eval')
-from tabulate import tabulate
-
-# Load predictor and label data
-# Predictors are kinematic data, labels are behaviour data
-tracking_file = '..\\data\\tracking\\par2024Cam1\\cam1par2024.txt'
-label_file = '..\\data\\labels\\p2024cam1.dat'
-
-predictors, labels = None, None
-behaviours = ['talk']  # We'll only be looking at the talk behaviour
-try:
-    (predictors, labels) = (cnv_data.load(tracking_file, label_file, behaviours))
-except IOError:
-    print('Failed to open files')
-
-# Run an SVM on predictors and labels, printing some of the data:
-
-# Load the SVM model
-try:
-    from cnv_model import SVMModel
-except ImportError:
-    print('Unable to import from cnv_model')
-
-results = cnv_eval.eval_models([SVMModel()], predictors, labels,
-                               verbose=1)  # If we want to suppress output we can set this to 0
-
-# Now our SVM will train on the data
-
-# We have the evaluation results in the results DataFrame, we can print these out in a table
-print(cnv_eval.summary(results))
+# # End of tests ----------------------------------------------------------------------------------------------------------
+#
+# # Load data and evaluation modules
+# try:
+#     import cnv_data, cnv_eval
+# except ImportError:
+#     print('Unable to import cnv_data, cnv_eval')
+# from tabulate import tabulate
+#
+# # Load predictor and label data
+# # Predictors are kinematic data, labels are behaviour data
+# tracking_file = '..\\data\\tracking\\par2024Cam1\\cam1par2024.txt'
+# label_file = '..\\data\\labels\\p2024cam1.dat'
+#
+# predictors, labels = None, None
+# behaviours = ['talk']  # We'll only be looking at the talk behaviour
+# try:
+#     (predictors, labels) = (cnv_data.load(tracking_file, label_file, behaviours))
+# except IOError:
+#     print('Failed to open files')
+#
+# # Run an SVM on predictors and labels, printing some of the data:
+#
+# # Load the SVM model
+# try:
+#     from cnv_model import SVMModel
+# except ImportError:
+#     print('Unable to import from cnv_model')
+#
+# results = cnv_eval.eval_models([SVMModel()], predictors, labels,
+#                                verbose=1)  # If we want to suppress output we can set this to 0
+#
+# # Now our SVM will train on the data
+#
+# # We have the evaluation results in the results DataFrame, we can print these out in a table
+# print(cnv_eval.summary(results))
+#
+# print('cnv_tests.py: Completed execution')
