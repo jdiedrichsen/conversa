@@ -24,7 +24,7 @@ _TR_N_SKIP_LINES = 12
 _LA_FIELD_NAME_MIN = 'min'
 _LA_FIELD_NAME_SEC = 'sec'
 _LA_FIELD_NAME_FRAME = 'frame'
-_LA_NON_BEHAV_FIELDS = {'pid', 'cam', _LA_FIELD_NAME_MIN, _LA_FIELD_NAME_SEC, _LA_FIELD_NAME_FRAME, 'ms', 'absoluteframe'}
+_LA_NON_BEHAV_FIELDS = ['pid', 'cam', _LA_FIELD_NAME_MIN, _LA_FIELD_NAME_SEC, _LA_FIELD_NAME_FRAME, 'ms', 'absoluteframe']
 _LA_FRAME_SHIFT = 0  # Describes the amount to label frames forward by - compensates for misalignments
 
 
@@ -33,11 +33,10 @@ def load(tracking_file, label_file, behaviour_fields=None):
     Loads data from a tracking file and a label file into either a pandas DataFrame or numpy structured array
     :param tracking_file: The address of the tracking file, see File Format Examples for an example of a tracking file
     :param label_file: The address of the label file, see File Format Examples  for an example of a label file
-    :param behaviour_fields: A list of behavs to include from the label file, leave as None if you want all
-    behavs included
-    :param return_data_frames: Whether to return a pandas DataFrame or numpy array
-    :param structured: Whether the returned numpy array is a structured array, must have return_data_frames=False
-    :return: A 2 element tuple containing a pandas DataFrame structured array of the predictors and labels, as in (predictors, labels
+    :param behaviour_fields: A list of behaviours to include from the label file, leave as None if you want al
+    behaviours included
+    :return: A 2 element tuple containing a pandas DataFrameof the predictors and labels, as in (predictors, labels) =
+    cnv_data.load(...)
     '''
 
     tracking_data, label_data = None, None  # Initialize before loading files
@@ -55,7 +54,7 @@ def load(tracking_file, label_file, behaviour_fields=None):
         print('Failed to open label file at ' + label_file)
 
     if behaviour_fields is not None:  # Check if the label fields have been set
-        keep_fields = _LA_NON_BEHAV_FIELDS | behaviour_fields  # Fields to keep
+        keep_fields = _LA_NON_BEHAV_FIELDS + behaviour_fields  # Fields to keep
         for name in label_data.dtype.names:
             if name not in keep_fields:
                 label_data = rm_field(label_data, name)

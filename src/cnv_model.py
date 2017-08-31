@@ -80,6 +80,9 @@ class MeanModel(Model):
 
 
 class SVMModel(Model):
+    '''
+    A linear classifier which predicts a single label via a single entry in predictors (row-to-row)
+    '''
 
     def __init__(self):
         Model.__init__(self)
@@ -118,8 +121,3 @@ class SVMModel(Model):
     def summary(self):
         return 'SMVModel\n\tSupport vectors: {support_vectors}'.format(
             support_vectors='none' if not hasattr(self._mdl, 'support_vectors_') else self._mdl.support_vectors_)
-
-
-# class NeuralNetworkModel(Model):
-#     pass
-
