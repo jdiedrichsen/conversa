@@ -92,6 +92,8 @@ class SVMModel(Model):
         self._label_columns = None
 
     def learn(self, predictors, labels):
+        self._check_labels(labels)
+
         self._label_columns = labels.columns.tolist()
 
         # The SVC (and other models in sklearn) require that all data used with the fit function have multiple class
@@ -121,3 +123,11 @@ class SVMModel(Model):
     def summary(self):
         return 'SMVModel\n\tSupport vectors: {support_vectors}'.format(
             support_vectors='none' if not hasattr(self._mdl, 'support_vectors_') else self._mdl.support_vectors_)
+
+    @staticmethod
+    def  _check_labels(labels):
+        '''
+        Check that labels are compatible with the model
+        '''
+        if labels.shape[1] > 1:
+            raise ValueError('Label has multiple columns, incompatible with SVMModel')

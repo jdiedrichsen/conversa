@@ -100,6 +100,25 @@ def load(tracking_file, label_file, behaviour_fields=None):
     # Return data
     return tracking_data, behav_data
 
+# TODO: Documentation
+def load_subject(pid, cam,
+                 tracking_dir='..\\data\\tracking\\',
+                 tracking_file_suffix='.txt',
+                 label_dir='..\\data\\labels\\',
+                 label_file_suffix='.dat'):
+
+    par_cam_str = ''.join(['par', str(pid), 'cam', str(cam)])
+    cam_par_str = ''.join(['cam', str(cam), 'par', str(pid)])
+    p_cam_str = ''.join(['p', str(pid), 'cam', str(cam)])
+
+    # Note that the hierarchy of files is different between tracking and label files, this is hardcoded below
+    # FUTURE_TODO: Find way to deal with different file hierarchy and implement
+
+    tracking_file = ''.join([tracking_dir, par_cam_str, '\\', cam_par_str, tracking_file_suffix])
+    label_file = ''.join([label_dir, p_cam_str, label_file_suffix])
+
+    return load(tracking_file, label_file)
+
 
 def time_to_frame(minute, second, frame, frame_rate=30):
     return int((minute * 60 + second) * frame_rate + frame)
@@ -163,26 +182,6 @@ def rm_field(data, field_name):
     if field_name in names:
         names.remove(field_name)
     return data[names]
-
-
-# TODO: Documentation
-def load_subject(pid, cam,
-                 tracking_dir='..\\data\\tracking\\',
-                 tracking_file_suffix='.txt',
-                 label_dir='..\\data\\labels\\',
-                 label_file_suffix='.dat'):
-
-    par_cam_str = ''.join(['par', str(pid), 'cam', str(cam)])
-    cam_par_str = ''.join(['cam', str(cam), 'par', str(pid)])
-    p_cam_str = ''.join(['p', str(pid), 'cam', str(cam)])
-
-    # Note that the hierarchy of files is different between tracking and label files, this is hardcoded below
-    # FUTURE_TODO: Find way to deal with different file hierarchy and implement
-
-    tracking_file = ''.join([tracking_dir, par_cam_str, '\\', cam_par_str, tracking_file_suffix])
-    label_file = ''.join([label_dir, p_cam_str, label_file_suffix])
-
-    return load(tracking_file, label_file)
 
 
 print('Imported cnv_data')

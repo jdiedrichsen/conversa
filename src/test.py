@@ -248,24 +248,6 @@
 # summary = cnv_eval.summary(eval_results)
 # print(summary)
 #
-# # # Quick test of accuracy
-# # cnv_eval.accuracy(
-# #     np.array([
-# #         np.array([0, 0]),
-# #         np.array([0, 0]),
-# #         np.array([0, 0]),
-# #         np.array([0, 0]),
-# #         np.array([0, 0]),
-# #     ]),
-# #     np.array([
-# #         np.array([0, 0]),
-# #         np.array([0, 0]),
-# #         np.array([0, 0]),
-# #         np.array([0, 0]),
-# #         np.array([0, 0]),
-# #     ])
-# # )
-#
 #
 # # End ------------------------------------------------------------------------------------------------------------------
 
@@ -297,7 +279,7 @@ try:
 except ImportError:
     print('Unable to import from cnv_model')
 
-results = cnv_eval.eval_models([SVMModel()], predictors, labels['talk'],
+results = cnv_eval.eval_models([SVMModel()], predictors, labels,
                                verbose=1)  # If we want to suppress output we can set this to 0
 
 # Now our SVM will train on the data

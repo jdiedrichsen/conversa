@@ -55,10 +55,10 @@ def accuracy(predicted, true, rounding=True):
 
 def eval_models(models, predictors, labels, n_folds=5, return_data_frame=True, verbose=1):  # TODO: Implement verbose
     '''
-    Evaluates nn_models given predictor and label data to train and test the nn_models on
-    :param models: The nn_models to evaluate
-    :param predictors: Predictors to test the nn_models on
-    :param labels: Labels to test the nn_models on
+    Evaluates models given predictor and label data to train and test the models on
+    :param models: The models to evaluate
+    :param predictors: Predictors to test the models on
+    :param labels: Labels to test the models on
     :param n_folds: The number of folds to test the data on, defaults to 5
     :param return_data_frame: Whether to return the evaluation data in a pandas DataFrame or a Python dict
     :param verbose: The verbosity level of model training and testing - note that model console output often conflicts
@@ -79,7 +79,7 @@ def eval_models(models, predictors, labels, n_folds=5, return_data_frame=True, v
         # Select model
         model = models[model_no]
         print('Model: ' + str(model_no+1) + '/' + str(len(models)) + ', ' + model.name()) if verbose >= 1 else None
-        # model = deepcopy(nn_models[model_no])  # Resets model on each fold
+        # model = deepcopy(models[model_no])  # Resets model on each fold
         # TODO: Determine applicable behaviour or parameterize
 
         k_fold = StratifiedKFold(n_splits=n_folds)

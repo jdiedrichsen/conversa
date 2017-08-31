@@ -2,6 +2,7 @@
 
 import unittest
 
+
 class DataTest(unittest.TestCase):
 
     def test_load(self):
