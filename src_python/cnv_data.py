@@ -27,6 +27,10 @@ _LA_FIELD_NAME_FRAME = 'frame'
 _LA_NON_BEHAV_FIELDS = ['pid', 'cam', _LA_FIELD_NAME_MIN, _LA_FIELD_NAME_SEC, _LA_FIELD_NAME_FRAME, 'ms', 'absoluteframe']
 _LA_FRAME_SHIFT = 0  # Describes the amount to label frames forward by - compensates for misalignments
 
+# Default directories
+DEFAULT_TRACKING_DIR = '../data/tracking/'
+DEFAULT_LABEL_DIR = '../data/labels/'
+
 
 def load(tracking_file, label_file, behaviour_fields=None):
     '''
@@ -100,12 +104,17 @@ def load(tracking_file, label_file, behaviour_fields=None):
     # Return data
     return tracking_data, behav_data
 
+
+# ..\data\labels\p{pid}cam{cam}.dat
+# ..\data\tracking\par{pid}Cam{cam}\cam{cam}par{pid}.txt
 # TODO: Documentation
 def load_subject(pid, cam,
                  tracking_dir='../data/tracking/',
                  tracking_file_suffix='.txt',
                  label_dir='../data/labels/',
                  label_file_suffix='.dat'):
+
+    # TODO: Use string.format to set pid and cam in file paths as per above comment
 
     par_cam_str = ''.join(['par', str(pid), 'cam', str(cam)])
     cam_par_str = ''.join(['cam', str(cam), 'par', str(pid)])
@@ -114,7 +123,11 @@ def load_subject(pid, cam,
     # Note that the hierarchy of files is different between tracking and label files, this is hardcoded below
     # FUTURE_TODO: Find way to deal with different file hierarchy and implement
 
-    tracking_file = ''.join([tracking_dir, par_cam_str, '/', cam_par_str, tracking_file_suffix])
+    from os import sep
+
+    tracking_dir.replace('/', sep)
+
+    tracking_file = ''.join([tracking_dir, par_cam_str, sep, cam_par_str, tracking_file_suffix])
     label_file = ''.join([label_dir, p_cam_str, label_file_suffix])
 
     return load(tracking_file, label_file)
