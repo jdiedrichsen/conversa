@@ -1,5 +1,5 @@
 *.asv
-etc/Meeting Notes
+etc/Meeting Notes/*
 src/__pycache__/*
-archive
-data
+archive/*
+data/*
