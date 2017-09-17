@@ -6,7 +6,11 @@ if (nargin<3);
 end; 
 trackingFile=fullfile(rootDir,'RawData',sprintf('par%dCam%d',pid,cam),...
     sprintf('cam%dpar%d.txt',cam,pid)); 
-labelFile=fullfile(rootDir,'VideoCoding',sprintf('p%dcam%d.dat',pid,cam)); 
+labelFile=fullfile(rootDir,'VideoCoi',sprintf('par%dCam%d',pid,cam),...
+    sprintf('cam%dpar%d.txt',cam,pid)); 
+
+
+
 T=cnv_loadTrackingData(trackingFile); 
 L=cnv_loadLabelFile(labelFile); 
 D = cnv_applyLabels(T,L);

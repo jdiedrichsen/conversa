@@ -1,3 +1,5 @@
-function predictions = cnv_predict_csvm(model, predictors)
-predictions = predict(model, cnv_struct2Matrix(predictors));
-end
+function prediction = cnv_predict_csvm(model, data)
+for i=1:length(model.fields) 
+    X(:,i)=data.(model.fields{i}); 
+end; 
+prediction = predict(model.svm,X); 

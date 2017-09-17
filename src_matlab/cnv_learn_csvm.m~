@@ -5,5 +5,5 @@ vararginoptions(varargin);
 for i=1:length(fields) 
     X(:,i)=predictors.(fields{i}); 
 end; 
-model.svm = fitcsvm(X,labels,'Standardize',true);
-model.fields=fields; 
+model = fitcsvm(X,labels,'Standardize',true);
+mod

@@ -1,4 +1,3 @@
-function prediction = cnv_predict_null(model, predictors)
-predictFields = fieldnames(predictors);
-prediction = zeros(length(predictors.(predictFields{1})),model.nLabelFields);
-end
+function prediction = cnv_predict_null(model, data)
+% Predicts the mean probability 
+prediction = model.mean*ones(length(data.timestamp),1);

@@ -4,7 +4,6 @@ function changeI = cnv_firstChangeI(data, varargin)
 % Last updated 19-Jun-17
 args = [];
 args = cnv_getArgs(args, varargin); % TODO: implement easy default behaviour, as in cnv_eval
-data
 fields = fieldnames(data);
 % Remove fields to exclude
 if(isfield(args, 'exclude'))

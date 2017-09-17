@@ -8,7 +8,6 @@ excludeFields = {'timestamp', 'istracked', 'bodyid'};
 % Add trackingData fields after they start tracking (after first point of
 % change)
 start = cnv_firstChangeI(trackingData, 'exclude', excludeFields);
-fprintf('removed %d frames\n',start);
 labelledDf=getrow(trackingData,start:length(trackingData.timestamp)); 
 
 % Zero timestamps to true start
@@ -29,10 +28,11 @@ i=find(strcmp(labels.behaviour,'video'));
 fprintf('Differences in Frames: %d\n',nFrames-labels.end(i));
 labels=getrow(labels,~strcmp(labels.behaviour,'video')); % Remove video field 
 
-behavNames = unique(labels.behaviour); 
-nBehavs = length(behavNames);
+be
+nBehavs = length(labels.behaviour);
 for i = 1:nBehavs
-    labelledDf.(behavNames{i})(1:nFrames, 1) = false;
+    behavName = labels.behaviour{i};
+    labelledDf.(behavName)(1:nFrames, 1) = false;
 end;
 for i = 1:nBehavs
     behavName = labels.behaviour{i};

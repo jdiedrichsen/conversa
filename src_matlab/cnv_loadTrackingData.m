@@ -1,34 +1,30 @@
 function cnvTrackingData = cnv_loadTrackingData(fileName)
 % Loads a tab delimited text file of motion tracking data into a struct
 % Usage
-%   cnvTrackingData=cnvLoad('fileName')
-%   cnvTrackingData=cnvLoad()
+%   cnvTrackingData=cnv_loadTrackingData('fileName')
 % Description
 %   Reads and stores data from a Kinect face-tracking data text file
-%   The data is stored in a structure with a 2D array of fields, with the
-%   ith field array belonging to the ith face
-%   If no fileName argument is provided a default file is read from
-% By Shayaan Syed Ali
-% Last updated 26-May-17
+%   The data is stored in a dataframe, a structure with a 2D array of fields. 
+%   By Shayaan Syed Ali
+%   Last updated 09-Sep-17 joern.diedrichsen 
 
-% DEFAULT_FILE = 'C:\Users\Shayn\Documents\Work\AI Research\conversa\Test Data\par1001Cam1\cam1par1001.txt';
 TOP_HEADER_LN = '==========';
 N_HEADER_LNS = 3;
-% We use the above since this entry delimits each face (where i is replaced by the faceNo):
-% ==========
-%  Face: i
-% ==========
+
 cnvTrackingData = [];
+
+% Open File 
 fid = fopen(fileName,'r'); % Open the file for reading
 if (fid == -1) % Indicates file not found
-    fprintf('Error: Did not find file\n');
-    return;
+    error('Error: Did not find file: %s',fileName);
 end
+
 % Read in the metadata file from file header
 % Ignore some metadata lines in file
 for i = 0:6
     fgetl(fid);
 end
+
 % Get the number of frames from metadata
 nFrameLnStr = fgetl(fid); % The line in the file containing the number of frames
 nFrames = str2double(nFrameLnStr(regexp(nFrameLnStr, '(\d*)$'):end)); % Finds number in line by searching from back of string

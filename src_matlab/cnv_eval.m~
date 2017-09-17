@@ -22,27 +22,19 @@ function T = cnv_eval(varargin);
 %
 % By joern Diedrichsen & Shayaan Syed Ali
 
-pid  =[1001;1005;1005;2001;2001;2002;2002;2006;2006;2024;2024];
-cam  =[2;1;2;1;2;1;2;1;2;1;2;1;2];
+pid  =[1001;1005;1005]; % ;2001;2001;2002;2002;2006;2006;2024;2024];
+cam  =[2;1;2]; % ;1;2;1;2;1;2;1;2];
 
 nParts = 5;            % Number of partitions for within-person classification
 crossval = 'between';  % Between is between person classification
 lossfcn  = 'error';    % Loss function
 verbose  = 1;
 targetField = 'smile';
-algorithms = {'clinear','clinear','clinear','clinear','clinear','clinear','null'};
-allN = {'neckposx','neckposy','neckposz','neckrotx','neckroty','neckrotz'}; 
-allH = {'headposx','headposy','headposz','headrotx','headroty','headrotz'}; 
-allE = {'brow_up_l','brow_up_r','brow_down_l','brow_down_r','eye_closed_l','eye_closed_r'}; 
-allM = {'cheek_puffed_l','cheek_puffed_r','lips_pucker','lips_stretch_l','lips_stretch_r','lip_lower_down_l','lip_lower_down_r'}; 
-allX = {'smile_l','smile_r','frown_l','frown_r'}; 
-allJ = {'jaw_l','jaw_r','jaw_open'}; 
-options  = {{'fields',allX,'Learner','logistic','Lambda',exp(-7)},...
-            {'fields',horzcat(allX,allE),'Learner','logistic','Lambda',exp(-7)},...
-            {'fields',horzcat(allX,allM),'Learner','logistic','Lambda',exp(-7)},...
-            {'fields',horzcat(allX,allM,allE,allJ),'Learner','logistic','Lambda',exp(-7)},...
-            {'fields',horzcat(allM,allE,allJ),'Learner','logistic','Lambda',exp(-7)},...
-            {'fields',horzcat(allJ,allX,allM,allE,allH,allN),'Learner','logistic','Lambda',exp(-7)},...
+algorithms = {'logistic','logistic','csvm','csvm','null'};
+options  = {{'fields',{'smile_l','smile_r'}},...
+            {'fields',{'smile_l','smile_r','eye_closed_l','eye_closed_r'}},...
+            {'fields',{'smile_l','smile_r'}},...
+            {'fields',{'smile_l','smile_r','eye_closed_l','eye_closed_r'}},...
             {}};         % Additional options for algorithm
 plotPred = {};
 vararginoptions(varargin);
@@ -82,6 +74,7 @@ T=[];
 D=[];
 switch (crossval)
     case 'between'
+        
         % Remove the targetField from the data to prevent cheating!
         Labels = Data.(targetField);
         Data = rmfield(Data,targetField);

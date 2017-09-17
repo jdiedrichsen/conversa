@@ -9,7 +9,6 @@ function labels = cnv_loadLabelFile(fileName, varargin)
 %          cam: [n×1 double] repeated entry
 %          min: [n×1 double] 00
 %          sec: [n×1 double] 00
-%           ms: [n×1 double] 000
 %        frame: [n×1 double] 000
 %   behaviour1: [n×1 double] one hot
 %   behaviour2: [n×1 double] one hot
@@ -38,36 +37,23 @@ function labels = cnv_loadLabelFile(fileName, varargin)
 global FRAME_RATE;
 FRAME_RATE = 30; % Assumed 30 fps for frame encoding
 
-FIELD_MAP = containers.Map( ...
-    {'smiling', 'smile', 'talking', 'talk', 'laughing', 'laugh'}, ... % Behaviours
-    {'behaviour', 'behaviour', 'behaviour', 'behaviour', 'behaviour', 'behaviour'} ...
-    );
+behaviors={ 'smile', 'talk', 'laugh','video'}; 
 
 labels = [];
 
 dlf = dload(fileName); % dlf for dloadFile
+dlf.video = ones(length(dlf.frame),1); 
 
-% Figure out which conversion function to use (frames or seconds)
-toSeconds = [];
-if (isfield(dlf,'ms')) % Decode by using milliseconds
-    toSeconds = @millisToSeconds;
-elseif (isfield(dlf,'frame')) % Decode by using frame numbers
-    toSeconds = @framesToSeconds;
-else % Error - neither frames nor milliseconds provided
-    error('Label file does not contain milliseconds or frame numbers');
-end
 
 pid = dlf.pid(1); % Set pid
 cam = dlf.cam(1); % Set cam number array (does not vary)
-
 dlfFields = fieldnames(dlf);
 
 % Identify behaviour fields
 behaviourFields = {};
 for i = 1:length(dlfFields)
-    chkField = dlfFields{i};
-    if (isKey(FIELD_MAP, chkField) && strcmp(FIELD_MAP(chkField), 'behaviour') == 1) % Field is a behaviour field
-        behaviourFields{end+1} = chkField;
+    if (any(strcmp(dlfFields{i},behaviors))) 
+        behaviourFields{end+1} = dlfFields{i};
     end
 end
 
@@ -100,11 +86,8 @@ end
 
 end % cnv_loadLabelFile
 
-function outSecs = framesToSeconds(dlf, i)
+function outSecs = toSeconds(dlf, i)
 global FRAME_RATE;
 outSecs = (60)*dlf.min(i) + dlf.sec(i)+ (1/FRAME_RATE)*dlf.frame(i);
 end
 
-function outSecs = millisToSeconds(dlf, i)
-outSecs = (60)*(dlf.min(i)) + dlf.sec(i)+ (1/1000)*(dlf.ms(i));
-end
