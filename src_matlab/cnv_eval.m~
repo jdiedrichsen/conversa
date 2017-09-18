@@ -22,20 +22,25 @@ function T = cnv_eval(varargin);
 %
 % By joern Diedrichsen & Shayaan Syed Ali
 
-pid  =[1001;1005;1005]; % ;2001;2001;2002;2002;2006;2006;2024;2024];
-cam  =[2;1;2]; % ;1;2;1;2;1;2;1;2];
+pid  =[1001;1005]; % ;1005;2001;2001;2006;2006;2024;2024];
+cam  =[2;1]; % ;2;1;2;1;2;1;2;1;2];
 
-nParts = 5;            % Number of partitions for within-person classification
+nPart = 5;            % Number of partitions for within-person classification
 crossval = 'between';  % Between is between person classification
 lossfcn  = 'error';    % Loss function
 verbose  = 1;
 targetField = 'smile';
-algorithms = {'logistic','logistic','csvm','csvm','null'};
-options  = {{'fields',{'smile_l','smile_r'}},...
-            {'fields',{'smile_l','smile_r','eye_closed_l','eye_closed_r'}},...
-            {'fields',{'smile_l','smile_r'}},...
-            {'fields',{'smile_l','smile_r','eye_closed_l','eye_closed_r'}},...
-            {}};         % Additional options for algorithm
+algorithms = {'wavelet','clinear','clinear','null'};
+allN = {'neckposx','neckposy','neckposz','neckrotx','neckroty','neckrotz'};
+allH = {'headposx','headposy','headposz','headrotx','headroty','headrotz'};
+allE = {'brow_up_l','brow_up_r','brow_down_l','brow_down_r','eye_closed_l','eye_closed_r'};
+allM = {'cheek_puffed_l','cheek_puffed_r','lips_pucker','lips_stretch_l','lips_stretch_r','lip_lower_down_l','lip_lower_down_r'};
+allX = {'smile_l','smile_r','frown_l','frown_r'};
+allJ = {'jaw_l','jaw_r','jaw_open'};
+options  = {{'fields',{'jaw_open','lips_pucker'},...
+    {'fields',horzcat(allJ),'Learner','logistic','Lambda',exp(-7)},...
+    {'fields',horzcat(allM,allJ,allE),'Learner','logistic','Lambda',exp(-7)},...
+    {}};         % Additional options for algorithm
 plotPred = {};
 vararginoptions(varargin);
 
@@ -74,7 +79,6 @@ T=[];
 D=[];
 switch (crossval)
     case 'between'
-        
         % Remove the targetField from the data to prevent cheating!
         Labels = Data.(targetField);
         Data = rmfield(Data,targetField);
@@ -83,12 +87,12 @@ switch (crossval)
         for i=1:nData
             trainIndx = Data.dataset~=i;
             testIndx  = Data.dataset==i;
-            prediction = zeros(sum(testIndx),nAlgos); 
+            prediction = zeros(sum(testIndx),nAlgos);
             for m=1:nAlgos
                 if (verbose)
                     fprintf('Data set %d %d, algorithm %s\n',pid(i),cam(i),algorithms{m});
                 end;
-                D.dataset = i; 
+                D.dataset = i;
                 D.algorithmNum = m;
                 D.algorithm = algorithms(m);
                 D.pid   = pid(i);
@@ -104,9 +108,9 @@ switch (crossval)
             end;
             if (~isempty(plotPred))
                 testData = getrow(Data,testIndx);
-                time=Data.timestamp(testIndx,1); 
+                time=Data.timestamp(testIndx,1);
                 subplot(nAlgos+1,1,1);
-                X=[]; 
+                X=[];
                 for j=1:length(plotPred)
                     X=[X testData.(plotPred{j})];
                 end;
@@ -121,13 +125,49 @@ switch (crossval)
                     cnv_drawPatches(time,prediction(:,m)>0.5,'k');
                     title(sprintf('%s: %2.2f',algorithms{m},T.loss(T.algorithmNum==m &  T.dataset==i)));
                 end;
-                keyboard; 
+                keyboard;
             end;
         end;
         
-        %
     case 'within'
-        % ToDO
+        % Remove the targetField from the data to prevent cheating!
+        Labels = Data.(targetField);
+        Data = rmfield(Data,targetField);
+        
+        % Now do one data set at a time
+        for i=1:nData
+            iData = getrow(Data,Data.dataset==i);
+            iLabel = Labels(Data.dataset==i,1);
+            
+            % Make the partition vector
+            nFrames = length(iData.timestamp);
+            iData.part = ceil([1:nFrames]'./nFrames*(nPart));
+            
+            % Loop over partitions and build up prediction
+            prediction = zeros(nFrames,nAlgos);
+            for m=1:nAlgos
+                if (verbose)
+                    fprintf('Data set %d %d, algorithm %s\n',pid(i),cam(i),algorithms{m});
+                end;
+                for j=1:nPart
+                    trainIndx = iData.part~=j;
+                    testIndx  = iData.part==j;
+                    M = feval(learnFcn{m},getrow(iData,trainIndx),iLabel(trainIndx,1),options{m}{:});
+                    prediction(testIndx,m) = feval(predictFcn{m},M,getrow(iData,testIndx));
+                end;
+                D.dataset = i;
+                D.algorithmNum = m;
+                D.algorithm = algorithms(m);
+                D.pid   = pid(i);
+                D.cam   = cam(i);
+                D.target  = {targetField};
+                D.meanPred = mean(prediction(:,m));
+                D.propPred = mean(prediction(:,m)>0.5);
+                D.propData = mean(iLabel);
+                D.loss = evalLoss(iLabel,prediction(:,m),lossfcn);   % Calculate Loss
+                T=addstruct(T,D);
+            end;
+        end;
 end
 
 % Recieves predicted and actual as matrices (or vectors)

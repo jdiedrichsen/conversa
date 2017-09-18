@@ -31,7 +31,15 @@ Ridge is best at exp(-1) with at 12.57%
 
 In terms of data features, using the extracted features (smiles and frowns) plus the mouth features gives the best results.  
 
+Within-subject classification goes down to 9% error. 
 
+
+
+For TALK the same learner (38% Guessing)
+
+* {'fields',horzcat(allM,allE,allJ),'Learner','logistic','Lambda',exp(-7)}: 27.75% error.
+
+However
 
 # Conversa Documentation - Python
 

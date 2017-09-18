@@ -7,7 +7,7 @@ function out = cnv_plot(T, varargin)
 %   starttime       Time to start at
 %   endtime         Time to end at
 %   plotgroups      Groups to plot
-%                   Usage example: 'plotgroups', {'Neck', 'Head'}
+%                   Usage example: 'plotgroups', {'neck', 'head'}
 %   plotmap         New map that defines which fields are presented
 %                   together
 %   timeunits       (WIP) Can either set timeunits to frames or seconds
