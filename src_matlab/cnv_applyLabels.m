@@ -4,7 +4,7 @@ function labelledDf = cnv_applyLabels(trackingData, labels)
 % Joins a tracking file with the corresponding label file 
 % 
 excludeFields = {'timestamp', 'istracked', 'bodyid'};
-alignAt = 'start'; 
+alignAt = 'startend'; 
 verbose = 1; 
 
 % Add trackingData fields after they start tracking (after first point of
@@ -21,7 +21,7 @@ i=find(strcmp(labels.behaviour,'video'));
 videolength = labels.end(i); 
 tracklength = labelledDf.timestamp(end)-labelledDf.timestamp(1); 
 if (verbose) 
-    fprintf('Differences in sec: %2.3f\n',tracklength-videolength);
+    fprintf('Tracking:%2.3f Video: %2.3f Difference:%2.3f\n',tracklength,videolength,tracklength-videolength);
 end; 
 labels=getrow(labels,~strcmp(labels.behaviour,'video')); % Remove video field 
 
@@ -32,6 +32,14 @@ switch (alignAt)
         labelledDf.timestamp = labelledDf.timestamp - labelledDf.timestamp(1);
     case 'end' 
         labelledDf.timestamp = labelledDf.timestamp - labelledDf.timestamp(end)+videolength;
+    case 'startend'
+        labelledDf.timestamp = labelledDf.timestamp - labelledDf.timestamp(1);
+        ratio = tracklength/videolength; 
+        labels.start = labels.start* ratio; 
+        labels.end = labels.end * ratio; 
+        if (verbose) 
+            fprintf('Inferred Video sampling rate is %2.2f frames / sec\n',30./ratio); 
+        end; 
 end; 
 
 % Look up the indeicdes for the timestamps
