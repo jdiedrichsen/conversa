@@ -1,6 +1,5 @@
-function [D,T,L] = cnv_loadData(dataID,rootDir); 
-% function [D,T,L] = cnv_loadData(dataID,rootDir); 
-% Shortcut function to get tracking and label file 
+function T = cnv_makeLabelFromAvi(name);
+% T = cnv_makeLabelFromAvi(name);
 if (nargin<2); 
     rootDir = pwd; 
 end; 
