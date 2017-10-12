@@ -3,3 +3,4 @@ etc/Meeting Notes/
 src/__pycache__/
 archive/
 data/
+*.m~
