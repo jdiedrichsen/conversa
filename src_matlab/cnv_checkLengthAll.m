@@ -1,4 +1,4 @@
-function D = cnv_checkLengthAll(dataID);
+function D = cnv_checkLengthAll();
 D=[]; 
 color={'r','b','r','b'}; 
 for i=22:26

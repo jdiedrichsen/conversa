@@ -35,7 +35,6 @@ end;
 try
     A=textread(filename,'%f','headerlines',1);
 catch
-
     A=textread(filename,'%s','headerlines',1);
 end;
 
