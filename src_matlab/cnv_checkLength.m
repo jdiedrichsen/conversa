@@ -6,12 +6,15 @@ end;
 aviFile=fullfile(rootDir,'RawData',dataID,sprintf('%s_Color.avi',dataID)); 
 wavFile=fullfile(rootDir,'RawData',dataID,sprintf('%s.wav',dataID)); 
 trackingFile=fullfile(rootDir,'RawData',dataID,sprintf('%s.txt',dataID)); 
+fprintf('loading %s\n',trackingFile);
 T=cnv_loadTrackingData(trackingFile);
 % Add trackingData fields after they start tracking (after first point of
 % change)
 start = cnv_firstChangeI(T, 'exclude', {'timestamp', 'istracked', 'bodyid'});
 fprintf('removed %d frames\n',start);
 tracklength = T.timestamp(end)-T.timestamp(start); 
+T=getrow(T,start:length(T.timestamp)); 
+T.timestamp=T.timestamp-T.timestamp(1); 
 A=aviinfo(aviFile); 
 [x,Fs]=audioread(wavFile);
 Fs
