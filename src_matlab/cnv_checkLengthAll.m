@@ -1,27 +1,32 @@
 function D = cnv_checkLengthAll();
-D=[]; 
-color={'r','b','r','b'}; 
-for i=22:26
+D=[];
+color={'r','b','r','b'};
+for i=31
     for c=3:4
-        dataID=sprintf('cam%di%d',c,i); 
-        T.cam = c; 
-        T.int = i; 
-        [T.length,R{c},x{c},Fs]= cnv_checkLength(dataID); 
-        D=addstruct(D,T); 
-        subplot(2,1,1); 
-        plot(R{c}.timestamp,(R{c}.smile_l+R{c}.smile_r)/2,color{c}); 
-        hold on; 
-        subplot(2,1,2); 
-        t=[1:length(x{c})]/Fs; 
-        plot(t,abs(x{c}),color{c}); hold on; 
-%         indx=find(abs(x{c})>0.01);
- %       drawline(t(indx)); 
-%         subplot(2,1,1); 
-%         drawline(t(indx)); 
-    end; 
-    subplot(2,1,1); 
-    hold off; 
-    subplot(2,1,2); 
-    hold off; 
-    keyboard; 
-end; 
+        dataID=sprintf('cam%di%d',c,i);
+        T.cam = c;
+        T.int = i;
+        [T.length,F{c},B{c},x{c},Fs]= cnv_checkLength(dataID);
+        D=addstruct(D,T);
+        subplot(3,1,1);
+        plot(F{c}.timestamp,(F{c}.Smile_L+F{c}.Smile_L)/2,color{c});
+        hold on;
+        subplot(3,1,2);
+        plot(B{c}.timestamp,B{c}.hand_L_tz,color{c});
+        hold on;
+        
+        subplot(3,1,3);
+        t=[1:length(x{c})]/Fs;
+        plot(t,abs(x{c}),color{c}); hold on;
+        [~,claps]=findpeaks(abs(x{c}),t,'MinPeakHeight',0.1,'MinPeakDistance',0.3);
+        subplot(3,1,1);
+        drawline(claps);
+        subplot(3,1,2);
+        drawline(claps);
+    end;
+    for i=1:3
+        subplot(3,1,i);
+        hold off;
+    end;
+    keyboard;
+end;

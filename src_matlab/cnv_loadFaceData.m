@@ -1,7 +1,7 @@
-function cnvTrackingData = cnv_loadFaceData(fileName)
+function D = cnv_loadFaceData(fileName)
 % Loads a tab delimited text file of motion tracking data into a struct
 % Usage
-%   cnvTrackingData=cnv_loadTrackingData('fileName')
+%   D=cnv_loadTrackingData('fileName')
 % Description
 %   Reads and stores data from a Kinect face-tracking data text file
 %   The data is stored in a dataframe, a structure with a 2D array of fields. 
@@ -11,7 +11,6 @@ function cnvTrackingData = cnv_loadFaceData(fileName)
 TOP_HEADER_LN = '==========';
 N_HEADER_LNS = 3;
 
-cnvTrackingData = [];
 
 % Open File 
 fid = fopen(fileName,'r'); % Open the file for reading
