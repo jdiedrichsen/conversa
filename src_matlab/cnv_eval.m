@@ -22,23 +22,23 @@ function T = cnv_eval(varargin);
 %
 % By joern Diedrichsen & Shayaan Syed Ali
 
-pid  =[1001;1005;1005;2001;2001;2006;2006;2024;2024];
-cam  =[2;1;2;1;2;1;2;1;2;1;2];
+pid  =[1001;1005;1005;2001;2001];
+cam  =[2;1;2;1;2;1;2];
 
 nPart = 5;            % Number of partitions for within-person classification
-crossval = 'between';  % Between is between person classification
+crossval = 'within';  % Between is between person classification
 lossfcn  = 'error';    % Loss function
 verbose  = 1;
 targetField = 'smile';
-algorithms = {'wavelet','clinear','clinear','null'};
 allN = {'neckposx','neckposy','neckposz','neckrotx','neckroty','neckrotz'};
 allH = {'headposx','headposy','headposz','headrotx','headroty','headrotz'};
 allE = {'brow_up_l','brow_up_r','brow_down_l','brow_down_r','eye_closed_l','eye_closed_r'};
 allM = {'cheek_puffed_l','cheek_puffed_r','lips_pucker','lips_stretch_l','lips_stretch_r','lip_lower_down_l','lip_lower_down_r'};
 allX = {'smile_l','smile_r','frown_l','frown_r'};
 allJ = {'jaw_l','jaw_r','jaw_open'};
-options  = {{'fields',{'lips_pucker'}},...
-    {'fields',horzcat(allJ),'Learner','logistic','Lambda',exp(-7)},...
+
+algorithms = {'clinear','clinear','null'};
+options  = {{'fields',horzcat(allJ),'Learner','logistic','Lambda',exp(-7)},...
     {'fields',horzcat(allM,allJ,allE),'Learner','logistic','Lambda',exp(-7)},...
     {}};         % Additional options for algorithm
 plotPred = {};
@@ -56,7 +56,8 @@ end;
 nData = length(pid);
 Data =[];
 for i=1:nData
-    D=cnv_loadData(pid(i),cam(i));
+    dataID = sprintf('p%dcam%d',pid(i),cam(i)); 
+    D=cnv_loadData(dataID);
     v= ones(length(D.timestamp),1);
     D.dataset = v*i;
     D.pid = v*pid(i);

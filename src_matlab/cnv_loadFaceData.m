@@ -54,6 +54,6 @@ if (length(A)~=(nCols*nFrames))
 end; 
 A = reshape(A,nCols,nFrames)'; 
 for i=1:nCols 
-    D.(H{i}) = A(:,i); 
+    D.(lower(H{i})) = A(:,i); 
 end; 
 
