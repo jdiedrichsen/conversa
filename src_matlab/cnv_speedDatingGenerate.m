@@ -88,6 +88,7 @@ for s=0:numStations
     for i=1:numInteractions 
         ind=find(T.station==s & T.interaction==i & T.participant>0); 
         for j=1:length(ind) 
+<<<<<<< Updated upstream
             S.station     =s; 
             S.interaction =i; 
             S.camera = T.camera(ind(j)); 
@@ -100,6 +101,14 @@ for s=0:numStations
                 S.nextStation = T.station(nextind(1)); 
             end; 
             SS{s+1}=addstruct(SS{s+1},S); 
+=======
+            S{s+1}.station     = s; 
+            S{s+1}.interaction = i;
+            S{s+1}.participant = T.participant(ind(j));
+            S{s+1}.camera      = T.camera(ind(j)); 
+            next = find(T.) = T.; 
+            S{s+1}.nextStation = sss;
+>>>>>>> Stashed changes
         end; 
     end; 
 end; 
